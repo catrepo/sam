@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_totales_conso_gastos" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="818" leftMargin="12" rightMargin="12" topMargin="12" bottomMargin="12" uuid="8dbec3ec-3309-4335-b7ab-c6ccab483f76">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechai" class="java.lang.Integer"/>
+	<parameter name="fechaf" class="java.lang.Integer"/>
+	<parameter name="inicial" class="java.lang.Integer"/>
+	<parameter name="reforma" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select sum((case when inicial is null then 0 else inicial end ))as inicial1,
+(sum((case when inicial is null then 0 else inicial end ))+sum((case when reforma is null then 0 else reforma end )))as codificado,
+sum((case when compromiso is null then 0 else compromiso end))as compromiso1,
+sum((case when devengado is null then 0 else devengado end))as devengado1,
+sum((inicial-(case when devengado is null then 0 else devengado end))) as saldo,
+sum((case when ejecutado is null then 0 else ejecutado end ))as ejecutado1,
+sum((case when reforma is null then 0 else reforma end ))as reforma
+
+from (
+select CEDTMC,NOLAAD,
+(case when CUENDT is null then 0 else v1 end) as inicial
+ from (
+select CUENMC,CEDTMC,NOLAAD
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and NIVEMC between 1 and 1  and substr(CEDTMC,1,1) in (5,6,7,8,9) )
+left join
+(select CUENDT, sum(MONTDT1) as v1 from(
+SELECT substr(CUENDT,1,1) as CUENDT,SUM(MONTDT) as MONTDT1 FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT=$P{inicial}
+GROUP BY CUENDT, AUAD01
+HAVING SUM(MONTDT)>0)
+GROUP BY CUENDT
+)
+on CUENMC=CUENDT
+where (case when CUENDT is null then 0 else v1 end)>=0 )
+left join
+(select CEDTMC as CEDTMCr,
+(case when CUENDT is null then 0 else v1 end) as reforma
+ from (
+select CUENMC,CEDTMC
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and NIVEMC between 1 and 1  and substr(CEDTMC,1,1) in (5,6,7,8,9) )
+left join
+(select CUENDT, sum(MONTDT1) as v1 from(
+SELECT substr(CUENDT,1,1) as CUENDT,SUM(MONTDT) as MONTDT1 FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT=$P{reforma}
+GROUP BY CUENDT, AUAD01
+HAVING SUM(MONTDT)>0)
+GROUP BY CUENDT
+)
+on CUENMC=CUENDT
+where (case when CUENDT is null then 0 else v1 end)>=0 )
+on CEDTMC = CEDTMCr
+left join
+(select CEDTMC as CEDTMC1,
+(case when CUENDT7 is null then 0 else v7 end) as ejecutado
+ from (
+select CUENMC,CEDTMC,NOLAAD
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and NIVEMC between 1 and 1  and substr(CEDTMC,1,1) in (5,6,7,8,9) )
+left join
+(select CUENDT as CUENDT7, sum(MONTDT1) as v7 from(
+SELECT substr(CUENDT,1,1) as CUENDT,SUM(MONTDT) as MONTDT1 FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='3'
+AND TMOVDT='D'
+GROUP BY CUENDT
+HAVING SUM(MONTDT)>0)
+GROUP BY CUENDT
+)
+on CUENMC=CUENDT7
+where (case when CUENDT7 is null then 0 else v7 end)>=0)
+on CEDTMC = CEDTMC1
+left join
+(select CEDTMC as CEDTMC2,
+(case when CUENDT7 is null then 0 else v7 end) as compromiso
+ from (
+select CUENMC,CEDTMC,NOLAAD
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and NIVEMC between 1 and 1  and substr(CEDTMC,1,1) in (5,6,7,8,9) )
+left join
+(select CUENDT as CUENDT7, sum(MONTDT1) as v7 from(
+SELECT substr(CUENDT,1,1) as CUENDT,SUM(MONTDT) as MONTDT1 FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+GROUP BY CUENDT
+HAVING SUM(MONTDT)>0)
+GROUP BY CUENDT
+)
+on CUENMC=CUENDT7
+where (case when CUENDT7 is null then 0 else v7 end)>=0)
+on CEDTMC = CEDTMC2
+left join
+(select CEDTMC as CEDTMC3,
+(case when CUENDT7 is null then 0 else v7 end) as devengado
+ from (
+select CUENMC,CEDTMC,NOLAAD
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and NIVEMC between 1 and 1  and substr(CEDTMC,1,1) in (5,6,7,8,9) )
+left join
+(select CUENDT as CUENDT7, sum(MONTDT1) as v7 from(
+SELECT substr(CUENDT,1,1) as CUENDT,SUM(MONTDT) as MONTDT1 FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+GROUP BY CUENDT
+HAVING SUM(MONTDT)>0)
+GROUP BY CUENDT
+)
+on CUENMC=CUENDT7
+where (case when CUENDT7 is null then 0 else v7 end)>=0)
+on CEDTMC = CEDTMC3]]>
+	</queryString>
+	<field name="INICIAL1" class="java.math.BigDecimal"/>
+	<field name="CODIFICADO" class="java.math.BigDecimal"/>
+	<field name="COMPROMISO1" class="java.math.BigDecimal"/>
+	<field name="DEVENGADO1" class="java.math.BigDecimal"/>
+	<field name="SALDO" class="java.math.BigDecimal"/>
+	<field name="EJECUTADO1" class="java.math.BigDecimal"/>
+	<field name="REFORMA" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="16">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="98a25e3f-7ff3-46bd-a3aa-353fb2dd5459" key="textField" x="746" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EJECUTADO1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="6ea2507e-f55b-43f5-958c-c87d5af9ad7c" key="textField" x="459" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="c109c55b-2fde-4f06-8237-0bb9788614b3" key="textField" x="675" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="a02c13b6-792b-4157-90ab-e8015cfdab56" key="textField-3" x="531" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPROMISO1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="30555b0a-d56e-4f98-b63a-4f81720fb96f" key="textField" x="386" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="c158c257-0488-45e1-8409-d73e5f378e99" key="textField" x="313" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INICIAL1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="b9a0f9f4-f0ce-47cf-8a99-a2941e4678a3" key="textField" x="603" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEVENGADO1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="bd1e4925-92f3-4d40-8874-c6acecc22ed1" x="225" y="0" width="100" height="16"/>
+				<textElement/>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+</jasperReport>

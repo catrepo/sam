@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_vale_consumo" language="groovy" pageWidth="421" pageHeight="297" orientation="Landscape" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fd5c3e03-831c-4619-a15e-5eba595d071e">
+	<property name="ireport.zoom" value="1.5394743546921197"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="autoriza" class="java.lang.String"/>
+	<parameter name="vale" class="java.lang.Integer"/>
+	<parameter name="id" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+o.IDE_ORDEN_CONSUMO,
+o.FECHA_ORDEN,
+o.PLACA_VEHICULO,
+o.DESCRIPCION_VEHICULO,
+o.CONDUCTOR,
+o.CI_CONDUCTOR,
+o.AUTORIZA,
+o.NUMERO_ORDEN,
+t.DESCRIPCION_COMBUSTIBLE
+FROM
+dbo.MVORDEN_CONSUMO o
+INNER JOIN dbo.MVTIPO_COMBUSTIBLE t ON o.IDE_TIPO_COMBUSTIBLE = t.IDE_TIPO_COMBUSTIBLE
+where o.NUMERO_ORDEN =$P{vale} and o.IDE_ORDEN_CONSUMO =$P{id}]]>
+	</queryString>
+	<field name="IDE_ORDEN_CONSUMO" class="java.lang.Integer"/>
+	<field name="FECHA_ORDEN" class="java.sql.Timestamp"/>
+	<field name="PLACA_VEHICULO" class="java.lang.String"/>
+	<field name="DESCRIPCION_VEHICULO" class="java.lang.String"/>
+	<field name="CONDUCTOR" class="java.lang.String"/>
+	<field name="CI_CONDUCTOR" class="java.lang.String"/>
+	<field name="AUTORIZA" class="java.lang.String"/>
+	<field name="NUMERO_ORDEN" class="java.lang.Integer"/>
+	<field name="DESCRIPCION_COMBUSTIBLE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="41" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="f00f569f-23b7-4b85-a6ea-444b2e86effe" x="37" y="0" width="134" height="36"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ORDEN DE ABASTECIMIENTO DE COMBUSTIBLE]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="ec1c96cf-9d13-46ae-89b9-d27255773890" x="251" y="-4" width="130" height="45"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_transporte.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="160" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="9d97a883-36e2-49fe-85c7-aa1e823e71f0" x="0" y="1" width="380" height="156"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="3a0c96ea-a9fd-40cb-9ea8-ee2457cccb4c" x="6" y="34" width="370" height="43"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="b2887516-4c0f-4cbf-aab8-8e1847b4b93f" x="284" y="3" width="51" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° ORDEN :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c1198ab7-f889-40bf-904e-d3e0e80dde05" x="324" y="3" width="55" height="20"/>
+				<textElement>
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUMERO_ORDEN}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9c5d9c30-4713-4d9d-a997-6555f1d87024" x="19" y="3" width="66" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA  DE ORDEN: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ca0dcd34-e7e2-46b3-8c96-f93d6089e519" x="8" y="34" width="47" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PLACA : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="324963e6-3afd-4ee4-8a7f-78dad6b0ee2c" x="144" y="34" width="59" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c2ba111c-0958-469e-8f5f-982f3270a215" x="9" y="56" width="57" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONDUCTOR :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="0f594163-36f8-46d3-b8ef-69241a8cf9be" x="82" y="3" width="63" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA_ORDEN}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="16f630ca-b432-4b75-be74-6ca81344a2b8" x="201" y="34" width="167" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DESCRIPCION_VEHICULO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="886129c4-7098-41f0-826e-ac075a0fbcb0" x="42" y="34" width="100" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PLACA_VEHICULO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d375cc42-e048-4037-8f08-a41a5005e6c9" x="65" y="56" width="179" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CONDUCTOR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="2e7d4c98-95d5-478d-bf48-4ef205e57dfb" x="8" y="98" width="77" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TIPO COMBUSTIBLE :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6f098f9d-4b78-49e2-b0dc-875007a474b3" x="8" y="111" width="68" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[# GALONES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c4631c09-cab2-4f69-b166-ee25621ec43c" x="242" y="119" width="52" height="20"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a59d701b-c9f3-475c-8942-34b85e2af13f" x="9" y="80" width="57" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[KILOMETRAJE:]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="b3b4c91a-a4cd-468c-89da-0307d7a57dde" x="65" y="92" width="100" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="e30c1118-c37e-4b85-9e12-51053afd3109" x="72" y="123" width="100" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="787aeb3d-7890-4732-85c6-9c7dfee72fc8" x="276" y="131" width="100" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="7d5225d4-5e08-479e-9c87-b239c4f132e8" x="8" y="130" width="68" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA ABASTECIMIENTO: :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e71eaedc-e857-400c-8681-e86e40e08915" x="141" y="132" width="68" height="20"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HORA :]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="9ef0a8b5-7f78-471f-9835-51259fbdf80a" x="204" y="149" width="60" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="1ca53db1-41b3-4fc8-b53e-a0fe2e9e8486" x="78" y="148" width="60" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="d6670b25-1642-4593-9fcf-0b5edfa73b04" x="85" y="98" width="100" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DESCRIPCION_COMBUSTIBLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<columnFooter>
+		<band height="53" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="65a875b8-2650-45d5-93e1-84798b487251" x="38" y="20" width="100" height="13"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Autorizado Por.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4d7adefb-5d9f-4a42-ab27-06139176d12c" x="224" y="17" width="100" height="13"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recibe Por.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="1cdee64c-2fde-485d-b9bd-e2ca2dbb3612" x="37" y="18" width="100" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="c603fab6-ccf3-4457-947f-d83cecec7da3" x="223" y="16" width="100" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="9e3033f7-ace9-442c-8beb-de7a0e5b48d7" x="224" y="30" width="100" height="13"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="84157fab-d256-48ff-bd89-c21bcf4b0f70" x="224" y="40" width="100" height="13"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[C.I. :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="55fff8e2-d9e1-44d2-813d-379b44da88c3" x="25" y="33" width="125" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{autoriza}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

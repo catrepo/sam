@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_liquidacion_anticipo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="efb62be0-bb69-4335-9fbd-d62289281ecf">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="codigo" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+d.id_pago,
+d.id_solicitud,
+d.num_pago,
+d.fecha_documento,
+d.valor_pagar,
+t.desc_tipo,
+s.ced_empleado,
+s.nom_empleado
+FROM dbo.nom_docu_pago d
+INNER JOIN dbo.nom_tipo t ON d.cod_pago = t.id_tipo
+INNER JOIN dbo.nom_solicitud s ON s.id_solicitud = d.id_solicitud
+where id_pago = $P{codigo}]]>
+	</queryString>
+	<field name="id_pago" class="java.lang.Integer"/>
+	<field name="id_solicitud" class="java.lang.Integer"/>
+	<field name="num_pago" class="java.lang.String"/>
+	<field name="fecha_documento" class="java.lang.String"/>
+	<field name="valor_pagar" class="java.math.BigDecimal"/>
+	<field name="desc_tipo" class="java.lang.String"/>
+	<field name="ced_empleado" class="java.lang.String"/>
+	<field name="nom_empleado" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="95" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="73ee5ebe-1b70-4f73-be70-8357349a07ec" x="275" y="26" width="112" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nùmero Solicitud : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a2958f62-d2b4-4e36-babf-76bb640b4ec9" x="42" y="1" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Documento Pago : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3f4aef8e-3d64-4543-a81d-d50ae8cc5432" x="42" y="26" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Pago : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="111ac65d-e6ce-4132-ab1c-f61a49d862fb" x="275" y="1" width="112" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Documento : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5a672837-e3be-41a5-b898-0c02bdf603d4" x="42" y="50" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cèdula : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ad4355a6-2646-4d3d-a6dd-bbbff40a7272" x="219" y="50" width="168" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="dacf9063-0b30-46ae-8e11-aa194ddef8f8" x="157" y="75" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Pagar : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="3ba4a1e7-8703-4d05-9b65-3669d287189f" x="142" y="1" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{num_pago}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="a342fb64-4af0-4a03-a70f-c2e7fcaea685" x="367" y="26" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{id_solicitud}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="fb3f249d-94e4-435b-97ab-7805554d914a" x="100" y="50" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{ced_empleado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="85bf9e0e-f670-4d3a-b9c4-6bedc11da6a6" x="387" y="1" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{fecha_documento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="88aa37a3-5d67-4834-beb3-aeba51b73927" x="126" y="26" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{desc_tipo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="86102bc0-f977-42e4-bf55-d1c26339c321" x="278" y="50" width="277" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nom_empleado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="5fbcc4bc-b339-4c63-b278-5339ec73641c" x="191" y="75" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{valor_pagar}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="31c6f1ff-a385-40f9-ad29-68f25baaac87" x="447" y="21" width="108" height="29"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/pie_logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+</jasperReport>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_total_8columnas" language="groovy" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="12" bottomMargin="12" uuid="fb4a4423-438e-443d-a909-bac7f9b02bd6">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="inicial" class="java.lang.Integer"/>
+	<parameter name="inicio" class="java.lang.Integer"/>
+	<parameter name="fin" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select sum(ini_debe) as ini_debe,sum(ini_haber) as ini_haber,sum(flujo_debe)as flujo_debe,sum(flujo_haber)as flujo_haber
+,sum(acumulado_debe)as acu_debe,sum(acumulado_haber)as acu_habe,sum(saldo_debe)as saldo_debe,sum(saldo_haber)as saldo_haber
+ from (
+select cue_debe,ini_debe,ini_haber
+,(flud_debe+fluc_debe) as flujo_debe
+,(flud_haber+fluc_haber) as flujo_haber
+,(ini_debe+flud_debe+fluc_debe) as acumulado_debe
+,(ini_haber+flud_haber+fluc_haber) as acumulado_haber
+,(case when  (ini_debe+flud_debe+fluc_debe)>=(ini_haber+flud_haber+fluc_haber) then  (ini_debe+flud_debe+fluc_debe)-(ini_haber+flud_haber+fluc_haber)  else 0 end )as saldo_debe
+,(case when (ini_haber+flud_haber+fluc_haber)>(ini_debe+flud_debe+fluc_debe) then (ini_haber+flud_haber+fluc_haber)-(ini_debe+flud_debe+fluc_debe)  else 0 end )as saldo_haber from (
+select cue_debe
+,(case when ini_debe is null then 0 else ini_debe end)as ini_debe
+,(case when ini_haber is null then 0 else ini_haber end) as ini_haber
+,(case when flud_debe is null then 0 else flud_debe end) as flud_debe
+,(case when flud_haber is null then 0 else flud_haber end) as flud_haber
+,(case when fluc_debe is null then 0 else fluc_debe end) as fluc_debe
+,(case when fluc_haber is null then 0 else fluc_haber end) as fluc_haber
+from (
+select CUENMC as cue_debe,inicial as ini_debe
+from (select DISTINCT CUENMC,NIVEMC from USFIMRU.TIGSA_GLM03
+where TIPLMC = 'C' and NIVEMC = 7)
+left join (
+select SUM(MONTDT) as inicial,CUENDT FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+and TIPLDT = 'C'
+and SAPRDT <= $P{inicial}
+GROUP BY CUENDT
+having SUM(MONTDT)>=0)
+on CUENMC = CUENDT)
+left join
+(select CUENMC as cue_haber,inicial*-1 as ini_haber
+from (select DISTINCT CUENMC,NIVEMC from USFIMRU.TIGSA_GLM03
+where TIPLMC = 'C' and NIVEMC = 7)
+left join (
+select SUM(MONTDT) as inicial,CUENDT FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+and TIPLDT = 'C'
+and SAPRDT <= $P{inicial}
+GROUP BY CUENDT
+having SUM(MONTDT) <0)
+on CUENMC = CUENDT)
+on cue_debe = cue_haber
+left join
+(select CUENMC as cue_fddebe,inicial as flud_debe
+from (select DISTINCT CUENMC,NIVEMC from USFIMRU.TIGSA_GLM03
+where TIPLMC = 'C' and NIVEMC = 7)
+left join (
+select SUM(MONTDT) as inicial ,CUENDT FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+and CCIADT = 'MR'
+and SAPRDT <= $P{fin}
+and SAPRDT >= $P{inicio}
+and TMOVDT = 'D'
+GROUP BY CUENDT
+having SUM(MONTDT)>=0)
+on CUENMC = CUENDT)
+on cue_debe = cue_fddebe
+left join
+(select CUENMC as cue_fdhaber,inicial*-1 as flud_haber
+from (select DISTINCT CUENMC,NIVEMC from USFIMRU.TIGSA_GLM03
+where TIPLMC = 'C' and NIVEMC = 7)
+left join (
+select SUM(MONTDT) as inicial ,CUENDT FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+and CCIADT = 'MR'
+and SAPRDT <= $P{fin}
+and SAPRDT >= $P{inicio}
+and TMOVDT = 'D'
+GROUP BY CUENDT
+having SUM(MONTDT)<0)
+on CUENMC = CUENDT)
+on cue_debe = cue_fdhaber
+left join
+(select CUENMC as cue_fcdebe,inicial as fluc_debe
+from (select DISTINCT CUENMC,NIVEMC from USFIMRU.TIGSA_GLM03
+where TIPLMC = 'C' and NIVEMC = 7)
+left join (
+select SUM(MONTDT) as inicial ,CUENDT FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+and CCIADT = 'MR'
+and SAPRDT <= $P{fin}
+and SAPRDT >= $P{inicio}
+and TMOVDT = 'H'
+GROUP BY CUENDT
+having SUM(MONTDT)>=0)
+on CUENMC = CUENDT)
+on cue_debe = cue_fcdebe
+left join
+(select CUENMC as cue_fchaber,inicial*-1 as fluc_haber
+from (select DISTINCT CUENMC,NIVEMC from USFIMRU.TIGSA_GLM03
+where TIPLMC = 'C' and NIVEMC = 7)
+left join (
+select SUM(MONTDT) as inicial ,CUENDT FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+and CCIADT = 'MR'
+and SAPRDT <= $P{fin}
+and SAPRDT >= $P{inicio}
+and TMOVDT = 'H'
+GROUP BY CUENDT
+having SUM(MONTDT)<0)
+on CUENMC = CUENDT)
+on cue_debe = cue_fchaber))]]>
+	</queryString>
+	<field name="INI_DEBE" class="java.math.BigDecimal"/>
+	<field name="INI_HABER" class="java.math.BigDecimal"/>
+	<field name="FLUJO_DEBE" class="java.math.BigDecimal"/>
+	<field name="FLUJO_HABER" class="java.math.BigDecimal"/>
+	<field name="ACU_DEBE" class="java.math.BigDecimal"/>
+	<field name="ACU_HABE" class="java.math.BigDecimal"/>
+	<field name="SALDO_DEBE" class="java.math.BigDecimal"/>
+	<field name="SALDO_HABER" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="16" splitType="Stretch">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="8adff9ad-93e8-4e38-a223-da5c24a1671d" key="textField" x="189" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FLUJO_DEBE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="3e0c972f-283d-43aa-b5f6-5ea2d6a553c3" key="textField" x="258" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FLUJO_HABER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="9f593606-7c00-4aa1-a19e-b234f0bb77cb" key="textField" x="53" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INI_DEBE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="6725bb94-6e8b-4552-9c0d-0551753e20f2" key="textField" x="121" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INI_HABER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="03a9b877-b475-4839-a62f-10cb30ec1703" key="textField" x="396" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACU_HABE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="e328991f-43bd-407d-8e17-7241a27acd88" key="textField" x="326" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACU_DEBE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="06b865da-9582-4410-87b2-abc3f174220c" key="textField" x="463" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO_DEBE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="c4ede9ad-86e2-4179-896f-196a849003ae" key="textField" x="526" y="0" width="68" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO_HABER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+</jasperReport>

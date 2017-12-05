@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_firmas_ingreso" language="groovy" columnCount="3" printOrder="Horizontal" pageWidth="595" pageHeight="842" columnWidth="185" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7111ffb1-08c8-4f05-8227-1ce05f1396a5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="lugar" class="java.lang.String"/>
+	<parameter name="sector" class="java.lang.String"/>
+	<parameter name="modulo" class="java.lang.String"/>
+	<parameter name="desde" class="java.lang.Integer"/>
+	<parameter name="hasta" class="java.lang.Integer"/>
+	<parameter name="bandera" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select *
+from (select DISTINCT NOM_USUA,0 as ban from SIS_USUARIO
+inner join CMT_FALLECIDO on SIS_USUARIO.NICK_USUA = CMT_FALLECIDO.USUARIO_INGRE
+inner join CMT_CATASTRO on CMT_FALLECIDO.IDE_CATASTRO = CMT_CATASTRO.IDE_CATASTRO
+where SIS_USUARIO.ACTIVO_USUA =1
+and ide_lugar = $P{lugar} and sector= $P{sector} and modulo = $P{modulo}
+union
+select DISTINCT NOM_USUA ,1 as ban from SIS_USUARIO
+inner join CMT_FALLECIDO on SIS_USUARIO.NICK_USUA = CMT_FALLECIDO.USUARIO_INGRE
+inner join CMT_CATASTRO on CMT_FALLECIDO.IDE_CATASTRO = CMT_CATASTRO.IDE_CATASTRO
+where SIS_USUARIO.ACTIVO_USUA =1
+and ide_lugar = $P{lugar} and sector= $P{sector} and modulo = $P{modulo} and numero between $P{desde} and $P{hasta}
+) as a
+where ban =0
+order by NOM_USUA]]>
+	</queryString>
+	<field name="NOM_USUA" class="java.lang.String"/>
+	<field name="ban" class="java.lang.Integer"/>
+	<detail>
+		<band height="43" splitType="Stretch">
+			<textField>
+				<reportElement uuid="fd12cf7a-317d-432d-a99f-fd32c947d671" x="0" y="0" width="161" height="20"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOM_USUA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

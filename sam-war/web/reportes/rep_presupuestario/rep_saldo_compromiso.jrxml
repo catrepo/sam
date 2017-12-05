@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_saldo_compromiso" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="12" bottomMargin="20" uuid="5d6e9a03-80c8-4c98-8e92-e0a265d629d4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select postma,partida,nolaad,inicial,reforma,codificado,ndocdt,observacion,responsable,oficio,fdocdt,compromiso
+,(case when fdocdt is null then null else (substr(fdocdt,6,2)||'/'||substr(fdocdt,4,2)||'/20'||substr(fdocdt,2,2))end)as fecha
+from (select CUENMC,NOLAAD,CEDTMC
+,(case when nivemc = 1 then SUBSTR(CUENMC, 1, 1)
+when nivemc = 2 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 2)
+when nivemc = 3 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)
+when nivemc = 4 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)||'.'||SUBSTR(CUENMC, 5, 2)
+when nivemc = 5 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)||'.'||SUBSTR(CUENMC, 5, 2)||'.'||SUBSTR(CUENMC, 7, 2)
+when nivemc = 6 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)||'.'||SUBSTR(CUENMC, 5, 2)||'.'||SUBSTR(CUENMC, 7, 2)||'.'||SUBSTR(CUENMC, 9, 2) end) as partida
+
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and substr(CEDTMC,1,1) in (5,6,7,8,9))
+left join
+(select *
+from (select CUENDT , (case when inicial is null then 0 else inicial end) as inicial
+,(case when reforma is null then 0 else reforma end) as reforma,codificado,POSTMA
+from (select CUENDT , POSTMA , SUM(codificado) as codificado
+from (select CUENDT, sum(codificado) as codificado,AUAD02
+from (select CUENDT, codificado,AUAD02  ,FDOCDT
+from (SELECT CUENDT, MONTDT as codificado,AUAD02  ,FDOCDT
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=11514
+AND SAPRDT<=11515)
+where substr(FDOCDT,1,5) <=11609)
+group by CUENDT,AUAD02
+having AUAD02 is not null)
+left join
+(SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'CC'
+UNION
+SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+on AUAD02 = CAUXMA
+GROUP BY CUENDT,POSTMA)
+left join
+(select CUENDT as CUENDTR , POSTMA as POSTMR, SUM(inicial) as reforma
+from (SELECT CUENDT , AUAD02 , SUM(MONTDT) as inicial
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT=11515
+and substr(FDOCDT,1,5) <= 11609
+GROUP BY CUENDT, AUAD02
+having AUAD02 is not null)
+left join
+(SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'CC'
+UNION
+SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+on AUAD02 = CAUXMA
+GROUP BY CUENDT,POSTMA)
+on CUENDT= CUENDTR and POSTMA=POSTMR
+left join
+(select CUENDT as CUENDTI , POSTMA as POSTMI , SUM(inicial) as inicial
+from (SELECT CUENDT , AUAD02 , SUM(MONTDT) as inicial
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT=11514
+GROUP BY CUENDT, AUAD02
+having AUAD02 is not null)
+left join
+(SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'CC'
+UNION
+SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+on AUAD02 = CAUXMA
+GROUP BY CUENDT,POSTMA)
+on CUENDT= CUENDTI and POSTMA=POSTMI)
+left join
+(select CUENDT as CUENDTC, compromiso,FDOCDT,NDOCDT ,observacion,POSTMA as POSTMAC
+,(case when SUBSTR(responsable, 0, INSTR(responsable, 'FU')-1) is not null then SUBSTR(responsable, 0, INSTR(responsable, 'FU')-1)
+else responsable end) as responsable
+,(case when SUBSTR(oficio, 0, INSTR(oficio, ',')-1) is not null then SUBSTR(oficio, 0, INSTR(oficio, ',')-1)
+when SUBSTR(oficio, 0, INSTR(oficio, ' 22.07.201')-1) is not null then SUBSTR(oficio, 0, INSTR(oficio, ' 22.07.201')-1)
+else oficio
+end) as oficio
+from (select CUENDT , AUAD02 ,compromiso,DESCAD,FDOCDT,NDOCDT ,observacion,POSTMA
+,(case when INSTR(observacion, 'NO.')>0 then substr(observacion,INSTR(observacion, 'NO.')+4,28)
+when INSTR(observacion, 'No.')>0 then substr(observacion,INSTR(observacion, 'No.')+3,28)
+when INSTR(observacion, 'NO-')>0 then substr(observacion,INSTR(observacion, 'NO-')+4,28)
+when INSTR(observacion, 'N0.')>0 then substr(observacion,INSTR(observacion, 'N0.')+4,28)
+when INSTR(observacion, 'Nro.')>0 then substr(observacion,INSTR(observacion, 'Nro.')+4,31)
+when INSTR(observacion, 'NRO.')>0 then substr(observacion,INSTR(observacion, 'NRO.')+4,31)
+when INSTR(observacion, 'MEMORANDO')>0 then substr(observacion,INSTR(observacion, 'MEMORANDO')+10,20)
+when INSTR(observacion, 'MM')>0 then substr(observacion,INSTR(observacion, 'MM')+2,31)
+when INSTR(observacion, 'ANULADO')>0 then substr(observacion,INSTR(observacion, 'ANULADO')+26,31)
+when INSTR(observacion, 'SOLICITADO,')>0 then substr(observacion,INSTR(observacion, 'SOLICITADO,')+27,31)
+end) as oficio
+,(case when INSTR(observacion, 'ING.')>0 then substr(observacion,INSTR(observacion, 'ING.')+4,28)
+when INSTR(observacion, 'LCDA.')>0 then substr(observacion,INSTR(observacion, 'LCDA.')+6,28)
+when INSTR(observacion, 'LIC.')>0 then substr(observacion,INSTR(observacion, 'LIC.')+5,28)
+when INSTR(observacion, 'DR.')>0 then substr(observacion,INSTR(observacion, 'DR.')+4,28)
+when INSTR(observacion, 'ABOGADO')>0 then substr(observacion,INSTR(observacion, 'ABOGADO')+7,28)
+when INSTR(observacion, 'ABG.')>0 then substr(observacion,INSTR(observacion, 'ABG.')+5,28)
+when INSTR(observacion, 'LCDO.')>0 then substr(observacion,INSTR(observacion, 'LCDO.')+6,28)
+when INSTR(observacion, 'DRA.')>0 then substr(observacion,INSTR(observacion, 'DRA.')+4,28)
+when INSTR(observacion, 'ARQ.')>0 then substr(observacion,INSTR(observacion, 'ARQ.')+4,28)
+when INSTR(observacion, 'TLG.')>0 then substr(observacion,INSTR(observacion, 'TLG.')+5,28)
+end) as responsable
+from (select CUENDT , AUAD02 , sum(compromiso) as compromiso,DESCAD,FDOCDT,NDOCDT ,observacion
+from (SELECT CUENDT , AUAD02 , MONTDT as compromiso,NUCODT,DESCAD,FDOCDT,NDOCDT
+,(select MAX(COHEAD) from USFIMRU.TIGSA_GLAI3 where CCIAAD=CCIADT and SAPRAD=SAPRDT and TICOAD=TICODT and NUCOAD=NUCODT) as observacion
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT>=11601
+AND SAPRDT<=11607
+AND CAUXDT='1'
+AND TMOVDT='D')
+group by CUENDT , AUAD02,DESCAD,FDOCDT,NDOCDT,observacion)
+left join
+(SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'CC'
+UNION
+SELECT CAUXMA,POSTMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+on AUAD02 = CAUXMA))
+on CUENDT= CUENDTC and POSTMA=POSTMAC)
+on CUENMC =  CUENDT
+where CUENDT is not null
+order by postma,CUENMC,FDOCDT]]>
+	</queryString>
+	<field name="POSTMA" class="java.lang.String"/>
+	<field name="PARTIDA" class="java.lang.String"/>
+	<field name="NOLAAD" class="java.lang.String"/>
+	<field name="INICIAL" class="java.math.BigDecimal"/>
+	<field name="REFORMA" class="java.math.BigDecimal"/>
+	<field name="CODIFICADO" class="java.math.BigDecimal"/>
+	<field name="NDOCDT" class="java.math.BigDecimal"/>
+	<field name="OBSERVACION" class="java.lang.String"/>
+	<field name="RESPONSABLE" class="java.lang.String"/>
+	<field name="OFICIO" class="java.lang.String"/>
+	<field name="FDOCDT" class="java.math.BigDecimal"/>
+	<field name="COMPROMISO" class="java.math.BigDecimal"/>
+	<field name="FECHA" class="java.lang.String"/>
+	<variable name="suma_com" class="java.math.BigDecimal" resetType="Group" resetGroup="partida" calculation="Sum">
+		<variableExpression><![CDATA[$F{COMPROMISO}]]></variableExpression>
+	</variable>
+	<group name="partida">
+		<groupExpression><![CDATA[$F{PARTIDA}]]></groupExpression>
+		<groupHeader>
+			<band height="45">
+				<textField>
+					<reportElement uuid="af07029b-01ab-4dc2-8c41-87f7c7cb06a0" x="8" y="8" width="100" height="16"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{POSTMA}+"."]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="5e716d46-64d0-4687-942d-b9f4888ecbcf" x="28" y="8" width="100" height="16"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PARTIDA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="3a679867-4fea-4404-a553-3e581de129e2" x="116" y="8" width="349" height="16"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NOLAAD}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="fc5a0e53-8021-40e8-a1a6-71939e6764b8" key="line" x="3" y="0" width="802" height="1"/>
+				</line>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="7ce538a0-43dc-4b82-889c-f382fa2338d5" x="514" y="16" width="100" height="16"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="121c1fc1-9787-4600-9e6d-3b9d7d5efd83" x="692" y="1" width="100" height="16"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{INICIAL}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="2e04a596-1b82-4c30-b943-d38a10a08e1d" x="692" y="16" width="100" height="16"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="471b3c8b-ce71-4c51-91f3-79bc6904db7f" x="484" y="16" width="100" height="16"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REFORMA : ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="1bc70255-8115-4e7c-b331-e379dfa28a55" x="636" y="1" width="100" height="16"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INICIAL : ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="dd32d0ec-b7e1-4031-a2f2-47f8d7e16451" x="636" y="16" width="100" height="16"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIFICADO : ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="875779fd-61a1-465f-8b8e-3aabbd4b54b7" x="45" y="31" width="380" height="14"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DETALLE DE COMPROMISO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="8f159f80-b6bb-4d76-8b48-c2278367eefa" x="425" y="31" width="148" height="14"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SOLICITA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="27fbbb51-9a95-4e95-b1d6-63938019b9a0" x="570" y="31" width="73" height="14"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OFICIO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="0d23e02f-b214-4cda-8fff-70883709efec" x="650" y="30" width="100" height="14"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FECHA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="658d6d10-036a-4ba2-af9b-8d14043cbb33" x="702" y="31" width="100" height="14"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VALOR]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="29">
+				<staticText>
+					<reportElement uuid="1367f0dd-3a6c-48f1-863b-ef3c20bd4b1d" x="611" y="0" width="110" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="7f0cac73-cb3f-4a86-bd7c-ca21bf7779e0" x="611" y="14" width="110" height="15"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Saldo Compromiso : ]]></text>
+				</staticText>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="05ad0024-1777-45a0-9957-959ef54e5f76" x="702" y="0" width="100" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{suma_com}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="2e90cf69-e75f-4b59-b0cc-22f21c49cade" x="702" y="14" width="100" height="15"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{CODIFICADO}-$V{suma_com}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="b8a96e0f-013d-4563-bad5-97fa15fff669" x="0" y="0" width="802" height="21"/>
+				<textElement>
+					<font size="16" isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[SALDOS DE PARTIDAS POR COMPROMISO]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="f3447e5a-8928-4ef6-ada0-389ec1841eb3" x="0" y="0" width="100" height="15"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NDOCDT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="065981ab-c609-4013-8be4-28965a9d902f" x="45" y="0" width="380" height="15"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OBSERVACION}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="8880b0ea-19ef-4201-87fa-1d7d15243142" x="425" y="0" width="148" height="15"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RESPONSABLE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="5e4a6f58-2d87-4c56-a9ad-5c1a00b07f13" x="570" y="0" width="73" height="15"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OFICIO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="f1405cab-0540-4490-b26f-1a2a8bac6f7f" x="650" y="0" width="100" height="15"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="918008b0-24e2-4cf1-97bd-e3b7289fcf17" x="702" y="0" width="100" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPROMISO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17" splitType="Stretch">
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="4315fe8d-2559-4193-b4ae-41be14faee3e" key="textField" x="743" y="3" width="36" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="18e73708-90d6-4b36-9377-5169238b39db" key="textField-4" x="13" y="3" width="209" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="705d080e-8038-4eb7-aa0e-a683ca7da4e7" key="line" x="-4" y="2" width="802" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="82ea7c24-3ad7-4877-af4e-f46d031d6a99" key="textField-1" x="313" y="3" width="152" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="0a6a0a8b-977e-494f-b588-63a938a960b0" key="textField" x="569" y="3" width="170" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="2" splitType="Stretch"/>
+	</summary>
+</jasperReport>

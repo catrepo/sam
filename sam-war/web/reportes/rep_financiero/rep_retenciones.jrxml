@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_retenciones" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="03ba5ddb-e442-439e-9ed3-0a3dce5355ab">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anio" class="java.lang.Integer"/>
+	<parameter name="periodo" class="java.lang.Integer"/>
+	<parameter name="distributivo" class="java.lang.Integer"/>
+	<parameter name="descripcion" class="java.lang.String"/>
+	<parameter name="mes" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+c.cue_codigo as cuenta,
+c.cue_descripcion as descripcion,
+l.mensual as valor
+FROM conc_lista_retenciones l
+inner join conc_catalogo_cuentas c on c.cedula= l.cedula_beneficiario
+inner join srh_empleado e on e.cod_empleado= l.cod_empleado
+where e.id_distributivo=$P{distributivo}
+union all
+select
+(case when substring(pre_codigo from 1 for 2) = '51' then trim(trailing ';' from substring(cuentas from 1 for 10))
+when substring(pre_codigo from 1 for 2) = '71' then ltrim(substring(cuentas from 11 for 11),';' ) end) as cuenta
+,
+descripcion,
+sum as valor
+from(SELECT descripcion,cuentas FROM conc_cuentas_asientos where estado ='A') as a
+inner join (
+select descripcion_col as tipo,ide_columnas,pre_codigo,sum(valor)
+from srh_roles  r
+inner join prec_programas p on r.ide_programa=p.ide_programa
+inner join  srh_empleado e on e.cod_empleado=r.ide_empleado
+inner join  conc_clasificador c on p.ide_clasificador=c.ide_clasificador
+inner join  srh_columnas h on r.ide_columnas=h.ide_col
+where ano=$P{anio}
+and  id_distributivo_roles=$P{distributivo}
+and ide_periodo=$P{periodo}
+and ide_columnas in(4,3,9,10,13,84,56,91,50,5,80)
+and valor>0
+group by c.pre_codigo,ide_columnas,descripcion_col
+order by descripcion_col) as b
+on a.descripcion = b.tipo
+order by descripcion,cuenta]]>
+	</queryString>
+	<field name="cuenta" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="valor" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VALOR]]></fieldDescription>
+	</field>
+	<variable name="variable1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="105" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="dd594827-5189-4e78-83e1-116354dd2e18" x="10" y="82" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PERIODO : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="03b0ce24-8820-40a0-b86d-6d96bd5eba63" x="10" y="62" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[AÑO : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8659d00e-c738-4adc-9412-7356da16f2a3" x="10" y="42" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bd4399cf-3ea5-4d6e-b520-46bbd2b58646" key="staticText-1" x="10" y="7" width="272" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Asiento Aútomatico Retenciones]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="186b854f-9c65-4f52-8e3d-b4583f4dde9b" x="95" y="62" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{anio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="18a7711e-466d-4ad4-aaf4-ef5cf950b762" x="95" y="82" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{mes}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="b768e85f-6149-438c-900a-ca0319aa3aa7" x="95" y="42" width="150" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{descripcion}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="5bf5a5ad-c88a-481b-8ffa-13d651eb89b1" x="343" y="3" width="171" height="102"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_reporte.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="11" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="21592a67-d618-4d7a-ac33-9dde815b1b19" x="0" y="0" width="555" height="20" backcolor="#666666"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="76121d11-8745-40fd-b937-8e2ce1fdcdf1" x="0" y="0" width="41" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ef459602-aee7-4e2d-945b-be0ef461d1d5" x="41" y="0" width="100" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuenta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d80ec274-0bdb-4690-8490-5c24f5f8068f" x="141" y="0" width="202" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Beneficiario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7b302966-b05a-4333-ad55-e22f9ed0a16a" x="343" y="0" width="100" height="20" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="b049bbe0-610a-49fc-8967-228b214208ca" x="0" y="0" width="41" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="a07d7db9-9ad9-4c25-8d40-d474b0e8bf87" x="41" y="0" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="dbc35587-6712-47aa-ad77-51a7bac62f8d" x="141" y="0" width="202" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="4cc45501-8dcd-4c7d-8f3d-5ec5f22a376c" x="343" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="9" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="15" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="de2b9c5a-a085-4852-8613-1a2d3b39e507" key="textField-5" x="18" y="0" width="92" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="18b562a0-1552-43d0-a2ba-b24ab704b60e" key="textField" x="327" y="0" width="170" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="44811c0a-8f29-4238-a00b-309e17278a33" key="textField-1" x="195" y="0" width="90" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="a1317869-5192-4ecb-94e5-ae297192a533" key="textField" x="501" y="0" width="36" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="e4a2934c-2d98-4c40-ac17-0511ea5b2e54" x="285" y="0" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Total : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="1b56568f-827a-4afc-8987-98993b321a7d" x="327" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{variable1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

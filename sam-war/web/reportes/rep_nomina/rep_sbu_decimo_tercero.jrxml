@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_meses_decimo_tercero" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="0" rightMargin="20" topMargin="0" bottomMargin="0" uuid="bb5b2a39-860f-4f87-a41e-daa9aa335919">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="empleado" class="java.lang.Long"/>
+	<parameter name="ide_distributivo" class="java.lang.Integer"/>
+	<parameter name="ano" class="java.lang.Integer"/>
+	<parameter name="anoaa" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select cod_empleado,nombres,cedula_pass,id_distributivo
+,(enero+febrero+marzo+abril+mayo+junio+julio+agosto+septiembre+octubre+noviembre+diciembre) as total
+,enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre
+from (
+select a.cod_empleado,nombres,cedula_pass,id_distributivo
+,(case when diciembre is null then 0 else diciembre end) as diciembre
+,(case when enero is null then 0 else enero end) as enero
+,(case when febrero is null then 0 else febrero end) as febrero
+,(case when e.marzo is null then 0 else e.marzo end) as marzo
+,(case when abril is null then 0 else abril end) as abril
+,(case when mayo is null then 0 else mayo end) as mayo
+,(case when junio is null then 0 else junio end) as junio
+,(case when julio is null then 0 else julio end) as julio
+,(case when agosto is null then 0 else agosto end) as agosto
+,(case when septiembre is null then 0 else septiembre end) as septiembre
+,(case when octubre is null then 0 else octubre end) as octubre
+,(case when noviembre is null then 0 else noviembre end) as noviembre
+from(
+select cod_empleado,nombres,cedula_pass,id_distributivo from srh_empleado where id_distributivo=$P{ide_distributivo} and estado=1) as a
+left join
+(SELECT cod_empleado,valor as diciembre
+FROM srh_reporte_decimos
+where mes=(12)
+and anio = $P{anoaa}
+and columna in(18)
+) as b
+on a.cod_empleado = b.cod_empleado
+left join
+(SELECT cod_empleado,valor as enero
+FROM srh_reporte_decimos
+where mes=(1)
+and anio = $P{ano}
+and columna in(18)
+) as c
+on a.cod_empleado = c.cod_empleado
+left join
+(SELECT cod_empleado,valor as febrero
+FROM srh_reporte_decimos
+where mes=(2)
+and anio = $P{ano}
+and columna in(18)
+) as d
+on a.cod_empleado = d.cod_empleado
+left join
+(SELECT cod_empleado,valor as marzo
+FROM srh_reporte_decimos
+where mes=(3)
+and anio = $P{ano}
+and columna in(18)
+) as e
+on a.cod_empleado = e.cod_empleado
+left join
+(SELECT cod_empleado,valor as abril
+FROM srh_reporte_decimos
+where mes=(4)
+and anio = $P{ano}
+and columna in(18)
+) as f
+on a.cod_empleado = f.cod_empleado
+left join
+(SELECT cod_empleado,valor as mayo
+FROM srh_reporte_decimos
+where mes=(5)
+and anio = $P{ano}
+and columna in(18)
+) as g
+on a.cod_empleado = g.cod_empleado
+left join
+(SELECT cod_empleado,valor as junio
+FROM srh_reporte_decimos
+where mes=(6)
+and anio = $P{ano}
+and columna in(18)
+) as h
+on a.cod_empleado = h.cod_empleado
+left join
+(SELECT cod_empleado,valor as julio
+FROM srh_reporte_decimos
+where mes=(7)
+and anio = $P{ano}
+and columna in(18)
+) as i
+on a.cod_empleado = i.cod_empleado
+left join
+(SELECT cod_empleado,valor as agosto
+FROM srh_reporte_decimos
+where mes=(8)
+and anio = $P{ano}
+and columna in(18)
+) as j
+on a.cod_empleado = j.cod_empleado
+left join
+(SELECT cod_empleado,valor as septiembre
+FROM srh_reporte_decimos
+where mes=(9)
+and anio = $P{ano}
+and columna in(18)
+) as k
+on a.cod_empleado = k.cod_empleado
+left join
+(SELECT cod_empleado,valor as octubre
+FROM srh_reporte_decimos
+where mes=(10)
+and anio = $P{ano}
+and columna in(18)
+) as l
+on a.cod_empleado = l.cod_empleado
+left join
+(SELECT cod_empleado,valor as noviembre
+FROM srh_reporte_decimos
+where mes=(11)
+and anio = $P{ano}
+and columna in(18)
+) as m
+on a.cod_empleado = m.cod_empleado
+where a.cod_empleado=$P{empleado}) as a]]>
+	</queryString>
+	<field name="cod_empleado" class="java.lang.Long"/>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="cedula_pass" class="java.lang.String"/>
+	<field name="id_distributivo" class="java.lang.Integer"/>
+	<field name="total" class="java.math.BigDecimal"/>
+	<field name="enero" class="java.math.BigDecimal"/>
+	<field name="febrero" class="java.math.BigDecimal"/>
+	<field name="marzo" class="java.math.BigDecimal"/>
+	<field name="abril" class="java.math.BigDecimal"/>
+	<field name="mayo" class="java.math.BigDecimal"/>
+	<field name="junio" class="java.math.BigDecimal"/>
+	<field name="julio" class="java.math.BigDecimal"/>
+	<field name="agosto" class="java.math.BigDecimal"/>
+	<field name="septiembre" class="java.math.BigDecimal"/>
+	<field name="octubre" class="java.math.BigDecimal"/>
+	<field name="noviembre" class="java.math.BigDecimal"/>
+	<field name="diciembre" class="java.math.BigDecimal"/>
+	<variable name="variable1" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{diciembre}+$F{enero}+$F{febrero}+$F{marzo}+$F{abril}+$F{mayo}+$F{junio}+
+$F{julio}+$F{agosto}+$F{septiembre}+$F{octubre}+$F{noviembre}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="786b8d34-be7c-4561-873e-4773ce998507" x="329" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{junio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="b0da3974-3266-469a-91d0-2687e818a66f" x="548" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{octubre}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d11cbbc5-2aac-4255-a62e-a84e030d3ed8" x="274" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mayo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="6563dfe2-4915-4c20-ab50-d6a996e26fe8" x="438" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{agosto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="77ec6c72-f799-46bf-8165-c425f9d6a1c4" x="0" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{diciembre}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="cbacba12-15e7-4330-9825-3a86b1782cd4" x="494" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{septiembre}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="af6fb4d2-2e49-45ca-a75c-2acde563ef0e" x="55" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{enero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e3816612-133c-45d3-94ec-fa21c390d981" x="383" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{julio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e22ff2a3-718e-4ac5-8574-a5ddcbefa69b" x="220" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{abril}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="80792199-6443-4d73-8eea-4127d5aa2c08" x="602" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{noviembre}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="ad80c3e0-3f4d-4b00-a9f1-5ca1ed2adfbb" x="107" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{febrero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c095b5d6-fd9c-4c9a-8c4c-407424187e08" x="166" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{marzo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c0f5c44a-13c3-42a6-aedd-32b80326201a" x="669" y="0" width="64" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="0964534c-c650-4a37-8e15-2a7d22166c75" x="0" y="20" width="733" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="cdbccf2c-9d2e-438a-8c7c-7f93cd318f5d" x="0" y="0" width="733" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+</jasperReport>

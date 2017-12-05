@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_confidencial_ingresos" language="groovy" pageWidth="210" pageHeight="297" columnWidth="210" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="cb15504b-31c7-4671-ba95-bf7049b968e4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="codigo" class="java.lang.String"/>
+	<parameter name="mes" class="java.lang.String"/>
+	<parameter name="anio" class="java.lang.String"/>
+	<parameter name="bandera" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select * from (
+SELECT codtra,valtrs, 0 as id
+,(SELECT USRRHH.NODATEGR.NOLEGR FROM USRRHH.NODATEGR where USRRHH.NODATEGR.CODEGR =codtrs and USRRHH.NODATEGR.CODCIA = 'MA')as item
+,sum(valtrs) over (PARTITION BY codtra ORDER BY codtra) as total_egresos
+FROM NOHISNOM
+where TIPTRS = 'D' and CODPER = $P{mes} and to_char(fecini,'YYYY') = $P{anio}
+and CODTRA = $P{codigo})
+where id = $P{bandera}
+union
+select * from (
+SELECT codtra,valtrs, 1 as id
+,(SELECT USRRHH.NODATEGR.NOLEGR FROM USRRHH.NODATEGR where USRRHH.NODATEGR.CODEGR =codtrs and USRRHH.NODATEGR.CODCIA = 'MA')as item
+,sum(valtrs) over (PARTITION BY codtra ORDER BY codtra) as total_egresos
+FROM NOTRANOM
+where TIPTRS = 'D' and CODPER = $P{mes} and to_char(fecini,'YYYY') = $P{anio}
+and CODTRA = $P{codigo})
+where id = $P{bandera}]]>
+	</queryString>
+	<field name="CODTRA" class="java.lang.String"/>
+	<field name="VALTRS" class="java.math.BigDecimal"/>
+	<field name="ID" class="java.math.BigDecimal"/>
+	<field name="ITEM" class="java.lang.String"/>
+	<field name="TOTAL_EGRESOS" class="java.math.BigDecimal"/>
+	<variable name="variable1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{VALTRS}]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField pattern="#,##0.00">
+				<reportElement uuid="6000954d-bb08-49c7-abec-edcb3c420172" x="94" y="0" width="100" height="13"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VALTRS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="08e167e3-b6bd-4115-a897-d5b4b88a685f" x="6" y="0" width="156" height="13"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

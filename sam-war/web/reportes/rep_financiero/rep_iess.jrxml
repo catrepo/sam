@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_iess" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cc055f6f-9df7-4ace-80d5-30c22205dc8e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anio" class="java.lang.Integer"/>
+	<parameter name="periodo" class="java.lang.Integer"/>
+	<parameter name="descripcion" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="mes" class="java.lang.String"/>
+	<parameter name="distributivo" class="java.lang.Integer"/>
+	<parameter name="codigo" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select cast((a.pres_iess+a.aport_iess+a.ext_iess+b.total_aportes) as numeric (10,2)) as valor_total ,
+(SELECT (case when trim(trailing ';' from substring(cuentas from 5 for 2)) =a.partida then trim(trailing ';' from substring(cuentas from 1 for 10)) else
+ltrim(substring(cuentas from 11 for 11),';') end)
+FROM conc_cuentas_asientos
+where id_codigo = $P{codigo}) as cuenta
+from (
+ select
+ (case when substring(a.partida_pres, 4, 2) = '51' or substring(a.partida_pres, 4, 2)='71' then substring(a.partida_pres, 4, 2)
+ when substring(a.partida_pres, 7, 2)!='51' or  substring(a.partida_pres, 7, 2)!='71' then substring(a.partida_pres, 7, 2)end) as partida,
+ sum(b.prestamo_iess) as pres_iess,sum(c.aporte_iess)as aport_iess,(case when sum(d.exte_iess) is null then 0
+ when sum(d.exte_iess) is not null then sum(d.exte_iess) end ) as ext_iess from
+ (SELECT e.cod_empleado,e.partida_pres
+ FROM srh_roles AS r
+ INNER JOIN prec_programas AS p ON r.ide_programa = p.ide_programa
+ INNER JOIN srh_empleado AS e ON e.cod_empleado = r.ide_empleado
+ WHERE r.ano =  $P{anio}
+ AND r.id_distributivo_roles =$P{distributivo}
+ AND r.ide_periodo =$P{periodo}
+ AND r.ide_columnas IN (14,40)
+ ) as a
+ left join
+ (SELECT e.cod_empleado,r.valor AS prestamo_iess
+ FROM srh_roles AS r ,srh_empleado AS e
+ WHERE e.cod_empleado = r.ide_empleado AND
+ r.ano = $P{anio} AND
+ r.id_distributivo_roles =$P{distributivo} AND
+ r.ide_periodo =$P{periodo} AND
+ r.ide_columnas IN (21, 59) AND
+ r.valor > 0) as b
+ on a.cod_empleado = b.cod_empleado
+ left join
+ (SELECT e.cod_empleado,r.valor AS aporte_iess
+ FROM srh_roles AS r ,srh_empleado AS e
+ WHERE e.cod_empleado = r.ide_empleado AND
+ r.ano = $P{anio} AND
+ r.id_distributivo_roles =$P{distributivo} AND
+ r.ide_periodo =$P{periodo} AND
+ r.ide_columnas IN (33, 71) AND
+ r.valor > 0) as c
+ on a.cod_empleado = c.cod_empleado
+ left join
+ (SELECT e.cod_empleado,r.valor AS exte_iess
+ FROM srh_roles AS r ,srh_empleado AS e
+ WHERE e.cod_empleado = r.ide_empleado AND
+ r.ano = $P{anio} AND
+ r.id_distributivo_roles =$P{distributivo} AND
+ r.ide_periodo =$P{periodo} AND
+ r.ide_columnas IN (111, 112) AND
+ r.valor > 0) as d
+ on a.cod_empleado = d.cod_empleado
+ group by (case when substring(a.partida_pres, 4, 2) = '51' or substring(a.partida_pres, 4, 2)='71' then substring(a.partida_pres, 4, 2)
+ when substring(a.partida_pres, 7, 2)!='51' or  substring(a.partida_pres, 7, 2)!='71' then substring(a.partida_pres, 7, 2)end)) as a
+ inner join
+ (select (case when substring(partida_pres, 4, 2) = '51' or substring(partida_pres, 4, 2)='71' then substring(partida_pres, 4, 2)
+ when substring(partida_pres, 7, 2)!='51' or  substring(partida_pres, 7, 2)!='71' then substring(partida_pres, 7, 2)end) as partida
+ ,sum(total_aportes) as total_aportes from (
+ select partida_pres,
+ (case when id_distributivo= 1 then ((sum(valor) * 11.15)/100)
+ when id_distributivo = 2 then ((sum(valor) * 11.15)/100) end) +
+ (case when id_distributivo= 1 then  ((sum(valor) * 0.5)/100)
+ when id_distributivo= 2 then ((sum(valor) * 0.5)/100) end) +
+ (case when id_distributivo =1 then 0
+ when id_distributivo =2 then ((sum(valor) * 0.5)/100) end) as total_aportes
+ from (
+ select partida_pres,a.ide_programa,valor,id_distributivo
+ from srh_roles a, srh_columnas b, srh_empleado c
+ where a.ide_columnas = b.ide_col
+ and a.ide_empleado = c.cod_empleado
+ and a.ide_periodo =$P{periodo}
+ and ano= $P{anio}
+ and valor > 0
+ and not (valor*calcula) = 0
+ and  ide_columnas in (25,70,18,92,93,75,76,19)
+ and id_distributivo =$P{distributivo}) a,
+ (select numero,cod_programa,a.ide_programa from (
+ select count(distinct ide_empleado) as numero,ide_programa
+ from srh_roles where ano= $P{anio}
+ and ide_periodo=$P{periodo}
+ and id_distributivo_roles=$P{distributivo}
+ group by ide_programa
+ ) a,prec_programas b
+ where a.ide_programa=b.ide_programa
+ ) b
+ group by partida_pres,a.ide_programa,b.ide_programa,id_distributivo
+ having a.ide_programa = b.ide_programa
+ ) a
+ group by (case when substring(partida_pres, 4, 2) = '51' or substring(partida_pres, 4, 2)='71' then substring(partida_pres, 4, 2)
+ when substring(partida_pres, 7, 2)!='51' or  substring(partida_pres, 7, 2)!='71' then substring(partida_pres, 7, 2)end))as b
+ on a.partida = b.partida]]>
+	</queryString>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="cuenta" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="148" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="7416ad40-e7e3-4109-af64-e68833a0d15c" key="staticText-1" x="10" y="25" width="272" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Asiento Aútomatico IESS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="55d5253d-42f3-47ee-ae04-0e17fc98ed11" x="10" y="65" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ab6274f3-2dcc-43c3-a83c-508afd42374a" x="10" y="85" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[AÑO : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea191dc8-172b-4a5f-ba3e-ab7e36a5f679" x="10" y="105" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PERIODO : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="3d40bcba-3479-4005-b713-8cc45e8b76b1" x="90" y="65" width="192" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="085751cd-a585-432a-b3e4-f4db90e51f18" x="73" y="85" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{anio}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="3504a8e8-6b97-4082-8abf-e57b1b30b659" x="345" y="23" width="171" height="102"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_reporte.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="066761a3-8884-4098-90e6-6d72899df3b8" x="73" y="105" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{mes}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="8" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="633a8c8e-60be-4c9a-a5b9-5af9a93305c0" x="0" y="0" width="555" height="20" backcolor="#666666"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="069c6201-e6d3-4fed-9374-7da0b34e3d07" x="190" y="0" width="31" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="deb205a0-ea5e-471c-bf8d-1489ffb38abc" x="221" y="0" width="111" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuenta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="fa485d0a-7efa-4f1a-8bfd-1e29bcd3ef95" x="300" y="0" width="100" height="20" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement uuid="649384ac-0a44-4652-a77d-e527709c663c" x="221" y="5" width="111" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="e8aeb91b-de4b-4325-bc61-9cb38d443bb9" x="300" y="5" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{valor_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f1b8bddb-2c46-4d91-a06c-0130b4c37118" x="190" y="5" width="31" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="7" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="15" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="21be386c-b854-4c1f-9a90-005a26b7b3ab" key="textField-5" x="23" y="0" width="92" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="5f11ba3b-32e6-49fa-a046-87a73a71c027" key="textField" x="332" y="0" width="170" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="69ee37ae-cd41-4aeb-8478-890925560703" key="textField-1" x="200" y="0" width="90" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="6c28354b-6887-4075-9d03-a762b6221d7e" key="textField" x="506" y="0" width="36" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="8" splitType="Stretch"/>
+	</summary>
+</jasperReport>

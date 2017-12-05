@@ -1,0 +1,981 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_consolidado_gastos" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="818" leftMargin="12" rightMargin="12" topMargin="20" bottomMargin="20" uuid="f57b2446-a30e-421a-aac6-3f96021d837a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="niveli" class="java.lang.Integer"/>
+	<parameter name="nivelf" class="java.lang.Integer"/>
+	<parameter name="fechai" class="java.lang.Integer"/>
+	<parameter name="fechaf" class="java.lang.Integer"/>
+	<parameter name="fechain" class="java.lang.String"/>
+	<parameter name="fechafi" class="java.lang.String"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["e-sanguano"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="inicial" class="java.lang.Integer"/>
+	<parameter name="reforma" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\p-chumana\\Documents\\NetBeansProjects\\simur\\web\\reportes\\rep_presupuestario\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fecha" class="java.lang.String"/>
+	<parameter name="alcalde" class="java.lang.String"/>
+	<parameter name="cargo_alcalde" class="java.lang.String"/>
+	<parameter name="director" class="java.lang.String"/>
+	<parameter name="cargo_director" class="java.lang.String"/>
+	<parameter name="jefe" class="java.lang.String"/>
+	<parameter name="cargo_jefe" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select partida,nolaad,sum(inicial)inicial,sum(reforma)reforma,sum(codificado)codificado,sum(compromiso)compromiso,sum(devengado)devengado
+,sum(ejecutado)ejecutado,sum(saldo)saldo,nivemc
+from(select partida,nolaad,inicial, reforma,codificado,compromiso,devengado,ejecutado,saldo,nivemc
+from(select CUENMC
+,(case when nivemc = 1 then SUBSTR(CUENMC, 1, 1)
+when nivemc = 2 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 2)
+when nivemc = 3 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)
+when nivemc = 4 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)||'.'||SUBSTR(CUENMC, 5, 2)
+when nivemc = 5 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)||'.'||SUBSTR(CUENMC, 5, 2)||'.'||SUBSTR(CUENMC, 7, 2)
+when nivemc = 6 then SUBSTR(CUENMC, 1, 1)||'.'||SUBSTR(CUENMC, 2, 1)||'.'||SUBSTR(CUENMC, 3, 2)||'.'||SUBSTR(CUENMC, 5, 2)||'.'||SUBSTR(CUENMC, 7, 2)||'.'||SUBSTR(CUENMC, 9, 2) end) as partida
+,NOLAAD,nivemc
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'R' and substr(CEDTMC,1,1) in (5,6,7,8,9)
+order by CEDTMC,nivemc)
+left join
+(select CUENDT,(case when inicial is null then 0 else inicial end)inicial,(case when reforma is null then 0 else reforma end)reforma,(case when codificado is null then 0 else codificado end)codificado
+,(case when compromiso is null then 0 else compromiso end)compromiso,(case when devengado is null then 0 else devengado end)devengado,(case when ejecutado is null then 0 else ejecutado  end)ejecutado
+,(case when ((case when codificado is null then 0 else codificado end)-(case when devengado is null then 0 else devengado end)) is null then 0 else  ((case when codificado is null then 0 else codificado end)-(case when devengado is null then 0 else devengado end)) end) as saldo,AUAD02
+from(select CUENDT,codificado,AUAD02
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by CUENDT,AUAD02
+union
+select substr(CUENDT,1,8) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,8),AUAD02
+union
+select substr(CUENDT,1,6) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,6),AUAD02
+union
+select substr(CUENDT,1,4) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,4),AUAD02
+union
+select substr(CUENDT,1,2) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,2),AUAD02
+union
+select substr(CUENDT,1,1) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,1),AUAD02))
+left join
+(select CUENDT as CUENDTi,inicial,AUAD02 as auxi
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{inicial}
+and AUAD02 is not null
+group by CUENDT,AUAD02
+union
+select substr(CUENDT,1,8) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{inicial}
+and AUAD02 is not null
+group by substr(CUENDT,1,8),AUAD02
+union
+select substr(CUENDT,1,6) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{inicial}
+and AUAD02 is not null
+group by substr(CUENDT,1,6),AUAD02
+union
+select substr(CUENDT,1,4) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{inicial}
+and AUAD02 is not null
+group by substr(CUENDT,1,4),AUAD02
+union
+select substr(CUENDT,1,2) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{inicial}
+and AUAD02 is not null
+group by substr(CUENDT,1,2),AUAD02
+union
+select substr(CUENDT,1,1) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{inicial}
+and AUAD02 is not null
+group by substr(CUENDT,1,1),AUAD02))
+on CUENDT = CUENDTi and AUAD02 = auxi
+left join
+(select CUENDT as CUENDTr,reforma,AUAD02 as auxr
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by CUENDT,AUAD02
+union
+select substr(CUENDT,1,8) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,8),AUAD02
+union
+select substr(CUENDT,1,6) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,6),AUAD02
+union
+select substr(CUENDT,1,4) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,4),AUAD02
+union
+select substr(CUENDT,1,2) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,2),AUAD02
+union
+select substr(CUENDT,1,1) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT=$P{reforma}
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{fechaf}
+group by substr(CUENDT,1,1),AUAD02))
+on CUENDT = CUENDTr and AUAD02 = auxr
+left join
+(select CUENDT as CUENDTc,compromiso,AUAD02 as auxc
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+group by CUENDT,AUAD02
+union
+select substr(CUENDT,1,8) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+group by substr(CUENDT,1,8),AUAD02
+union
+select substr(CUENDT,1,6) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+group by substr(CUENDT,1,6),AUAD02
+union
+select substr(CUENDT,1,4) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+group by substr(CUENDT,1,4),AUAD02
+union
+select substr(CUENDT,1,2) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+group by substr(CUENDT,1,2),AUAD02
+union
+select substr(CUENDT,1,1) as CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='1'
+AND TMOVDT='D'
+group by substr(CUENDT,1,1),AUAD02))
+on CUENDT = CUENDTc and AUAD02 = auxc
+left join
+(select CUENDT as CUENDTd,devengado,AUAD02 as auxd,ejecutado
+from(select CUENDT,devengado,AUAD02,
+(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado
+then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado
+from (
+select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo
+,(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale
+,(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee
+from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo
+from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro
+,(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+group by CUENDT,AUAD02))
+left join
+(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu
+from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND TMOVDT='D'
+AND CCIADT = 'MR'
+and CUENDT like '213%'
+group by substr(CUENDT,1,5)))
+on pro= cu)))
+union
+select substr(CUENDT,1,8) as CUENDT,sum(devengado),AUAD02,sum(ejecutado)
+from(select CUENDT,devengado,AUAD02,
+(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado
+then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado
+from (
+select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo
+,(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale
+,(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee
+from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo
+from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro
+,(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+group by CUENDT,AUAD02))
+left join
+(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu
+from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND TMOVDT='D'
+AND CCIADT = 'MR'
+and CUENDT like '213%'
+group by substr(CUENDT,1,5)))
+on pro= cu)))
+group by substr(CUENDT,1,8),AUAD02
+union
+select substr(CUENDT,1,6) as CUENDT,sum(devengado),AUAD02,sum(ejecutado)
+from(select CUENDT,devengado,AUAD02,
+(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado
+then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado
+from (
+select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo
+,(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale
+,(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee
+from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo
+from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro
+,(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+group by CUENDT,AUAD02))
+left join
+(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu
+from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND TMOVDT='D'
+AND CCIADT = 'MR'
+and CUENDT like '213%'
+group by substr(CUENDT,1,5)))
+on pro= cu)))
+group by substr(CUENDT,1,6),AUAD02
+union
+select substr(CUENDT,1,4) as CUENDT,sum(devengado),AUAD02,sum(ejecutado)
+from(select CUENDT,devengado,AUAD02,
+(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado
+then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado
+from (
+select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo
+,(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale
+,(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee
+from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo
+from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro
+,(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+group by CUENDT,AUAD02))
+left join
+(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu
+from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND TMOVDT='D'
+AND CCIADT = 'MR'
+and CUENDT like '213%'
+group by substr(CUENDT,1,5)))
+on pro= cu)))
+group by substr(CUENDT,1,4),AUAD02
+union
+select substr(CUENDT,1,2) as CUENDT,sum(devengado),AUAD02,sum(ejecutado)
+from(select CUENDT,devengado,AUAD02,
+(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado
+then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado
+from (
+select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo
+,(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale
+,(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee
+from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo
+from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro
+,(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+group by CUENDT,AUAD02))
+left join
+(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu
+from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND TMOVDT='D'
+AND CCIADT = 'MR'
+and CUENDT like '213%'
+group by substr(CUENDT,1,5)))
+on pro= cu)))
+group by substr(CUENDT,1,2),AUAD02
+union
+select substr(CUENDT,1,1) as CUENDT,sum(devengado),AUAD02,sum(ejecutado)
+from(select CUENDT,devengado,AUAD02,
+(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado
+then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado
+from (
+select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo
+,(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale
+,(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee
+from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo
+from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro
+,(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total
+from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND CAUXDT='2'
+AND TMOVDT='D'
+group by CUENDT,AUAD02))
+left join
+(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu
+from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND SAPRDT>=$P{fechai}
+AND SAPRDT<=$P{fechaf}
+AND TMOVDT='D'
+AND CCIADT = 'MR'
+and CUENDT like '213%'
+group by substr(CUENDT,1,5)))
+on pro= cu)))
+group by substr(CUENDT,1,1),AUAD02)
+on CUENDT = CUENDTd and AUAD02 = auxd)
+on CUENMC=CUENDT
+where AUAD02 is not null)
+where nivemc between $P{niveli} and $P{nivelf}
+group by partida,nolaad,nivemc
+order by partida]]>
+	</queryString>
+	<field name="PARTIDA" class="java.lang.String"/>
+	<field name="NOLAAD" class="java.lang.String"/>
+	<field name="INICIAL" class="java.math.BigDecimal"/>
+	<field name="REFORMA" class="java.math.BigDecimal"/>
+	<field name="CODIFICADO" class="java.math.BigDecimal"/>
+	<field name="COMPROMISO" class="java.math.BigDecimal"/>
+	<field name="DEVENGADO" class="java.math.BigDecimal"/>
+	<field name="EJECUTADO" class="java.math.BigDecimal"/>
+	<field name="SALDO" class="java.math.BigDecimal"/>
+	<field name="NIVEMC" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="105" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="2bbb1cce-edd5-4769-8569-06e1f2abaa54" key="staticText-1" x="390" y="19" width="412" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CEDULA PRESUPUESTARIA DE GASTOS CONSOLIDADA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f5dc9fcc-177a-45cc-bf05-2f361115048a" key="staticText" x="217" y="0" width="585" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[GOBIERNO  AUTONOMO  DESCENTRALIZADO  MUNICIPAL  DEL  CANTON  RUMIÑAHUI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7c585f72-32e2-42b9-8df8-a7c8c2bea861" key="staticText-9" x="385" y="82" width="69" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[REFORMAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2e3fe758-720a-4876-b717-f3a796b958e4" key="staticText-3" x="68" y="82" width="248" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[DENOMINACIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="30ddbd47-1f70-4bb3-a473-da6e39c31953" key="staticText-11" x="598" y="82" width="76" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[DEVENGADO]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement uuid="c8e857e3-5615-458c-917a-c55e39126d6e" key="line-1" x="4" y="103" width="812" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="24b63614-812e-4097-8a34-0f9cba2321e1" key="line" x="4" y="81" width="812" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="16100529-45cd-4246-a153-0774669ef344" key="staticText-15" x="673" y="82" width="70" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[SALDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="44e587c3-5931-4dd1-9dff-0997839a53bc" key="staticText-13" x="742" y="82" width="75" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[PAGADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="fa7fc3c6-f0bb-475f-8231-179718382177" key="staticText-8" x="316" y="82" width="70" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[INICIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="28591b18-f1dd-4953-99e2-d296ad86fe4e" key="staticText-24" x="523" y="82" width="76" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[COMPROMISO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d5bdbce1-6f44-43b4-a0f4-e5b82133ce66" key="staticText-10" x="453" y="82" width="71" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CODIFICADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="44f0e0c9-a735-439f-8f84-c602ebf40b38" key="staticText-2" x="5" y="82" width="67" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[PARTIDA]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement uuid="0a9731e0-32f6-4958-b67e-b123cbe4d030" key="line" x="4" y="98" width="812" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="bd2a8f9a-64e6-4265-980d-5fc98cf790b3" key="staticText-17" x="548" y="55" width="70" height="21" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[NIVEL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="167d47bd-b874-499f-a2b4-1b34c849364f" key="staticText-17" x="493" y="35" width="70" height="21" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="74d268fe-6d36-4df3-bd46-4447b0a88b49" x="486" y="36" width="316" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Desde :  " + $P{fechain} + " hasta :  "+$P{fechafi}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="c86fc025-ab6a-4442-a000-fde3c27bb157" x="586" y="56" width="213" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Inicial :  " + $P{niveli} + " final :  "+$P{nivelf}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="0a550f0a-7ef3-4b50-8049-1ad79cc11102" x="10" y="1" width="152" height="81"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logor.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="e2e852e1-c151-4f9f-939d-5c839aabf153" key="textField" x="5" y="2" width="59" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PARTIDA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="ea5dd260-ca22-4d32-a845-21c467718294" key="textField-3" x="523" y="2" width="75" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPROMISO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="49c75afb-51dd-4ea5-b1fb-89c41d4355c1" key="textField" x="62" y="2" width="254" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOLAAD}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="1fd140f5-0d37-4e42-84d5-010c3727ace3" key="textField" x="673" y="2" width="69" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="2df47507-8cbd-4ba2-81cc-60ec9ffcf0ca" key="textField" x="453" y="2" width="70" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="72cd4fd4-b529-4299-b652-cdfbe807490f" key="textField" x="598" y="2" width="75" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEVENGADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="134531b6-2710-4437-bbc2-3ece81366256" key="textField" x="316" y="2" width="69" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INICIAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="342eb507-2bfc-48df-b79b-3915a88c9adb" key="textField" x="742" y="2" width="74" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EJECUTADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="e48b410a-50cc-4b3b-b58b-3f390845fc60" key="textField" x="385" y="2" width="68" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="79" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="fc41725c-f82e-49ef-a830-9a2653f3bfc1" key="textField" x="580" y="4" width="170" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="828882ef-41b7-4884-b41e-a26d2f18123d" key="textField" x="752" y="4" width="36" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="b5c8518f-e56b-4e94-8e2f-0f67e3d83c70" key="line" x="10" y="1" width="782" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="6879c21a-d30f-48ca-94b0-4ad68df614ed" key="textField-1" x="324" y="4" width="152" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="c5108307-cfcd-48a1-b57b-2c20283b094e" key="textField-1" x="23" y="4" width="152" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fecha}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="104" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="6cbad9ea-0572-4784-bea6-90d0cd371cb8" key="textField" x="562" y="90" width="225" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cargo_jefe}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="5942f805-ef0a-46e8-9a5c-9358ed134b7e" key="line-2" x="309" y="78" width="204" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="dc3105d8-2537-4142-98b3-e6cb79fdeb34" key="line-2" x="570" y="78" width="204" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="b63084b1-4ca0-484f-9df7-79b52b5c734b" key="textField" x="310" y="77" width="204" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{director}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="bfdd6ad0-c46c-4448-9560-b61789abc9a4" key="line-2" x="42" y="78" width="204" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="ffc5a848-f365-4753-bbe4-912ffc3c70e0" key="textField" x="298" y="90" width="225" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cargo_director}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="d54a595e-3b9b-4307-a119-d6180a2e3bc7" key="textField" x="43" y="77" width="204" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{alcalde}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="443072e6-fad0-4978-a4bb-a3b5c9906db9" key="textField" x="571" y="77" width="204" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{jefe}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="b3082d43-1a94-420a-b718-c453b7760164" key="textField" x="32" y="90" width="225" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cargo_alcalde}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement uuid="f1baaa0f-08da-4359-9616-78a628b80c2f" x="-10" y="1" width="78" height="22"/>
+				<subreportParameter name="fechai">
+					<subreportParameterExpression><![CDATA[$P{fechai}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fechaf">
+					<subreportParameterExpression><![CDATA[$P{fechaf}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="inicial">
+					<subreportParameterExpression><![CDATA[$P{inicial}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="reforma">
+					<subreportParameterExpression><![CDATA[$P{reforma}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"/reportes/rep_presupuesto/rep_totales_conso_gastos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

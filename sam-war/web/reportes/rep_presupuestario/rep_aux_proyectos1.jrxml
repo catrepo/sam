@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_aux_proyectos" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="821" leftMargin="1" rightMargin="20" topMargin="0" bottomMargin="20" uuid="0e9a6b11-aea2-4141-9023-d750e5640d26">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="proyecto" class="java.lang.String"/>
+	<parameter name="inicial" class="java.lang.Integer"/>
+	<parameter name="reforma" class="java.lang.Integer"/>
+	<parameter name="ani1" class="java.lang.Integer"/>
+	<parameter name="ani2" class="java.lang.Integer"/>
+	<parameter name="fechaRe" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\p-chumana\\Documents\\NetBeansProjects\\simur\\web\\reportes\\rep_presupuestario\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select fecha1,p.CUENMC,p.CEDTMC,p.NOLAAD,p.inicial,p.reforma,(case when p.inicial = 0 then (p.inicial-(case when p.reforma<1 then p.reforma*-1 else p.reforma end))*-1 else (p.inicial-(case when p.reforma<1 then p.reforma*-1 else p.reforma end)) end) as codificado,p.AUAD02,p.dep,p.POSTM,p.proyecto
+,(case when compromiso is null  then 0 else compromiso end)as compromiso,(case when devengado is null  then 0 else devengado end)as devengado,proyecto1,
+(case when valor is null  then 0 else valor end)as valor,NUCODT,NDOCDT
+,totalco as saldo_co
+,beneficiario
+,FECODT
+,fecha
+,(sum((case when compromiso is null then 0 else (case when compromiso < 0 then compromiso else compromiso end) end)) over (PARTITION BY CUENDT ORDER BY FECODT) -
+sum((case when devengado is null then 0 else devengado end)) over (PARTITION BY CUENDT ORDER BY FECODT))as saldo_dev
+ from (select CUENMC,CEDTMC,NOLAAD
+,(case when inicial is null  then 0 else inicial end)as inicial
+,(case when reforma is null  then 0 else reforma end)as reforma
+,(case when codificado is null  then 0 else codificado end)as codificado,auad02,dep,postm,proyecto
+from (select CUENMC,CEDTMC,NOLAAD
+from USFIMRU.TIGSA_GLM03
+where TIPLMC= 'P' and substr(CEDTMC,1,1) in (5,6,7,8,9))
+inner join (
+select CUENDT,inicial,reforma,codificado,AUAD02,dep,POSTM,proyecto
+from (select CUENDT ,codificado,AUAD02 ,dep,POSTM
+,(select DISTINCT NOMBMA from USFIMRU.TIGSA_GLm05 where CAUXMA = AUAD02 and POSTMA=POSTM ) as proyecto
+ from (select *
+from(select CUENDT , sum(MONTDT) as codificado,AUAD02,FDOCDT
+from (SELECT CUENDT , MONTDT,AUAD02,FDOCDT
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY'))
+group by CUENDT ,AUAD02,FDOCDT)
+where substr(FDOCDT,1,5) <=$P{ani2})
+left join
+(SELECT CAUXMA,POSTMA as POSTM,( select NOMBZ1 from USFIMRU.TIGSA_GLM11 where CLASZ1 = '001' and ZONAZ1 = SUBSTR(ZONAMA, 0, 2)) as dep
+FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+on AUAD02 = CAUXMA)
+left join
+(SELECT CUENDT as cuentr, sum(MONTDT) as inicial,AUAD02 as auxi
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT=$P{inicial}
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+group by CUENDT, AUAD02)
+on AUAD02 = auxi
+left join
+(SELECT CUENDT as cuentr, sum(MONTDT) as reforma,AUAD02 as auxr
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT=$P{reforma}
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+group by CUENDT, AUAD02)
+on AUAD02 = auxr
+where AUAD02 =$P{proyecto})
+on CUENMC = CUENDT) p
+left join
+(select (case when fdocdt is null then null else (substr(fdocdt,6,2)||'/'||substr(fdocdt,4,2)||'/20'||substr(fdocdt,2,2))end)as fecha
+,(case when FECODT is null then null else (substr(FECODT,6,2)||'/'||substr(FECODT,4,2)||'/20'||substr(FECODT,2,2))end)as fecha1
+,CUENDT,FDOCDT,codificado,compromiso,devengado,AUAD02,NDOCDT,proyecto as proyecto1,valor,NUCODT
+,(codificado-sum((case when compromiso is null then 0 else compromiso end)) over (PARTITION BY CUENDT ORDER BY FECODT)) as totalco
+,sum((case when devengado is null then 0 else devengado end)) over (PARTITION BY CUENDT ORDER BY FECODT,NUCODT) as totalde
+,FECODT
+,beneficiario
+from (select CUENDT,FDOCDT,codificado,compromiso,null as devengado,AUAD02,NDOCDT,null as proyecto,null as valor,NUCODT, null as beneficiario,FECODT
+from (select CUENDT , sum(codificado) as codificado,AUAD02
+from (select CUENDT , codificado,AUAD02
+from (SELECT CUENDT , sum(MONTDT) as codificado,AUAD02,FDOCDT
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+group by CUENDT , AUAD02,FDOCDT)
+where substr(FDOCDT,1,5) <=$P{ani2})
+group by CUENDT ,AUAD02)
+left join (
+select * from (
+SELECT CUENDT as cuentac, sum(MONTDT) as compromiso,AUAD02 as auxc,FDOCDT,NDOCDT,NUCODT,FECODT
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=$P{ani1}
+AND SAPRDT<=$P{ani2}
+AND CAUXDT='1'
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+group by CUENDT,AUAD02 ,FDOCDT,NDOCDT,NUCODT,FECODT))
+on CUENDT = cuentac and AUAD02 = auxc
+union
+select CUENDT,FDOCDT,codificado,null as compromiso,devengado,AUAD02,NDOCDT,proyecto,null as valor,NUCODT, beneficiario,FECODT
+from (select CUENDT , sum(codificado) as codificado,AUAD02
+from (select CUENDT , codificado,AUAD02
+from (SELECT CUENDT , sum(MONTDT) as codificado,AUAD02,FDOCDT
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+group by CUENDT , AUAD02,FDOCDT)
+where substr(FDOCDT,1,5) <=$P{ani2})
+group by CUENDT ,AUAD02)
+left join (
+select cuentad,FDOCDT,sum(MONTDT) as devengado,auxd,NDOCDT,proyecto,NUCODT
+, (case when SUBSTR(proyecto, 0, INSTR(proyecto, '.-')-1) is not null then SUBSTR(proyecto, 0, INSTR(proyecto, '.-')-1)
+when SUBSTR(proyecto, 0, INSTR(proyecto, ':')-1) is not null then SUBSTR(proyecto, 0, INSTR(proyecto, ':')-1)
+when SUBSTR(proyecto, 0, INSTR(proyecto, ',')-1) is not null then SUBSTR(proyecto, 0, INSTR(proyecto, ',')-1)
+when SUBSTR(proyecto, 0, INSTR(proyecto, '.')-1) is not null then SUBSTR(proyecto, 0, INSTR(proyecto, '.')-1)
+end) as beneficiario ,FECODT
+from (SELECT CUENDT as cuentad, MONTDT,AUAD02 as auxd,FDOCDT,NDOCDT,NUCODT,FECODT
+,(select DISTINCT COHEAD from USFIMRU.TIGSA_GLAI3 where CCIAAD=CCIADT and SAPRAD=SAPRDT and TICOAD=TICODT and NUCOAD=NUCODT) as proyecto
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=$P{ani1}
+AND SAPRDT<=$P{ani2}
+AND CAUXDT='2'
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY'))
+group by cuentad,auxd,FDOCDT,NDOCDT,proyecto,NUCODT,FECODT)
+on CUENDT = cuentad and AUAD02 = auxd
+union
+select  CUENDT,FDOCDT,codificado,null as compromiso,null as devengado,AUAD02,NDOCDT,proyecto,valor,NUCODT, null as beneficiario ,FECODT
+from (select CUENDT , sum(codificado) as codificado,AUAD02
+from (select CUENDT , sum(codificado) as codificado,AUAD02
+from (select CUENDT , codificado,AUAD02
+from (SELECT CUENDT , sum(MONTDT) as codificado,AUAD02,FDOCDT
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND TMOVDT='D'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+AND TAAD02 = 'PY'
+AND AUAD02 in (SELECT CAUXMA FROM USFIMRU.TIGSA_GLM05 where TAUXMA = 'PY')
+group by CUENDT , AUAD02,FDOCDT)
+where substr(FDOCDT,1,5) <=$P{ani2})
+group by CUENDT ,AUAD02)
+group by CUENDT ,AUAD02 )
+left join
+(select FDOCDT,NDDOAD,sum(valor)as valor,NUCODT,NDOCDT,CDDOAD,cohead as proyecto,FECODT
+from (select FDOCDT,NDDOAD,valor,NUCODT,NDOCDT,CDDOAD,cohead,FECODT
+from(select FDOCDT,NDDOAD,sum(MONTDT)as valor,NUCODT,NDOCDT,CDDOAD,FECODT,CCIADT,SAPRDT,TICODT
+from (select FDOCDT,NDDOAD,MONTDT,NUCODT,NDOCDT,CDDOAD,FECODT,CCIADT,SAPRDT,TICODT
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='MR'
+AND SAPRDT>=$P{ani1}
+AND SAPRDT<=$P{ani2}
+and CUENDT between '11203%' and '11205%'
+and CDDOAD = 'CO')
+group by  FDOCDT,NDDOAD,NUCODT,NDOCDT,CDDOAD,FECODT,CCIADT,SAPRDT,TICODT
+having sum(MONTDT)<>0)
+left join
+(SELECT cohead, CCIAAD,SAPRAD,TICOAD,NUCOAD
+from USFIMRU.TIGSA_GLAI3 )
+on CCIAAD=CCIADT AND SAPRAD=SAPRDT AND TICOAD=TICODT AND NUCOAD=NUCODT)
+group by  FDOCDT,NDDOAD,NUCODT,NDOCDT,CDDOAD,cohead,FECODT
+having sum(valor)<>0)
+on  AUAD02 = NDDOAD)
+where AUAD02 = $P{proyecto} and FDOCDT is not null)
+on CUENMC=CUENDT]]>
+	</queryString>
+	<field name="FECHA1" class="java.lang.String"/>
+	<field name="CUENMC" class="java.lang.String"/>
+	<field name="CEDTMC" class="java.lang.String"/>
+	<field name="NOLAAD" class="java.lang.String"/>
+	<field name="INICIAL" class="java.math.BigDecimal"/>
+	<field name="REFORMA" class="java.math.BigDecimal"/>
+	<field name="CODIFICADO" class="java.math.BigDecimal"/>
+	<field name="AUAD02" class="java.lang.String"/>
+	<field name="DEP" class="java.lang.String"/>
+	<field name="POSTM" class="java.lang.String"/>
+	<field name="PROYECTO" class="java.lang.String"/>
+	<field name="COMPROMISO" class="java.math.BigDecimal"/>
+	<field name="DEVENGADO" class="java.math.BigDecimal"/>
+	<field name="PROYECTO1" class="java.lang.String"/>
+	<field name="VALOR" class="java.math.BigDecimal"/>
+	<field name="NUCODT" class="java.math.BigDecimal"/>
+	<field name="NDOCDT" class="java.math.BigDecimal"/>
+	<field name="SALDO_CO" class="java.math.BigDecimal"/>
+	<field name="BENEFICIARIO" class="java.lang.String"/>
+	<field name="FECODT" class="java.math.BigDecimal"/>
+	<field name="FECHA" class="java.lang.String"/>
+	<field name="SALDO_DEV" class="java.math.BigDecimal"/>
+	<variable name="compromiso" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{COMPROMISO}]]></variableExpression>
+	</variable>
+	<variable name="devengado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{DEVENGADO}]]></variableExpression>
+	</variable>
+	<variable name="saldod" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{compromiso}-$V{devengado}]]></variableExpression>
+	</variable>
+	<variable name="saldoc" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{SALDO_CO}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="118" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="40ff224c-0f61-4909-89da-fabcb3be0b66" x="0" y="0" width="802" height="25"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AUXILIAR DE GASTOS PRESUPUESTARIOS POR PROYECTO]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="f6e4fa55-1475-42b5-ba63-3cac4cc13fa1" x="693" y="3" width="109" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Código : "+$F{AUAD02}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="27c81592-9b02-43b5-b287-4f4b1b7e4a9d" x="0" y="25" width="90" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre proyecto :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6c7ad391-71d1-4e88-b8ac-bb6ba3928395" x="0" y="59" width="109" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dirección / depto :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="402446ae-c488-4e6f-88c7-18b15bad36f0" x="0" y="98" width="58" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c8251f5e-7610-4ba4-aacb-2f3abd94cbee" x="0" y="78" width="48" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Partida :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="e1f90ae3-699f-4976-8619-e779798c41f9" x="90" y="25" width="471" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROYECTO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="e6f09d08-d1e3-47ba-b40f-ca9754828e30" x="237" y="78" width="304" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{NOLAAD}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="58c57fcb-8266-437b-b2a2-5c1378af8626" x="561" y="21" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Financiamiento : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="362075a5-9ccb-40d2-a1cc-8928e46ef1f3" x="540" y="67" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Inicial : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9624870c-13b7-4811-86da-ad95cb0b1d47" x="540" y="80" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Reforma : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3363941b-37bf-4080-86e5-805fd98eee10" x="699" y="80" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Total : ]]></text>
+			</staticText>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement uuid="e9580ffb-21a1-4ecf-ae4c-22e40c88d4f1" x="582" y="67" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{INICIAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="47f4fd16-1510-42da-bcb0-fa1b8a16ec27" x="582" y="80" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement uuid="ff092d9c-3a4e-4e52-9dd6-cfc69760b5c0" x="727" y="80" width="94" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="770f388e-5a71-42eb-b3b4-271c6a9b5820" x="51" y="98" width="42" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRAM. ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6bdeab8d-e965-4622-b695-266d73bcd022" x="89" y="98" width="38" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[#C/E]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d243000f-1173-41f4-83d5-34a08575133c" x="121" y="98" width="73" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Compromiso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="de796f76-1d7b-486b-b116-9f9333c97990" x="194" y="98" width="73" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="08dfb4bc-6f46-44dc-9c45-fbb911d1b338" x="267" y="98" width="75" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Saldo Comp.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5273cf62-5aba-4e1a-b1cc-5fead9134441" x="342" y="98" width="74" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Saldo Dev.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="00e00db4-79b4-43b8-ae8d-68104958479c" x="424" y="98" width="108" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Beneficiario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="980a1f5f-443f-41c7-8bf4-98700c7390bc" x="535" y="98" width="220" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Concepto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c616b011-3021-46b3-9706-cfa8133f37a6" x="719" y="98" width="96" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Anticipo]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="f791c0b6-759e-424d-962e-f3f8bd39c842" x="0" y="117" width="802" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="75a852c2-0359-43a6-9675-4b788f047710" x="48" y="78" width="31" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{POSTM}+"."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="37ed39fe-d444-4077-82ad-abd76343bab0" x="64" y="78" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{CEDTMC}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8b25818c-655a-4b63-a4b7-b08172883717" x="148" y="78" width="89" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre Partida :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="b6896b04-2a50-4a0e-9f1e-04364a59473d" x="92" y="59" width="452" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{DEP}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement uuid="6e4b9fdf-476a-4adb-8cbd-d999b0461fbf" x="643" y="23" width="178" height="20"/>
+				<subreportParameter name="inicial">
+					<subreportParameterExpression><![CDATA[$P{inicial}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="reforma">
+					<subreportParameterExpression><![CDATA[$P{reforma}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ani2">
+					<subreportParameterExpression><![CDATA[$P{ani2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="proyecto">
+					<subreportParameterExpression><![CDATA[$P{proyecto}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"/reportes/rep_presupuestario/rep_descripcion_finan.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="52905d10-0019-4f26-83de-15912ba870d7" x="0" y="0" width="58" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="03fd3f72-bbc8-4434-aa82-02f7954442f2" x="53" y="0" width="42" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NDOCDT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d3c8874a-f1a5-4001-9d65-1dfd47652dfa" x="194" y="0" width="73" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEVENGADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="e931c8d9-b704-470d-863f-3706be64efb2" x="267" y="0" width="75" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO_CO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="f9e3a171-8b2c-43e4-a640-6fda34c32f8a" x="92" y="0" width="38" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUCODT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="5046d1eb-9fb0-4fc7-a861-a764a5442c1b" x="123" y="0" width="71" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPROMISO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="97706474-360e-4d86-ab0c-dc82485b1301" x="342" y="0" width="74" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO_DEV}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="d697e402-ce9b-440e-b9ad-a62e913a509d" x="535" y="0" width="220" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROYECTO1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="7c3e448e-0471-47ca-9f5c-eeca44a63182" x="424" y="0" width="108" height="20"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BENEFICIARIO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="0bce81e4-933e-4dde-9357-95ba64b9edd3" x="719" y="0" width="96" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{VALOR}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="3" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="2ce5441a-0a77-4c3a-89d9-f2995705cf01" key="textField" x="573" y="2" width="170" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="d8e86e03-9565-4cb4-92ff-98a0f6bc22c2" key="textField-4" x="17" y="2" width="209" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="80bb7b7e-300a-4312-943a-ba0f68250e08" key="line" x="0" y="1" width="802" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="70a7872a-10e0-4b09-a35c-c4db0771989d" key="textField-1" x="317" y="2" width="152" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="994e78f8-a167-414c-b564-b927eac3085f" key="textField" x="747" y="2" width="36" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="a56bea1a-2de6-456a-a0ff-579e3da49947" x="38" y="0" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTALES : ]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="1db200e1-f348-42d4-99f6-93d2ee55fa84" x="99" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{compromiso}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="f9a389e6-599f-4f4c-b98c-badc5c8fac12" x="172" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{devengado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="21e295a5-b7a0-4324-9626-ac919ae91e4b" x="321" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{SALDO_DEV}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="087be916-d613-4962-a159-adeafaca8626" x="247" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{SALDO_CO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

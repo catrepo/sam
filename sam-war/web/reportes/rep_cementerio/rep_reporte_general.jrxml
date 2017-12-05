@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_reporte_general" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c39bff76-040b-4b69-a0f1-cf34e1daae2d">
+	<property name="ireport.zoom" value="1.948717100000002"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TIPO_LUGAR" class="java.lang.String"/>
+	<parameter name="FECHA_CONSULTA " class="java.lang.String"/>
+	<parameter name="nom_resp" class="java.lang.String">
+		<defaultValueExpression><![CDATA["l-suntaxi"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\p-chumana\\Documents\\NetBeansProjects\\simur\\web\\reportes\\rep_presupuestario\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT IDE_CATASTRO,DETALLE_LUGAR,IDE_LUGAR,sector ,modulo,numero, FECHA_HASTA,NOMBRES,(+'SECTOR : '+sector+' MODULO : '+modulo+' NÚMERO : '+numero) AS sitio
+FROM CMT_CATASTRO_ARRIENDO_FALLECIDO_VTA
+WHERE CAST(FECHA_HASTA AS DATE)<=$P{FECHA_CONSULTA }
+AND CASE $P{TIPO_LUGAR} WHEN 'TODOS' THEN '' ELSE IDE_LUGAR END = CASE $P{TIPO_LUGAR} WHEN 'TODOS' THEN '' ELSE $P{TIPO_LUGAR} END
+order by DETALLE_LUGAR,sector ,modulo,cast(numero as integer)]]>
+	</queryString>
+	<field name="IDE_CATASTRO" class="java.lang.Long"/>
+	<field name="DETALLE_LUGAR" class="java.lang.String"/>
+	<field name="IDE_LUGAR" class="java.lang.Long"/>
+	<field name="sector" class="java.lang.String"/>
+	<field name="modulo" class="java.lang.String"/>
+	<field name="numero" class="java.lang.String"/>
+	<field name="FECHA_HASTA" class="java.lang.String"/>
+	<field name="NOMBRES" class="java.lang.String"/>
+	<field name="sitio" class="java.lang.String"/>
+	<group name="DETALLE">
+		<groupExpression><![CDATA[$F{DETALLE_LUGAR}]]></groupExpression>
+		<groupHeader>
+			<band height="28">
+				<staticText>
+					<reportElement uuid="cd72d400-5959-481f-bced-990f9711be37" x="0" y="3" width="43" height="12"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LUGAR :]]></text>
+				</staticText>
+				<textField>
+					<reportElement uuid="0c5d2b39-8e76-41c9-acd3-b134b53d8348" x="43" y="3" width="100" height="12"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{DETALLE_LUGAR}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="e57ec7cf-6853-446a-acef-0e873b916465" x="39" y="15" width="43" height="13"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SECTOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="f8bd5110-dd76-49fb-b2c2-bb7498564988" x="82" y="15" width="45" height="13"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MODULO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfa1c64a-5842-44b0-8cc4-15f5da8ef080" x="127" y="15" width="50" height="13"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÚMERO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="a6eb7427-c459-418d-bdec-12aea46a243d" x="177" y="15" width="283" height="13"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NOMBRES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="ab75f69c-f9fa-4d16-949d-820f63b5471e" x="460" y="15" width="95" height="13"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FEC. RENOVACIÓN]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="sector">
+		<groupExpression><![CDATA[]]></groupExpression>
+		<groupFooter>
+			<band height="2"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="46" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="43265992-4d15-4f3d-a5db-005a02f6b430" key="staticText" x="0" y="0" width="555" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[GOBIERNO  AUTONOMO  DESCENTRALIZADO  MUNICIPAL  DEL  CANTON  RUMIÑAHUI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3fff1047-74ad-49f1-abb8-4ccef19f6a47" key="staticText-1" x="341" y="14" width="214" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CEMENTERIO MUNICIPAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="20a4c7fd-d252-4b22-b5f7-c34476b8c289" key="staticText-1" x="341" y="28" width="214" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CATASTRO ARRIENDO FALLECIDO]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="09440513-69a8-4fd6-b0b4-47cdd2c9afa9" x="3" y="0" width="135" height="46"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logor.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="2" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="9a87c0ec-b8dc-4a4b-be59-6a0ce921245a" x="177" y="0" width="283" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOMBRES}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy/MM/dd" isBlankWhenNull="true">
+				<reportElement uuid="ea4cfda7-bca3-418e-97f3-4308ef921d21" x="460" y="0" width="95" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA_HASTA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="c3bc8559-2792-47f8-b11a-bd0e52b76833" x="37" y="0" width="45" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sector}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="b90dacf4-f411-4385-8757-8c097140fd70" x="82" y="0" width="45" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{modulo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="c3ddf84a-e8b0-4f06-b3fd-9155c1fc72c4" x="127" y="0" width="50" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17" splitType="Stretch">
+			<line>
+				<reportElement uuid="8991e1af-bb6e-40c4-b214-ebf84ccba8ad" key="line" x="3" y="4" width="550" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="e189ac44-e860-44ae-b989-18c280346e3a" key="textField-5" x="3" y="5" width="135" height="11" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha Impresión: "+ new Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="d4bcd6ee-bcc0-472c-b07a-d250f5c07d23" key="textField" x="519" y="5" width="36" height="11" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="7fee88cb-878f-46ae-bec6-6961d0a5a381" key="textField-1" x="189" y="5" width="152" height="11" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Usuario Impresión : "+$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="3f0f1d53-8b2a-4e21-afe8-3066dd5cb482" key="textField" x="345" y="5" width="170" height="11" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

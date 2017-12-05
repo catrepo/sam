@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_aux_ingresos" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="818" leftMargin="12" rightMargin="12" topMargin="12" bottomMargin="12" uuid="971c87db-363d-443d-8a93-1db7d3f3f3fb">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anio" class="java.lang.String"/>
+	<parameter name="descripcion" class="java.lang.String"/>
+	<parameter name="inicial" class="java.lang.Integer"/>
+	<parameter name="ani1" class="java.lang.Integer"/>
+	<parameter name="reforma" class="java.lang.Integer"/>
+	<parameter name="ani2" class="java.lang.Integer"/>
+	<parameter name="cuenta" class="java.lang.String"/>
+	<parameter name="fechaRe" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select CUENDT,fecodt,NDOCDT,inicial,reforma,codificado,devengado,ejecutado,observacion
+,sum(devengado) over (PARTITION BY CUENDT ORDER BY fecodt) as valor
+,(codificado -sum(devengado) over (PARTITION BY CUENDT ORDER BY fecodt))as saldo
+,(case when fecodt is null then null else (substr(fecodt,6,2)||'/'||substr(fecodt,4,2)||'/20'||substr(fecodt,2,2))end)as fecha
+from (
+select CUENDT, inicial,(case when reforma is null then 0 else reforma end) as reforma
+,(inicial+(case when reforma is null then 0 else reforma end)) as codificado from (
+SELECT CUENDT,sum(MONTDT)*-1 as inicial
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT=$P{inicial}
+group by CUENDT)
+left join
+(SELECT CUENDT as cuentar,sum(MONTDT)*-1 as reforma
+FROM USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT='CM'
+AND SAPRDT=$P{reforma}
+and substr(FDOCDT,1,5) <= $P{fechaRe}
+group by CUENDT)
+on CUENDT = cuentar
+where CUENDT = $P{cuenta})
+left join
+(select * from(
+select F01CTD,(MONTDT*-1) as devengado, 0 as ejecutado,FECODT,NDOCDT,CAUXDT,observacion  from(
+SELECT CUENDT,MONTDT,FECODT,NUCODT,NDOCDT,CAUXDT
+,(SELECT  DISTINCT cohead from USFIMRU.TIGSA_GLAI3 where CCIAAD=CCIADT AND SAPRAD=SAPRDT AND TICOAD=TICODT AND NUCOAD=NUCODT) as observacion
+FROM USFIMRU.TIGSA_GLB01
+WHERE STATDT='E'
+AND CCIADT='MR'
+AND SAPRDT>=$P{ani1}
+AND SAPRDT<=$P{ani2}
+AND CUENDT in (SELECT DISTINCT F01CTO FROM USFIMRU.ECEF01 WHERE F01A1D='2')
+AND CAUXDT in (select DISTINCT F01A1O from(
+SELECT F01A1O FROM USFIMRU.ECEF01 WHERE F01A1D='2'
+UNION
+SELECT F01A2O FROM USFIMRU.ECEF01 WHERE F01A1D='2')))
+left join
+(SELECT F01CTO, (case when F01A1O is null then F01A2O else F01A1O end) as aux,F01CTD FROM USFIMRU.ECEF01  WHERE F01A1D='2')
+on F01CTO=CUENDT and aux =CAUXDT
+where F01CTD = $P{cuenta}
+UNION
+select F01CTD,0 as devengado,(MONTDT*-1) as ejecutado,FECODT,NDOCDT,CAUXDT,observacion from(
+SELECT CUENDT,MONTDT,FECODT,NUCODT,NDOCDT,CAUXDT
+,(SELECT  DISTINCT cohead from USFIMRU.TIGSA_GLAI3 where CCIAAD=CCIADT AND SAPRAD=SAPRDT AND TICOAD=TICODT AND NUCOAD=NUCODT) as observacion
+FROM USFIMRU.TIGSA_GLB01
+WHERE STATDT='E'
+AND CCIADT='MR'
+AND SAPRDT>=$P{ani1}
+AND SAPRDT<=$P{ani2}
+AND CUENDT in (SELECT DISTINCT F01CTO FROM USFIMRU.ECEF01 WHERE F01A1D='3')
+AND CAUXDT in (select DISTINCT F01A1O from(
+SELECT F01A1O FROM USFIMRU.ECEF01 WHERE F01A1D='3'
+UNION
+SELECT F01A2O FROM USFIMRU.ECEF01 WHERE F01A1D='3'))
+AND TMOVDT = 'H')
+left join
+(SELECT F01CTO, (case when F01A1O is null then F01A2O else F01A1O end) as aux,F01CTD FROM USFIMRU.ECEF01  WHERE F01A1D='3')
+on F01CTO=CUENDT and aux =CAUXDT
+where F01CTD = $P{cuenta}))
+on CUENDT = F01CTD
+order by fecodt]]>
+	</queryString>
+	<field name="CUENDT" class="java.lang.String"/>
+	<field name="FECODT" class="java.math.BigDecimal"/>
+	<field name="NDOCDT" class="java.math.BigDecimal"/>
+	<field name="INICIAL" class="java.math.BigDecimal"/>
+	<field name="REFORMA" class="java.math.BigDecimal"/>
+	<field name="CODIFICADO" class="java.math.BigDecimal"/>
+	<field name="DEVENGADO" class="java.math.BigDecimal"/>
+	<field name="EJECUTADO" class="java.math.BigDecimal"/>
+	<field name="OBSERVACION" class="java.lang.String"/>
+	<field name="VALOR" class="java.math.BigDecimal"/>
+	<field name="SALDO" class="java.math.BigDecimal"/>
+	<field name="FECHA" class="java.lang.String"/>
+	<variable name="sum_devengado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{DEVENGADO}]]></variableExpression>
+	</variable>
+	<variable name="sum_ejecutado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{EJECUTADO}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="64" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="e1fdd087-2f3b-45ed-b465-ff9a1ebf9646" key="staticText" x="1" y="-6" width="513" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[GOBIERNO  AUTONOMO  DESCENTRALIZADO  MUNICIPAL  DEL  CANTON  RUMIÑAHUI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ddc99c84-c738-4076-b03c-52a0577d538a" x="339" y="47" width="84" height="17" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALDO DEV.]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="a5a6c3c8-aad6-4222-8b67-1c57d8a24cef" x="1" y="47" width="816" height="17" backcolor="#999999"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="bbc706b7-5f36-4ccd-8ab1-33524f0e916e" x="178" y="46" width="88" height="17" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CODIFICADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0ed4eb30-27aa-4e68-88e1-1677c41e6949" x="612" y="20" width="100" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REFORMA]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="fe2ad9f7-9bc5-4876-94da-1fb5b99b088a" x="712" y="33" width="100" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="db7a6a4a-bfa8-4e91-9506-b4180d3bd408" x="712" y="20" width="100" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="2f6c9d3a-250f-4370-9b33-9c4b727bf5c9" x="409" y="47" width="81" height="17" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f96567af-1515-4f48-8889-9174a7939ed0" x="256" y="47" width="88" height="17" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DEVENGADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="acb532fd-cb63-4ea8-8ba9-576416035351" x="1" y="46" width="53" height="17" forecolor="#FFFFFF"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="43484082-9090-49b9-9d44-96cf0cb77a94" x="612" y="7" width="100" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INICIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="141ec3ff-3597-4a32-8516-6650f24ce465" key="staticText" x="0" y="8" width="278" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[AUXILIAR PRESUPUESTARIO DE LA PARTIDA : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ab395bef-df8b-4ee0-b3fd-457be6a65fef" x="611" y="-7" width="100" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AÑO: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1ff45b75-ee96-4f2b-97ba-1151e5ccdba3" x="612" y="33" width="100" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CODIFICADO]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="08917f82-b1cf-4290-a794-d49bec55e3b5" x="712" y="7" width="100" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INICIAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="14044878-1c88-419f-819d-97b5601d700a" x="514" y="47" width="304" height="17" forecolor="#FFFFFF"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OBSERVACIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="acabcb85-5bfc-4893-b7dd-abc4fb42e434" x="47" y="46" width="71" height="17" forecolor="#FFFFFF"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COMPROBANTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7f71dfd3-8e37-42a5-b5cc-d24f4aca1551" x="104" y="46" width="88" height="17" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REFORMA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="81185647-286e-4cf3-a02d-79fc7a3938ca" x="349" y="47" width="74" height="17" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EJECUTADO]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d27d6e1d-f011-4ff3-9cd8-853177553c3d" x="662" y="-7" width="69" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{anio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="539f469e-43e9-441f-990a-da49c2cc0ba8" x="1" y="26" width="513" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descripcion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="12">
+			<textField>
+				<reportElement uuid="a00f62b2-476e-4d39-928d-f5407f09bfbc" x="1" y="0" width="53" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1864b839-b022-4d21-826f-cce695ba2179" x="47" y="0" width="71" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NDOCDT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="55964cf9-7646-4322-b9b1-26f0f123bc41" x="178" y="0" width="88" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="ffdc6cb2-be3e-4684-bd8f-3056d61aaf3b" x="104" y="0" width="88" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="ebf0a834-3efc-4ced-b115-0d2c8210bce5" x="256" y="0" width="88" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEVENGADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="acaaa9a9-4087-4940-a7b0-cd3a1df698d0" x="349" y="0" width="74" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EJECUTADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="33634ea3-13f2-45b4-87dd-d2297b81288b" x="409" y="0" width="81" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="27470f5b-a096-4d1c-87a2-be6624240079" x="514" y="0" width="303" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OBSERVACION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<line>
+				<reportElement uuid="0f18fabb-38b1-47c2-92d3-9db9ec6c53c5" key="line" x="1" y="1" width="812" height="1"/>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="d0356179-4222-4d20-bea9-7cd4274d24b7" key="textField-4" x="18" y="2" width="209" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="2c4d65ac-7ef6-4491-8cc9-ed4942a824e1" key="textField" x="748" y="2" width="36" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="01de83c8-cbb4-403d-b2ae-1e32ab1c4ffb" key="textField-1" x="318" y="2" width="152" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="6809a5bc-05af-49dd-92e0-8d2d1302d6b4" key="textField" x="574" y="2" width="170" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="21">
+			<staticText>
+				<reportElement uuid="d3d0300b-6ec3-4c80-8295-a50a089a32e7" x="0" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total : ]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="26676fff-6e98-4d8f-8f37-15c1e874bbea" x="249" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sum_devengado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="4570d425-7e16-495c-941a-9f5ed6717a18" x="323" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sum_ejecutado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="10acaa87-ff9d-48ba-836d-97e934a0290f" x="390" y="1" width="100" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALDO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d871c19c-6ef3-48f9-8e9e-057a5f7310ef" x="166" y="0" width="100" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODIFICADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="b93cf2e5-625b-4b6b-bc0b-8e54e07cdb55" x="92" y="0" width="100" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFORMA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

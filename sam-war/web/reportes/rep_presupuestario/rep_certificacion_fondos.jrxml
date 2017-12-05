@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_certificacion_fondos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="daa9b5f6-f087-474b-b641-1610306cf9b5">
+	<property name="ireport.zoom" value="1.2100000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="nom_resp" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="certificado" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="letrero" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT id_codigo, numero_certificado, memorando, fecha_memorando, monto, estado, fecha_certificado,
+(select nombres from srh_empleado where cod_empleado = codigo_funcionario) as Funcionario,
+(select nombre_cargo from srh_cargos where cod_cargo = cargo_funcionario) as Cargo,
+descripcion_proyecto,
+(select nombres from srh_empleado where cod_empleado = director_financiero) as Financiero,
+(select nombres from srh_empleado where cod_empleado = director_presupuesto) as Presupuesto
+FROM cert_fondos
+where id_codigo = $P{certificado}]]>
+	</queryString>
+	<field name="id_codigo" class="java.lang.Integer"/>
+	<field name="numero_certificado" class="java.lang.String"/>
+	<field name="memorando" class="java.lang.String"/>
+	<field name="fecha_memorando" class="java.sql.Date"/>
+	<field name="monto" class="java.math.BigDecimal"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="fecha_certificado" class="java.sql.Date"/>
+	<field name="funcionario" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="descripcion_proyecto" class="java.lang.String"/>
+	<field name="financiero" class="java.lang.String"/>
+	<field name="presupuesto" class="java.lang.String"/>
+	<background>
+		<band height="802" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="7d72f978-1c19-4a2d-a782-7a5718362409" mode="Transparent" x="227" y="0" width="100" height="802" forecolor="#CC0000" backcolor="#F0F0F0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font fontName="SansSerif" size="62"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{letrero}]]></textFieldExpression>
+			</textField>
+		</band>
+	</background>
+	<title>
+		<band height="112" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="cb5bcee4-4387-4237-838b-2b2868f53fd8" x="0" y="0" width="555" height="79"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[GOBIERNO AUTONOMO DESCENTRALIZADO MUNICIPAL DEL CANTÓN RUMIÑAHUI
+CERTIFICADO DE DISPONIBILIDAD
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c6a46fd2-7c9b-4bda-97bf-e977e3c38c45" x="136" y="63" width="285" height="21"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DE FONDOS NRO.  "+$F{numero_certificado}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="32c1f47c-35eb-424b-92d9-b44246f1680e" x="430" y="23" width="125" height="89"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="275" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="1133ca3d-6460-42ee-b04f-eaaf179cf936" x="0" y="242" width="244" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="909eb2c0-94f8-4ea4-96fc-7e5df7b6a32e" mode="Transparent" x="0" y="150" width="554" height="77" backcolor="#FFFFFF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="001d21c8-4c9f-4fe2-beba-7814c2655277" mode="Transparent" x="0" y="33" width="556" height="99" backcolor="#FFFFFF"/>
+			</rectangle>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="dbe338b8-f334-4089-a13d-0a30845055f5" x="5" y="39" width="546" height="63"/>
+				<textElement textAlignment="Justified" verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["En cumplimiento a la RESOLUCIÒN DE DECLARATORIA DE EMERGENCIA Nº 230-A-GADMUR-2016, del 26 de Mayo del 2016, solicitado mediante memorando No. "+$F{memorando}+" con fecha "+$F{fecha_memorando}+" suscrita por el señor/a: "+$F{funcionario}+", Con Cargo: "+$F{cargo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="35c8b738-5da3-4d54-84ab-2be543b7943f" x="4" y="152" width="545" height="50"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["La Dirección Financiera Certifica: QUE EXISTE DISPONIBILIDAD DE FONDOS, para la ejecución de, "+$F{descripcion_proyecto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="80b9e805-55df-41eb-bbdf-2da6caa73b59" x="6" y="242" width="238" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["POR UN MONTO DE : \$ "+new DecimalFormat("###,###,##0.00").format($F{monto})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="150" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="b7475597-5d1c-453e-8062-1ca9cf48f32e" mode="Transparent" x="0" y="18" width="556" height="69" backcolor="#FFFFFF"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="afff16cf-dd21-45da-88bd-577a49d60e19" x="5" y="18" width="547" height="65"/>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Este valor será considerado dentro de la reforma presupuestaria, es importante señalar que los recursos que se comprometen en esta certificación deben ser destinados exclusivamente para la atención de la emergencia y la responsabilidad de uso de la misma es exclusiva del Solicitante.]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="f832e2f7-acd4-4fdf-b5b9-b2d55863bfef" x="327" y="102" width="229" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Sangolqui ,"+$F{fecha_certificado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="1" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="19" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="aec6f670-5fa3-4438-95c8-5c3996e63c28" key="textField-5" x="17" y="0" width="115" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f01e09b1-6bfd-4935-a498-711db74d4929" x="430" y="0" width="100" height="19"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{nom_resp}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="164" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="1d010e3c-2231-4001-b674-df880bcbd2d3" x="208" y="9" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Atentamente ,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="80fb6347-e92e-4757-8c2f-75a68ad44dac" x="6" y="124" width="259" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNCIONARIO DIRECTIVO FINANCIERO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="64d57ed2-ce38-4f37-8814-5a8e5814d96a" x="290" y="124" width="259" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JEFE PRESUPUESTO]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="dd50e2ac-a997-44de-9d78-a69ce80c7608" x="6" y="144" width="259" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{financiero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1bd39a25-aaa0-4494-9e54-93119aa71ebb" x="290" y="144" width="259" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{presupuesto}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="13ff2947-da92-4ef2-82cc-50bac3406533" x="6" y="123" width="259" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="23fe8962-1c02-4470-ae92-26ed6d4d04ae" x="290" y="122" width="259" height="1"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

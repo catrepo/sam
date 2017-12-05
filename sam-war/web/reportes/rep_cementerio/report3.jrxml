@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report3" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f390b89e-3689-4afe-8d58-2ad1bedc1407">
+    <property name="ireport.zoom" value="1.5"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="NUM_LIQUIDACION" class="java.lang.String"/>
+    <parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+    <parameter name="PERIODO" class="java.lang.String"/>
+    <queryString>
+		<![CDATA[SELECT
+     A.periodo_liquidacion,
+     num_liquidacion,
+     cedula_ruc,
+     nombre_razonsocial,
+     antecedentes,
+     fecha_liquidacion,
+     valortotal_liquidacion,
+     direccion_representante,
+     representante_localcomercial,
+     actividad_localcomercial,
+     giro_producto,
+     num_liquidacion,
+     cedula_ruc,
+     nombre_razonsocial,
+     DOMICILIO AS liquidaciones_DOMICILIO,
+     antecedentes,
+     OBSERVACIONES AS liquidaciones_OBSERVACIONES,
+     fecha_liquidacion,
+     LOGIN_LIQUIDADOR AS liquidaciones_LOGIN_LIQUIDADOR,
+     RESP_LIQUIDACION AS liquidaciones_RESP_LIQUIDACION,
+     valortotal_liquidacion,
+     direccion_representante,
+     representante_localcomercial,
+     actividad_localcomercial,
+     COD_RUBRO AS liquidaciones_COD_RUBRO,
+     giro_producto,valortotal_liquidacion+1.60+1.20 AS TOTAL,
+     cod_catastro AS liquidaciones_cod_catastro,CODIGOFISCAL_CUENTA,DSC_CUENTA,VALOR_CUENTA
+FROM
+    liquidaciones A , DETALLE_LIQUIDACION B
+WHERE A.CODIGO_LIQUIDACION=B.CODIGO_LIQUIDACION
+    AND B.PERIODO_LIQUIDACION=$P{PERIODO} AND num_liquidacion = $P{NUM_LIQUIDACION}]]>
+    </queryString>
+    <field name="periodo_liquidacion" class="java.lang.String"/>
+    <field name="num_liquidacion" class="java.lang.String"/>
+    <field name="cedula_ruc" class="java.lang.String"/>
+    <field name="nombre_razonsocial" class="java.lang.String"/>
+    <field name="antecedentes" class="java.lang.String"/>
+    <field name="fecha_liquidacion" class="java.sql.Timestamp"/>
+    <field name="valortotal_liquidacion" class="java.math.BigDecimal"/>
+    <field name="direccion_representante" class="java.lang.String"/>
+    <field name="representante_localcomercial" class="java.lang.String"/>
+    <field name="actividad_localcomercial" class="java.lang.String"/>
+    <field name="giro_producto" class="java.lang.String"/>
+    <field name="liquidaciones_DOMICILIO" class="java.lang.String"/>
+    <field name="liquidaciones_OBSERVACIONES" class="java.lang.String"/>
+    <field name="liquidaciones_LOGIN_LIQUIDADOR" class="java.lang.String"/>
+    <field name="liquidaciones_RESP_LIQUIDACION" class="java.lang.String"/>
+    <field name="liquidaciones_COD_RUBRO" class="java.lang.String"/>
+    <field name="TOTAL" class="java.math.BigDecimal"/>
+    <field name="liquidaciones_cod_catastro" class="java.lang.String"/>
+    <field name="CODIGOFISCAL_CUENTA" class="java.lang.String"/>
+    <field name="DSC_CUENTA" class="java.lang.String"/>
+    <field name="VALOR_CUENTA" class="java.math.BigDecimal"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="154" splitType="Stretch">
+            <staticText>
+                <reportElement uuid="426d9b34-2d03-42d0-a8f7-d72587ff661a" x="229" y="12" width="100" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Liquidacion No.]]></text>
+            </staticText>
+            <textField>
+                <reportElement uuid="31a9e507-e0db-4848-9b54-793ad90a6577" x="329" y="13" width="100" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{num_liquidacion}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement uuid="ea10c618-4299-45b0-9890-65960bc94581" x="40" y="59" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Fallecido:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement uuid="9bcfa067-cafb-4aa0-af7a-61c1395b528f" x="40" y="78" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Representante:]]></text>
+            </staticText>
+            <textField>
+                <reportElement uuid="c8ebb4b1-f1e9-43e0-abd5-4770758cc21e" x="117" y="79" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{cedula_ruc}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement uuid="8e43982e-891a-4183-9053-17955fa8640c" x="220" y="79" width="308" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{nombre_razonsocial}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement uuid="6cab2e62-54d5-4cba-9bfe-7bb01b7f0d3c" x="40" y="97" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Antecedentes:]]></text>
+            </staticText>
+            <textField>
+                <reportElement uuid="7bb15349-660b-41de-8158-e04a4757f200" x="117" y="99" width="429" height="49"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{antecedentes}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement uuid="7162b5a1-a54f-4306-b918-50b7908ec0c0" x="220" y="60" width="308" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{representante_localcomercial}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement uuid="43a90b45-bc20-4352-aad6-e95accb6c085" x="117" y="60" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{actividad_localcomercial}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement uuid="b2561b1b-a04e-4e1b-949e-34569055bc58" x="40" y="40" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Sangolqui, ]]></text>
+            </staticText>
+            <textField>
+                <reportElement uuid="7faf04f2-037c-47b1-85fa-8fdecfded6cc" x="117" y="41" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{fecha_liquidacion}]]></textFieldExpression>
+            </textField>
+            <image>
+                <reportElement uuid="c4555cde-d923-4ed7-b549-68d91a9dd9dd" x="78" y="4" width="117" height="35"/>
+                <imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_reporte.png"]]></imageExpression>
+            </image>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="22" splitType="Stretch">
+            <rectangle>
+                <reportElement uuid="d93d70f9-1c37-46f4-8ad8-8318696347f7" x="50" y="2" width="452" height="19"/>
+            </rectangle>
+            <staticText>
+                <reportElement uuid="91e17888-56d0-44e1-acba-3c4800fab0a2" x="63" y="2" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[COD CUENTA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement uuid="ef2e6baa-5c0a-4580-b42c-fe7014945299" x="147" y="2" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[DESCRIPCION]]></text>
+            </staticText>
+            <staticText>
+                <reportElement uuid="5d19a725-dccb-401f-b1e5-ef308fcfef65" x="418" y="2" width="73" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[VALOR]]></text>
+            </staticText>
+        </band>
+    </pageHeader>
+    <columnHeader>
+        <band splitType="Stretch"/>
+    </columnHeader>
+    <detail>
+        <band height="57" splitType="Stretch">
+            <rectangle>
+                <reportElement uuid="3ada6e52-3562-48b7-b1c0-1c48cf64ae88" x="50" y="-1" width="452" height="58"/>
+            </rectangle>
+            <staticText>
+                <reportElement uuid="ff2dd4c0-ebea-4a43-86cf-3141eacc110b" x="64" y="37" width="427" height="20"/>
+                <textElement/>
+                <text><![CDATA[ 4.1.3.01.19.1       SERVICIOS ADMINISTRATIVOS Y TECNICOS                             1.60]]></text>
+            </staticText>
+            <staticText>
+                <reportElement uuid="d0cf3209-5bdc-4e4c-9816-cdd3a9a594a9" x="64" y="19" width="427" height="20"/>
+                <textElement/>
+                <text><![CDATA[ 4.1.3.01.19.3       ESPECIES VALORADAS                                                                 0.20]]></text>
+            </staticText>
+            <textField>
+                <reportElement uuid="0f4eab4b-b841-4b4d-89f8-06eaf69875f8" x="65" y="-1" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{CODIGOFISCAL_CUENTA}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement uuid="93c25065-1d16-4a67-a653-b737ac8e0e2f" x="147" y="0" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression><![CDATA[$F{DSC_CUENTA}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00;-#,##0.00">
+                <reportElement uuid="e184dcbb-5ba0-4a53-a448-81b692d0053a" x="386" y="0" width="73" height="20"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{VALOR_CUENTA}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <summary>
+        <band height="42" splitType="Stretch">
+            <rectangle>
+                <reportElement uuid="9df14e28-27ba-4685-9031-dd2eaf79c5f0" x="50" y="0" width="452" height="19"/>
+            </rectangle>
+            <staticText>
+                <reportElement uuid="23bfa437-aea0-44ba-a76f-6456f5af8240" x="143" y="3" width="148" height="20"/>
+                <textElement/>
+                <text><![CDATA[VALOR TOTAL LIQUIDACION]]></text>
+            </staticText>
+            <textField pattern="###0.00;-###0.00">
+                <reportElement uuid="2d6916b1-a0b5-4666-9c40-34ad2b1c15a9" x="409" y="3" width="49" height="20"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>

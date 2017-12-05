@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_descripcion_finan" language="groovy" pageWidth="297" pageHeight="210" orientation="Landscape" columnWidth="297" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="daecbde7-985d-4031-bdf9-0112e1fb741c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="inicial" class="java.lang.Integer"/>
+	<parameter name="reforma" class="java.lang.Integer"/>
+	<parameter name="ani2" class="java.lang.Integer"/>
+	<parameter name="proyecto" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select DISTINCT CUENDT
+,(select DISTINCT NOMBMA from USFIMRU.TIGSA_GLm05 where CAUXMA = CCIADT and tauxma = 'FF') as finan
+from USFIMRU.TIGSA_GLB01
+where STATDT='E'
+AND CCIADT <> 'CM' and CCIADT <> 'MR'
+AND SAPRDT>=$P{inicial}
+AND SAPRDT<=$P{reforma}
+AND TAAD01 = 'PY'
+and AUAD02 is not null
+and substr(FDOCDT,1,5) <= $P{ani2}
+and AUAD01 = $P{proyecto}]]>
+	</queryString>
+	<field name="CUENDT" class="java.lang.String"/>
+	<field name="FINAN" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="3e5fe115-cdad-4d9d-8f52-d47714cf0ba2" x="0" y="0" width="297" height="11"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FINAN}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
