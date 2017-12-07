@@ -26,7 +26,7 @@ public class Empleado extends Pantalla{
       pat_empleado.setId("pat_empleado");
       pat_empleado.setPanelTabla(tab_empleado);
       Division div_empleado = new Division();
-      div_empleado.setId("div_cargo");
+      div_empleado.setId("div_empleado");
       div_empleado.dividir1(pat_empleado);
       agregarComponente(div_empleado);
     }
