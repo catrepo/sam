@@ -1,8 +1,7 @@
 package paq_adquisicion;
-
 /**
  *
- * @author Andres Redroban
+ * @author Andres Redroban soy nina
  */
 import framework.componentes.Division;
 import framework.componentes.PanelTabla;
