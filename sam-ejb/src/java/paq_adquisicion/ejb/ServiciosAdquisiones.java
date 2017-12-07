@@ -53,4 +53,24 @@ public class ServiciosAdquisiones {
             "order by CODIGO_ADPAMA";
         return sql;
     }
+    public String getAreaAdministrativa() {
+        String sql="";
+        sql="SELECT IDE_ADARAD, CODIGO_ADARAD, DETALLE_ADARAD FROM ADQ_AREA_ADMINISTRATIVA";
+        return sql;
+    }
+    public String getEmpleado() {
+        String sql="";
+        sql="SELECT IDE_ADEMPLE, CEDULA_ADEMPLE, NOMBRES_ADEMPLE FROM ADQ_EMPLEADO";
+        return sql;
+    }
+    public String getCargo() {
+        String sql="";
+        sql="SELECT IDE_ADCARG, DETALLE_ADCARG FROM ADQ_CARGO";
+        return sql;
+    }
+    public String getTipoAprobador() {
+        String sql="";
+        sql="SELECT IDE_ADTIAP, DETALLE_ADTIAP FROM ADQ_TIPO_APROBADOR";
+        return sql;
+    }
 }
