@@ -11,15 +11,21 @@ import framework.componentes.Tabla;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import paq_adquisicion.ejb.ServiciosAdquisiones;
 import sistema.aplicacion.Pantalla;
 
 public class Empleado extends Pantalla{
     
     private Tabla tab_empleado = new Tabla();
     
+    @EJB
+    private final  ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
+    
     public Empleado (){
        tab_empleado.setId("tab_empleado");   //identificador
        tab_empleado.setTabla("adq_empleado", "ide_ademple", 1); 
+       tab_empleado.getColumna("IDE_ADTIDE").setCombo(ser_adquisiciones.getTipoDenominacion());
+       tab_empleado.getColumna("IDE_USUA").setCombo(ser_adquisiciones.getUsuario("1"));
        tab_empleado.dibujar();
        
        PanelTabla pat_empleado = new PanelTabla();

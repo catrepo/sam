@@ -1,7 +1,7 @@
 package paq_adquisicion;
 /**
  *
- * @author Andres Redroban soy nina
+ * @author Andres Redroban 
  */
 import framework.componentes.Division;
 import framework.componentes.PanelTabla;
@@ -52,7 +52,7 @@ public class Adquisiciones extends Pantalla {
       pat_adquisiciones.setPanelTabla(tab_adquisiones);
       
       tab_certificacion.setId("tab_certificacion");
-      tab_certificacion.setTabla("ADQ_CERTIFICACION", "IDE_ADCERT", 1);
+      tab_certificacion.setTabla("ADQ_CERTIFICACION", "IDE_ADCERT", 2);
       List lista3 = new ArrayList();
       Object fila3[] = {"1", "CERTIFICACION"};
       Object fila4[] = {"2","COMPROMISO"};
@@ -65,7 +65,7 @@ public class Adquisiciones extends Pantalla {
       pat_panel_certificacion.setPanelTabla(tab_certificacion);
       
       tab_compra_bienes.setId("tab_compra_bienes");
-      tab_compra_bienes.setTabla("ADQ_COMPRA_BIENES", "IDE_ADCOBI", 1);
+      tab_compra_bienes.setTabla("ADQ_COMPRA_BIENES", "IDE_ADCOBI", 3);
       tab_compra_bienes.getColumna("IDE_ADPAMA").setCombo(ser_adquisiciones.getPartidaMaterial());
       tab_compra_bienes.dibujar();
       PanelTabla pat_panel_compra_bienes = new PanelTabla();
