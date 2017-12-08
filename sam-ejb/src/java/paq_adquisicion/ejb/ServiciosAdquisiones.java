@@ -22,7 +22,7 @@ public class ServiciosAdquisiones {
      */
     public String getAprobado() {
         String sql="";
-        sql="SELECT IDE_ADAPRO, DETALLE_ADAPRO FROM ADQ_APROBADO";
+        sql="SELECT IDE_ADAPRO, DETALLE_ADAPRO FROM ADQ_APROBADO order by DETALLE_ADAPRO";
         return sql;
     }
     public String getTipoArea() {
@@ -32,12 +32,12 @@ public class ServiciosAdquisiones {
     }
     public String getGrupoMaterial() {
         String sql="";
-        sql="SELECT IDE_ADGRMA, DETALLE_ADGRMA, CODIGO_ADGRMA FROM ADQ_GRUPO_MATERIAL";
+        sql="SELECT IDE_ADGRMA, CODIGO_ADGRMA, DETALLE_ADGRMA FROM ADQ_GRUPO_MATERIAL order by DETALLE_ADGRMA";
         return sql;
     }
     public String getPartidaPresupuestaria() {
         String sql="";
-        sql="SELECT IDE_ADPAPR, DETALLE_ADPAPR, CODIGO_ADPAPR FROM ADQ_PARTIDA_PRESUPUESTARIA";
+        sql="SELECT IDE_ADPAPR, CODIGO_ADPAPR, DETALLE_ADPAPR FROM ADQ_PARTIDA_PRESUPUESTARIA order by CODIGO_ADPAPR";
         return sql;
     }
     public String getAreaPartida() {
@@ -83,4 +83,5 @@ public class ServiciosAdquisiones {
         sql="SELECT IDE_USUA, NICK_USUA, NOM_USUA FROM SIS_USUARIO WHERE ACTIVO_USUA = "+activo+"";
         return sql;
     }
+
 }
