@@ -18,6 +18,8 @@ public class Cargo extends Pantalla {
    public Cargo (){
        tab_cargo.setId("tab_cargo");   //identificador
        tab_cargo.setTabla("adq_cargo", "ide_adcarg", 1); 
+       tab_cargo.getColumna("IDE_ADCARG").setNombreVisual("CODIGO");
+       tab_cargo.getColumna("DETALLE_ADCARG").setNombreVisual("DETALLE");
        tab_cargo.dibujar();
        
       PanelTabla pat_cargo = new PanelTabla();

@@ -26,6 +26,12 @@ public class Empleado extends Pantalla{
        tab_empleado.setTabla("adq_empleado", "ide_ademple", 1); 
        tab_empleado.getColumna("IDE_ADTIDE").setCombo(ser_adquisiciones.getTipoDenominacion());
        tab_empleado.getColumna("IDE_USUA").setCombo(ser_adquisiciones.getUsuario("1"));
+       tab_empleado.getColumna("IDE_ADEMPLE").setNombreVisual("CODIGO");
+       tab_empleado.getColumna("IDE_ADTIDE").setNombreVisual("DENOMINACION");
+       tab_empleado.getColumna("IDE_USUA").setNombreVisual("USUARIO");
+       tab_empleado.getColumna("CEDULA_ADEMPLE").setNombreVisual("CEDULA");
+       tab_empleado.getColumna("NOMBRES_ADEMPLE").setNombreVisual("NOMBRES");
+       tab_empleado.getColumna("DIRECCION_ADEMPLE").setNombreVisual("DIRECCION");
        tab_empleado.dibujar();
        
        PanelTabla pat_empleado = new PanelTabla();
