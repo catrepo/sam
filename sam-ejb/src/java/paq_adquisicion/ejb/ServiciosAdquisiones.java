@@ -60,7 +60,7 @@ public class ServiciosAdquisiones {
     }
     public String getEmpleado() {
         String sql="";
-        sql="SELECT IDE_ADEMPLE, CEDULA_ADEMPLE, NOMBRES_ADEMPLE FROM ADQ_EMPLEADO";
+        sql="SELECT IDE_ADEMPLE, CEDULA_ADEMPLE, NOMBRES_ADEMPLE FROM ADQ_EMPLEADO ORDER BY NOMBRES_ADEMPLE";
         return sql;
     }
     public String getCargo() {
@@ -71,6 +71,16 @@ public class ServiciosAdquisiones {
     public String getTipoAprobador() {
         String sql="";
         sql="SELECT IDE_ADTIAP, DETALLE_ADTIAP FROM ADQ_TIPO_APROBADOR";
+        return sql;
+    }
+    public String getTipoDenominacion() {
+        String sql="";
+        sql="select IDE_ADTIDE, DETALLE_ADTIDE from ADQ_TIPO_DENOMINACION";
+        return sql;
+    }
+    public String getUsuario(String activo) {
+        String sql="";
+        sql="SELECT IDE_USUA, NICK_USUA, NOM_USUA FROM SIS_USUARIO WHERE ACTIVO_USUA = "+activo+"";
         return sql;
     }
 }
