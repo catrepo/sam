@@ -5,21 +5,30 @@ package paq_adquisicion;
  *
  * @author Andres
  */
+import framework.aplicacion.TablaGenerica;
+import framework.componentes.Boton;
 import framework.componentes.Division;
 import framework.componentes.PanelTabla;
+import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
+import framework.componentes.Texto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import paq_adquisicion.ejb.ServiciosAdquisiones;
+import paq_remuneraciones.ejb.BeanRemuneracion;
 import sistema.aplicacion.Pantalla;
 
 public class Empleado extends Pantalla{
     
     private Tabla tab_empleado = new Tabla();
+    private Texto text_texto = new Texto() ;
     
     @EJB
     private final  ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
+    
+    @EJB
+    private BeanRemuneracion adminRemuneracion = (BeanRemuneracion) utilitario.instanciarEJB(BeanRemuneracion.class);
     
     public Empleado (){
        tab_empleado.setId("tab_empleado");   //identificador
@@ -32,6 +41,14 @@ public class Empleado extends Pantalla{
        tab_empleado.getColumna("CEDULA_ADEMPLE").setNombreVisual("CEDULA");
        tab_empleado.getColumna("NOMBRES_ADEMPLE").setNombreVisual("NOMBRES");
        tab_empleado.getColumna("DIRECCION_ADEMPLE").setNombreVisual("DIRECCION");
+       
+              tab_empleado.getColumna("IDE_ADEMPLE").setOrden(0);
+       tab_empleado.getColumna("IDE_ADTIDE").setOrden(3);
+       tab_empleado.getColumna("IDE_USUA").setOrden(4);
+       tab_empleado.getColumna("CEDULA_ADEMPLE").setOrden(1);
+       tab_empleado.getColumna("NOMBRES_ADEMPLE").setOrden(2);
+       tab_empleado.getColumna("DIRECCION_ADEMPLE").setOrden(5);
+       
        tab_empleado.dibujar();
        
        PanelTabla pat_empleado = new PanelTabla();
@@ -41,6 +58,22 @@ public class Empleado extends Pantalla{
       div_empleado.setId("div_empleado");
       div_empleado.dividir1(pat_empleado);
       agregarComponente(div_empleado);
+      
+        text_texto.setId("text_texto");
+        text_texto.setSize(50);
+        bar_botones.agregarComponente(text_texto);
+      
+      Boton btn_empleado = new Boton ();
+        btn_empleado.setIcon("ui-icon-search");//fa-neuter  ui-icon-newwin
+        btn_empleado.setValue("BUSCAR");
+        btn_empleado.setTitle("BUSCAR");
+        bar_botones.agregarBoton(btn_empleado);    
+        btn_empleado.setMetodo("consultarEmpleado");
+    }
+    public void consultarEmpleado(){
+        
+         TablaGenerica tabActual = adminRemuneracion.getVerificaDatos(text_texto.getValue().toString());
+         utilitario.agregarMensajeInfo("Solicitante Posee", "Anticipo ExtraOrdinario Pendiente");
     }
     @Override
     public void insertar() {

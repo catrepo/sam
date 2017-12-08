@@ -33,6 +33,11 @@ public class EmpleadoDepartamentoAprueba extends Pantalla{
         aut_emple_depa_aprue.setAutoCompletar(ser_adquisiciones.getEmpleado());
         aut_emple_depa_aprue.setSize(75);
         aut_emple_depa_aprue.setMetodoChange("selecionoAutocompletar");
+                aut_emple_depa_aprue.setTitle("EMPLEADOS INSTITUCIONALES");
+
+        
+        
+        
         bar_botones.agregarComponente(new Etiqueta("Empleado :"));
         bar_botones.agregarComponente(aut_emple_depa_aprue);
         
@@ -42,7 +47,17 @@ public class EmpleadoDepartamentoAprueba extends Pantalla{
        tab_emp_depar.getColumna("ide_ademple").setCombo(ser_adquisiciones.getEmpleado());
        tab_emp_depar.getColumna("ide_adcarg").setCombo(ser_adquisiciones.getCargo());
        tab_emp_depar.getColumna("ide_adtiap").setCombo(ser_adquisiciones.getTipoAprobador());
+       tab_emp_depar.getColumna("IDE_ADEMDE").setNombreVisual("CODIGO");
+       tab_emp_depar.getColumna("IDE_ADARAD").setNombreVisual("AREA ADMINISTRATIVA");
+       tab_emp_depar.getColumna("IDE_ADEMPLE").setNombreVisual("EMPLEADO");
+       tab_emp_depar.getColumna("IDE_ADCARG").setNombreVisual("CARGO");
+       tab_emp_depar.getColumna("IDE_ADTIAP").setNombreVisual("TIPO APROBADOR");
+       //tab_emp_depar.getColumna("ide_ademple").setVisible(false);
+       tab_emp_depar.getColumna("FECHA_INICIO_ADEMDE").setNombreVisual("FECHA INICIO");
+       tab_emp_depar.getColumna("FECHA_FINAL_ADEMDE").setNombreVisual("FECHA FINAL");
+       tab_emp_depar.getColumna("ACTIVO_ADEMDE").setNombreVisual("ACTIVO");
        tab_emp_depar.agregarRelacion(tab_emp_aprueba);
+       
        tab_emp_depar.dibujar();
        
       PanelTabla pat_emp_depar_aprue = new PanelTabla();
@@ -52,12 +67,19 @@ public class EmpleadoDepartamentoAprueba extends Pantalla{
       tab_emp_aprueba.setId("tab_emp_aprueba");   //identificador
        tab_emp_aprueba.setTabla("adq_empleado_aprueba", "ide_ademap", 1); 
        tab_emp_aprueba.getColumna("ide_ademple").setCombo(ser_adquisiciones.getEmpleado());
+       tab_emp_aprueba.getColumna("ide_ademple").setNombreVisual("APRUEBA SOLICITUD");
        List lista = new ArrayList();
        Object fila1[] = {"1", "APROBADO OFICIAL"};
        Object fila2[] = {"2","APROBADO ENCARGADO"};
        lista.add(fila1);
        lista.add(fila2);
        tab_emp_aprueba.getColumna("categoria_ademap").setCombo(lista); 
+       tab_emp_aprueba.getColumna("IDE_ADEMAP").setNombreVisual("CODIGO");
+       tab_emp_aprueba.getColumna("IDE_ADEMPLE").setNombreVisual("EMPLEADO");
+       tab_emp_aprueba.getColumna("FECHA_INICIAL_ADEMAP").setNombreVisual("FECHA INICIAL");
+       tab_emp_aprueba.getColumna("FEHA_FINAL_ADEMAP").setNombreVisual("FECHA FINAL");
+       tab_emp_aprueba.getColumna("CATEGORIA_ADEMAP").setNombreVisual("CATEGORIA");
+       tab_emp_aprueba.getColumna("ACTIVO_ADEMAP").setNombreVisual("ACTIVO");
        tab_emp_aprueba.dibujar();
        
       PanelTabla pat_emp_aprueba = new PanelTabla();
@@ -70,14 +92,18 @@ public class EmpleadoDepartamentoAprueba extends Pantalla{
       agregarComponente(div_emp_aprueba);
     }
     public void selecionoAutocompletar(SelectEvent evt){
-    aut_emple_depa_aprue.onSelect(evt);
-      utilitario.agregarMensaje("VALOR", aut_emple_depa_aprue.getValor()); 
-      utilitario.agregarMensaje("NOMBRE", aut_emple_depa_aprue.getValorArreglo(1));     
+             aut_emple_depa_aprue.onSelect(evt);
+             if (aut_emple_depa_aprue.getValor() != null) {
+            tab_emp_depar.setFilaActual(aut_emple_depa_aprue.getValor());
+            utilitario.addUpdate("tab_emp_depar");
+        }
+ 
      }
     @Override
     public void insertar() {
         if(tab_emp_depar.isFocus()){
                   tab_emp_depar.insertar();
+                  tab_emp_depar.setValor("ide_ademple", aut_emple_depa_aprue.getValor());
         }
         else if (tab_emp_aprueba.isFocus()){
             tab_emp_aprueba.insertar();

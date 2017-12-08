@@ -31,6 +31,10 @@ public class AreaAdministrativa extends Pantalla{
        tab_area_administrativa.agregarArbol(arb_area);
        tab_area_administrativa.agregarRelacion(tab_area_partida);
        tab_area_administrativa.getColumna("ide_adtiar").setCombo(ser_adquisiciones.getTipoArea());
+       tab_area_administrativa.getColumna("IDE_ADARAD").setNombreVisual("CODIGO");
+       tab_area_administrativa.getColumna("IDE_ADTIAR").setNombreVisual("TIPO DE AREA");
+       tab_area_administrativa.getColumna("DETALLE_ADARAD").setNombreVisual("DETALLE");
+       tab_area_administrativa.getColumna("CODIGO_ADARAD").setNombreVisual("CODIGO DE AREA");
        tab_area_administrativa.dibujar();
        
       PanelTabla pat_area_administrativa = new PanelTabla();
@@ -40,6 +44,9 @@ public class AreaAdministrativa extends Pantalla{
        tab_area_partida.setId("tab_area_partida");   //identificador
        tab_area_partida.setTabla("adq_area_partida", "ide_adarpa", 1); 
        tab_area_partida.getColumna("ide_adpapr").setCombo(ser_adquisiciones.getPartidaPresupuestaria());
+       tab_area_partida.getColumna("IDE_ADARPA").setNombreVisual("CODIGO");
+       tab_area_partida.getColumna("IDE_ADPAPR").setNombreVisual("PARTIDA PRESUPUESTARIA");
+       tab_area_partida.getColumna("CODIGO_ADARPA").setNombreVisual("CODIGO PARTIDA");
        tab_area_partida.dibujar();
        PanelTabla pat_area_partida = new PanelTabla();
       pat_area_partida.setId("pat_area_partida");

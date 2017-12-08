@@ -1,5 +1,4 @@
 package paq_adquisicion;
-
 /**
  *
  * @author Andres
