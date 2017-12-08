@@ -238,7 +238,7 @@ public class pre_index {
         dibuja.getChildren().clear();
 
         Alerta ale_inicio = new Alerta();
-        ale_inicio.setAlertaCeleste("<strong>Bienvenido </strong> al Sistema Ministerio Salud Publica RUA v1.0 <span class='pull-right'> " + utilitario.getFechaLarga(utilitario.getFechaActual()) + " &nbsp;  </span>");
+        ale_inicio.setAlertaCeleste("<strong>Bienvenido </strong> al Sistema de Administracion Municipal v1.0 <span class='pull-right'> " + utilitario.getFechaLarga(utilitario.getFechaActual()) + " &nbsp;  </span>");
         dibuja.getChildren().add(ale_inicio);
 
         RowBootstrap row_cajas = new RowBootstrap();
