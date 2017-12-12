@@ -18,6 +18,8 @@ public class TipoAprobador extends Pantalla {
         
        tab_tipo_aprobador.setId("tab_tipo_aprobador");   //identificador
        tab_tipo_aprobador.setTabla("adq_tipo_aprobador", "ide_adtiap", 1); 
+       tab_tipo_aprobador.getColumna("IDE_ADTIAP").setNombreVisual("CODIGO");
+       tab_tipo_aprobador.getColumna("DETALLE_ADTIAP").setNombreVisual("DETALLE");
        tab_tipo_aprobador.dibujar();
        
       PanelTabla pat_tipo_aprobador = new PanelTabla();

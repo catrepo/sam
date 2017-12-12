@@ -42,7 +42,7 @@ public class Empleado extends Pantalla{
        tab_empleado.getColumna("NOMBRES_ADEMPLE").setNombreVisual("NOMBRES");
        tab_empleado.getColumna("DIRECCION_ADEMPLE").setNombreVisual("DIRECCION");
        
-              tab_empleado.getColumna("IDE_ADEMPLE").setOrden(0);
+       tab_empleado.getColumna("IDE_ADEMPLE").setOrden(0);
        tab_empleado.getColumna("IDE_ADTIDE").setOrden(3);
        tab_empleado.getColumna("IDE_USUA").setOrden(4);
        tab_empleado.getColumna("CEDULA_ADEMPLE").setOrden(1);

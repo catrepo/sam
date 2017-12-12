@@ -19,6 +19,9 @@ public class GrupoMaterial extends Pantalla {
      public GrupoMaterial (){
        tab_grupo_material.setId("tab_grupo_material");   //identificador
        tab_grupo_material.setTabla("adq_grupo_material", "ide_adgrma", 1); 
+       tab_grupo_material.getColumna("IDE_ADGRMA").setNombreVisual("CODIGO");
+       tab_grupo_material.getColumna("DETALLE_ADGRMA").setNombreVisual("DETALLE");
+       tab_grupo_material.getColumna("CODIGO_ADGRMA").setNombreVisual("CODIGO GRUPO MATERIAL");
        tab_grupo_material.dibujar();
        
       PanelTabla pat_grupo_material = new PanelTabla();

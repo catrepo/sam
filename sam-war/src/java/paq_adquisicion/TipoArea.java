@@ -19,6 +19,8 @@ public class TipoArea extends Pantalla {
     public TipoArea () {
        tab_tipo_area.setId("tab_tipo_area");   //identificador
        tab_tipo_area.setTabla("adq_tipo_area", "ide_adtiar", 1); 
+       tab_tipo_area.getColumna("IDE_ADTIAR").setNombreVisual("CODIGO");
+       tab_tipo_area.getColumna("DETALLE_ADTIAR").setNombreVisual("DETALLE");
        tab_tipo_area.dibujar();
        
       PanelTabla pat_tipo_area = new PanelTabla();

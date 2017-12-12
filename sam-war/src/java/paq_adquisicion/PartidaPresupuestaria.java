@@ -19,6 +19,9 @@ public class PartidaPresupuestaria extends Pantalla {
     public PartidaPresupuestaria (){
        tab_partida_pre.setId("tab_partida_pre");   //identificador
        tab_partida_pre.setTabla("adq_partida_presupuestaria", "ide_adpapr", 1); 
+       tab_partida_pre.getColumna("IDE_ADPAPR").setNombreVisual("CODIGO");
+       tab_partida_pre.getColumna("DETALLE_ADPAPR").setNombreVisual("DETALLE");
+       tab_partida_pre.getColumna("CODIGO_ADPAPR").setNombreVisual("PARTIDA PRESUPUESTARIA");
        tab_partida_pre.dibujar();
        
       PanelTabla pat_partida_pre = new PanelTabla();

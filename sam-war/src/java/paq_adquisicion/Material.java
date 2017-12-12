@@ -28,6 +28,10 @@ public class Material extends Pantalla {
        tab_material.setTabla("adq_material", "ide_admate", 1);
        tab_material.getColumna("IDE_ADGRMA").setCombo(ser_adquisiciones.getGrupoMaterial());
        tab_material.agregarRelacion(tab_partida_material);
+       tab_material.getColumna("IDE_ADMATE").setNombreVisual("CODIGO");
+       tab_material.getColumna("IDE_ADGRMA").setNombreVisual("CODIGO GRUPO MATERIAL");
+       tab_material.getColumna("DETALLE_ADMATE").setNombreVisual("DETALLE");
+       tab_material.getColumna("CODIGO_ADMATE").setNombreVisual("CODIGO MATERIAL");
        tab_material.dibujar();
        
       PanelTabla pat_material = new PanelTabla();
@@ -37,6 +41,9 @@ public class Material extends Pantalla {
        tab_partida_material.setId("tab_partida_material");   //identificador
        tab_partida_material.setTabla("adq_partida_material", "ide_adpama", 1); 
        tab_partida_material.getColumna("IDE_ADARPA").setCombo(ser_adquisiciones.getAreaPartida());
+       tab_partida_material.getColumna("IDE_ADPAMA").setNombreVisual("CODIGO");
+       tab_partida_material.getColumna("IDE_ADARPA").setNombreVisual("AREA PARTIDA");
+       tab_partida_material.getColumna("CODIGO_ADPAMA").setNombreVisual("CODIGO PARTIDA MATERIAL");
        tab_partida_material.dibujar();
        
       PanelTabla pat_partida_material = new PanelTabla();
