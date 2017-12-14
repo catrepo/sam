@@ -1,44 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package paq_adquisicion;
 
 /**
  *
- * @author Andres Redroban
+ * @author Andres
  */
 import framework.componentes.Boton;
 import framework.componentes.Division;
 import framework.componentes.PanelTabla;
-import framework.componentes.Reporte;
-import framework.componentes.SeleccionFormatoReporte;
 import framework.componentes.Tabla;
 import framework.componentes.Tabulador;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import paq_adquisicion.ejb.ServiciosAdquisiones;
 import sistema.aplicacion.Pantalla;
+import sistema.aplicacion.Utilitario;
 
-public class Adquisiciones extends Pantalla {
-
-    private Tabla tab_adquisiones = new Tabla();
+public class AdquisicionesSecretarias extends Pantalla {
+        private Tabla tab_adquisiones = new Tabla();
     private Tabla tab_certificacion = new Tabla();
     private Tabla tab_compra_bienes = new Tabla();
-    
-    private Reporte rep_reporte = new Reporte(); //Listado de Reportes, siempre se llama rep_reporte
-    private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
-    private Map map_parametros = new HashMap();//Parametros del reporte
 
     @EJB
     private final ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
-
-    public Adquisiciones() {
-        
-        rep_reporte.setId("rep_reporte");
-        agregarComponente(rep_reporte);
-        bar_botones.agregarReporte();
-        
-        Boton bot_agregar_solicitante= new Boton();
+    
+     public AdquisicionesSecretarias (){
+         Boton bot_agregar_solicitante= new Boton();
         
         
         Tabulador tab_tabulador = new Tabulador();
@@ -104,7 +96,7 @@ public class Adquisiciones extends Pantalla {
         tab_adquisiones.getColumna("OBSERVACIONES_ADCOMP").setNombreVisual("OBSERVACIONES");
         tab_adquisiones.getColumna("DESTINO_DEL_BIEN_ADCOMP").setNombreVisual("DESTINO");
         
-      /*  tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
+        tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
         tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("DESCRIPCION_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);
@@ -143,7 +135,7 @@ public class Adquisiciones extends Pantalla {
         tab_adquisiones.getColumna("IDE_ADEMDE").setVisible(false);
         tab_adquisiones.getColumna("IDE_ADEMPLE").setVisible(false);
         tab_adquisiones.getColumna("ADQ_IDE_ADEMDE").setVisible(false);
-        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setVisible(false);*/
+        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setVisible(false);
         
         tab_adquisiones.dibujar();
 
@@ -196,55 +188,8 @@ public class Adquisiciones extends Pantalla {
         div_adquisiciones.setId("div_adquisiciones");
         div_adquisiciones.dividir2(pat_adquisiciones, tab_tabulador, "70%", "H");
         agregarComponente(div_adquisiciones);
-        
-        sel_rep.setId("sel_rep");
-        agregarComponente(sel_rep);
 
     }
-    
-    @Override
-      public void abrirListaReportes() {
-        // TODO Auto-generated method stub
-        rep_reporte.dibujar();
-      }
-    @Override
-      public void aceptarReporte() {
-         if (rep_reporte.getReporteSelecionado().equals("ReporteDefinicionHora")){
-             abrirperfilesSistemas();
-         }
-      }
-      private void abrirperfilesSistemas(){
-         rep_reporte.cerrar();
-         map_parametros.clear();
-         map_parametros.put("titulo", "Definicion Hora");
-         sel_rep.setSeleccionFormatoReporte(map_parametros, rep_reporte.getPath());
-         sel_rep.dibujar();
-      }
-
-    public Reporte getRep_reporte() {
-        return rep_reporte;
-    }
-
-    public void setRep_reporte(Reporte rep_reporte) {
-        this.rep_reporte = rep_reporte;
-    }
-
-    public SeleccionFormatoReporte getSel_rep() {
-        return sel_rep;
-    }
-
-    public void setSel_rep(SeleccionFormatoReporte sel_rep) {
-        this.sel_rep = sel_rep;
-    }
-
-    public Map getMap_parametros() {
-        return map_parametros;
-    }
-
-    public void setMap_parametros(Map map_parametros) {
-        this.map_parametros = map_parametros;
-    }
-      
 
     @Override
     public void insertar() {
@@ -305,3 +250,4 @@ public class Adquisiciones extends Pantalla {
     }
 
 }
+
