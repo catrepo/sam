@@ -63,6 +63,17 @@ public class ServiciosAdquisiones {
         sql="SELECT IDE_ADEMPLE, CEDULA_ADEMPLE, NOMBRES_ADEMPLE FROM ADQ_EMPLEADO ORDER BY NOMBRES_ADEMPLE";
         return sql;
     }
+    public String getEmpleadoDepartamento() {
+        String sql="";
+        sql="select ide_ademde,CEDULA_ADEMPLE,NOMBRES_ADEMPLE from ADQ_EMPLEADO_DEPARTAMENTO a,ADQ_EMPLEADO b where a.IDE_ADEMPLE = b.IDE_ADEMPLE order by NOMBRES_ADEMPLE";
+        return sql;
+    }
+    public String getEmpleadoAprueba() {
+        String sql="";
+        sql="SELECT IDE_ADEMAP,CEDULA_ADEMPLE,NOMBRES_ADEMPLE FROM ADQ_EMPLEADO_APRUEBA a, ADQ_EMPLEADO b WHERE a.IDE_ADEMPLE = b.IDE_ADEMPLE order by NOMBRES_ADEMPLE";
+        return sql;
+    }
+    
     public String getCargo() {
         String sql="";
         sql="SELECT IDE_ADCARG, DETALLE_ADCARG FROM ADQ_CARGO";
