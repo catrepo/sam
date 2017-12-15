@@ -127,5 +127,13 @@
         <properties>
             <property name="eclipselink.logging.level" value="SEVERE"/>
         </properties>
-    </persistence-unit>  
+    </persistence-unit> 
+        <persistence-unit name="poolPostgres" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>poolPostgres</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="SEVERE"/>
+        </properties>
+    </persistence-unit> 
 </persistence>
