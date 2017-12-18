@@ -32,6 +32,7 @@ public class Material extends Pantalla {
        tab_material.getColumna("IDE_ADGRMA").setNombreVisual("CODIGO GRUPO MATERIAL");
        tab_material.getColumna("DETALLE_ADMATE").setNombreVisual("DETALLE");
        tab_material.getColumna("CODIGO_ADMATE").setNombreVisual("CODIGO MATERIAL");
+       tab_material.getColumna("APLICA_COD_PRESU_ADMATE").setNombreVisual("APLICA CODIGO PRESUPUESTARIO");
        tab_material.dibujar();
        
       PanelTabla pat_material = new PanelTabla();
