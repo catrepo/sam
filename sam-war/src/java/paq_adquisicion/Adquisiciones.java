@@ -4,6 +4,7 @@ package paq_adquisicion;
  *
  * @author Andres Redroban
  */
+import framework.aplicacion.TablaGenerica;
 import framework.componentes.Boton;
 import framework.componentes.Division;
 import framework.componentes.PanelTabla;
@@ -11,11 +12,13 @@ import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
 import framework.componentes.Tabla;
 import framework.componentes.Tabulador;
+import framework.componentes.VisualizarPDF;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
+import javax.faces.event.AjaxBehaviorEvent;
 import paq_adquisicion.ejb.ServiciosAdquisiones;
 import sistema.aplicacion.Pantalla;
 
@@ -29,6 +32,7 @@ public class Adquisiciones extends Pantalla {
     private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
     private Map map_parametros = new HashMap();//Parametros del reporte
     public static String par_ti_anulado;
+    private VisualizarPDF vipdf_comprobante = new VisualizarPDF();    
 
     @EJB
     private final ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
@@ -49,6 +53,13 @@ public class Adquisiciones extends Pantalla {
         bot_anular.setMetodo("anular");
         
         bar_botones.agregarBoton(bot_anular);
+        
+         Boton bot_imprimir = new Boton();
+        bot_imprimir.setIcon("ui-icon-print");
+        bot_imprimir.setValue("IMPRIMIR SOLICITUD");
+        bot_imprimir.setMetodo("generarPDF");
+        
+        bar_botones.agregarBoton(bot_imprimir);
         
         
         Tabulador tab_tabulador = new Tabulador();
@@ -73,6 +84,7 @@ public class Adquisiciones extends Pantalla {
         lista1.add(fila8);
         tab_adquisiones.getColumna("existe_adcomp").setRadio(lista, "1");
         tab_adquisiones.getColumna("tipo_compra_adcomp").setCombo(lista2);
+        //tab_adquisiones.getColumna("IDE_ADEMAP").setMetodoChange("prueba");
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setCombo(lista1);
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
         tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
@@ -236,9 +248,36 @@ public class Adquisiciones extends Pantalla {
         
         sel_rep.setId("sel_rep");
         agregarComponente(sel_rep);
+        
+        vipdf_comprobante.setId("vipdf_comprobante");
+        vipdf_comprobante.setTitle("SOLICITUD DE COMPRA");
+        agregarComponente(vipdf_comprobante);
+        
 
     }
-    
+    public void prueba (AjaxBehaviorEvent evt){
+        tab_adquisiones.modificar(evt);
+        String valor=tab_adquisiones.getValor("IDE_ADEMAP");
+        TablaGenerica empleado = utilitario.consultar("select ide_ademap,FECHA_INGRE from ADQ_EMPLEADO_APRUEBA where IDE_ADEMAP="+valor);
+        tab_adquisiones.setValor("uso_adcomp", empleado.getValor("FECHA_INGRE"));
+        utilitario.addUpdate("tab_adquisiones");
+        
+    }
+        public void generarPDF() {
+        if (tab_adquisiones.getValorSeleccionado() != null) {
+                        ///////////AQUI ABRE EL REPORTE
+                        Map parametros = new HashMap();
+                        parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("IDE_ADCOMP")));
+                                 map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
+
+                        //System.out.println(" " + str_titulos);
+                        vipdf_comprobante.setVisualizarPDF("rep_compras/rep_solicitudcompra.jasper", parametros);
+                        vipdf_comprobante.dibujar();
+                        utilitario.addUpdate("vipdf_comprobante");
+        } else {
+            utilitario.agregarMensajeInfo("Seleccione una Solititud de compra", "");
+        }
+    }
     @Override
       public void abrirListaReportes() {
         // TODO Auto-generated method stub
@@ -339,6 +378,14 @@ public class Adquisiciones extends Pantalla {
 
     public void setTab_compra_bienes(Tabla tab_compra_bienes) {
         this.tab_compra_bienes = tab_compra_bienes;
+    }
+
+    public VisualizarPDF getVipdf_comprobante() {
+        return vipdf_comprobante;
+    }
+
+    public void setVipdf_comprobante(VisualizarPDF vipdf_comprobante) {
+        this.vipdf_comprobante = vipdf_comprobante;
     }
 
 }
