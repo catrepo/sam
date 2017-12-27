@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://ruminahui.gob.ec/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://ruminahui.gob.ec/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://ruminahui.gob.ec/">
+      <s:element name="BusquedaPorCedula">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Cedula" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BusquedaPorCedulaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BusquedaPorCedulaResult" type="tns:ClassCiudadania" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ClassCiudadania">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="codError" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Cedula" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Nombre" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Sexo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Condicion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FechaNacimiento" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EstadoCivil" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Domicilio" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Direccion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DireccionTrabajo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NumeroCasa" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FechaFallecido" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Telefono" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TelefonoTrabajo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Mail" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MailTrabajo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LugarTrabajo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Observaciones" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RazonSocial" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NombreComercial" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ActividadEconomica" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SitioWeb" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Fax" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Pais" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FechaIngresoSistema" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CondicionCedulado" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Nacionalidad" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Conyuge" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Instruccion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Profesion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FechaCedulacion" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="BusquedaCedulaActual">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Cedula" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BusquedaCedulaActualResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BusquedaCedulaActualResult" type="tns:ClassCiudadania" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BusquedaPorRuc">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Ruc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Usuario" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BusquedaPorRucResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BusquedaPorRucResult" type="tns:ClassCiudadania" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="BusquedaPorCedulaSoapIn">
+    <wsdl:part name="parameters" element="tns:BusquedaPorCedula" />
+  </wsdl:message>
+  <wsdl:message name="BusquedaPorCedulaSoapOut">
+    <wsdl:part name="parameters" element="tns:BusquedaPorCedulaResponse" />
+  </wsdl:message>
+  <wsdl:message name="BusquedaCedulaActualSoapIn">
+    <wsdl:part name="parameters" element="tns:BusquedaCedulaActual" />
+  </wsdl:message>
+  <wsdl:message name="BusquedaCedulaActualSoapOut">
+    <wsdl:part name="parameters" element="tns:BusquedaCedulaActualResponse" />
+  </wsdl:message>
+  <wsdl:message name="BusquedaPorRucSoapIn">
+    <wsdl:part name="parameters" element="tns:BusquedaPorRuc" />
+  </wsdl:message>
+  <wsdl:message name="BusquedaPorRucSoapOut">
+    <wsdl:part name="parameters" element="tns:BusquedaPorRucResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ConsultaCiudadanoSoap">
+    <wsdl:operation name="BusquedaPorCedula">
+      <wsdl:input message="tns:BusquedaPorCedulaSoapIn" />
+      <wsdl:output message="tns:BusquedaPorCedulaSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BusquedaCedulaActual">
+      <wsdl:input message="tns:BusquedaCedulaActualSoapIn" />
+      <wsdl:output message="tns:BusquedaCedulaActualSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BusquedaPorRuc">
+      <wsdl:input message="tns:BusquedaPorRucSoapIn" />
+      <wsdl:output message="tns:BusquedaPorRucSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ConsultaCiudadanoSoap" type="tns:ConsultaCiudadanoSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BusquedaPorCedula">
+      <soap:operation soapAction="http://ruminahui.gob.ec/BusquedaPorCedula" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BusquedaCedulaActual">
+      <soap:operation soapAction="http://ruminahui.gob.ec/BusquedaCedulaActual" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BusquedaPorRuc">
+      <soap:operation soapAction="http://ruminahui.gob.ec/BusquedaPorRuc" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ConsultaCiudadanoSoap12" type="tns:ConsultaCiudadanoSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BusquedaPorCedula">
+      <soap12:operation soapAction="http://ruminahui.gob.ec/BusquedaPorCedula" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BusquedaCedulaActual">
+      <soap12:operation soapAction="http://ruminahui.gob.ec/BusquedaCedulaActual" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BusquedaPorRuc">
+      <soap12:operation soapAction="http://ruminahui.gob.ec/BusquedaPorRuc" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ConsultaCiudadano">
+    <wsdl:port name="ConsultaCiudadanoSoap" binding="tns:ConsultaCiudadanoSoap">
+      <soap:address location="http://186.46.84.36/ConsultaCiudadania/ciudadania.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ConsultaCiudadanoSoap12" binding="tns:ConsultaCiudadanoSoap12">
+      <soap12:address location="http://186.46.84.36/ConsultaCiudadania/ciudadania.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
