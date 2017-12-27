@@ -21,7 +21,9 @@ import persistencia.Conexion;
 @Stateless
 public class ClaseGenerica {
 
-    @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/186.46.84.36/ConsultaCiudadania/ciudadania.asmx.wsdl")//37
+    
+    
+    @WebServiceRef(wsdlLocation = "META-INF/wsdl/186.46.84.36/ConsultaCiudadania/ciudadania.asmx.wsdl")//37
     private ConsultaCiudadano service;
     /*
      * Objeto para conexion de base de datos
@@ -190,7 +192,9 @@ public class ClaseGenerica {
     }
 
     private ClassCiudadania busquedaPorCedula(java.lang.String cedula, java.lang.String usuario, java.lang.String password) {
-        paq_webservice.ConsultaCiudadanoSoap port = service.getConsultaCiudadanoSoap12();
+        // Note that the injected javax.xml.ws.Service reference as well as port objects are not thread safe.
+        // If the calling of port operations may lead to race condition some synchronization is required.
+        paq_webservice.ConsultaCiudadanoSoap port = service.getConsultaCiudadanoSoap();
         return port.busquedaPorCedula(cedula, usuario, password);
     }
 }
