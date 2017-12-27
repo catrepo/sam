@@ -4,7 +4,7 @@
  */
 package paq_pruebas;
 
-import com.google.common.collect.HashBiMap;
+//import com.google.common.collect.HashBiMap;
 import framework.componentes.Boton;
 import framework.componentes.Dialogo;
 import framework.componentes.Etiqueta;
