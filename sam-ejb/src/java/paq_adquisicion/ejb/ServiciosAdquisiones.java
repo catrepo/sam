@@ -122,5 +122,10 @@ public class ServiciosAdquisiones {
         String sql="";
         sql="select ide_ademap,NOMBRES_ADEMPLE,CEDULA_ADEMPLE from ADQ_EMPLEADO_APRUEBA a, ADQ_EMPLEADO b where a.IDE_ADEMPLE=b.IDE_ADEMPLE and ACTIVO_ADEMAP = "+activo+"  and IDE_USUA ="+ide_usua;
         return sql;
-    }      
+    }  
+    public String getMateriales(String ide_adcomp) {
+        String sql="";
+        sql="select IDE_ADCOBI, IDE_ADMATE, IDE_ADCOMP from ADQ_COMPRA_BIENES WHERE IDE_ADCOMP ="+ide_adcomp;
+        return sql;
+    }       
 }
