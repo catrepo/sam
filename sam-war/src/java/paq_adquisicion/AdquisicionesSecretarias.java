@@ -92,7 +92,7 @@ public class AdquisicionesSecretarias extends Pantalla {
         
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
         tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
-        tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("2","","1",ide_ademple));
+        tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("2",ide_ademple,"1",ide_ademple));
         tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
         tab_adquisiones.getColumna("IDE_ADEMDE").setAutoCompletar();
         tab_adquisiones.getColumna("IDE_ADEMDE").setLectura(true);
@@ -279,7 +279,7 @@ private boolean tienePerfilSecretaria() {
     }
     public void filtroDireccion() {
 
-        tab_adquisiones.setCondicion("IDE_ADARAD=" + com_direccion.getValue().toString()+" and IDE_ADEMDE="+ide_ademple);
+        tab_adquisiones.setCondicion("IDE_ADARAD=" + com_direccion.getValue().toString()+" and IDE_ADEMDE="+ide_ademple+" and PRUEBA_DIRECTOR_ADCOMP =0 ");
         tab_adquisiones.ejecutarSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
@@ -298,6 +298,8 @@ private boolean tienePerfilSecretaria() {
             tab_adquisiones.insertar();
             tab_adquisiones.setValor("IDE_ADEMDE", ide_ademple);
             tab_adquisiones.setValor("IDE_ADARAD",com_direccion.getValue().toString());
+//            tab_adquisiones.actualizarCombosFormulario();
+            
         } else if (tab_certificacion.isFocus()) {
             tab_certificacion.insertar();
         } else if (tab_compra_bienes.isFocus()) {
