@@ -35,12 +35,14 @@ public class Empleado extends Pantalla{
        tab_empleado.setTabla("adq_empleado", "ide_ademple", 1); 
        tab_empleado.getColumna("IDE_ADTIDE").setCombo(ser_adquisiciones.getTipoDenominacion());
        tab_empleado.getColumna("IDE_USUA").setCombo(ser_adquisiciones.getUsuario("1"));
+       tab_empleado.getColumna("IDE_USUA").setAutoCompletar();
        tab_empleado.getColumna("IDE_ADEMPLE").setNombreVisual("CODIGO");
        tab_empleado.getColumna("IDE_ADTIDE").setNombreVisual("DENOMINACION");
        tab_empleado.getColumna("IDE_USUA").setNombreVisual("USUARIO");
        tab_empleado.getColumna("CEDULA_ADEMPLE").setNombreVisual("CEDULA");
        tab_empleado.getColumna("NOMBRES_ADEMPLE").setNombreVisual("NOMBRES");
        tab_empleado.getColumna("DIRECCION_ADEMPLE").setNombreVisual("DIRECCION");
+       tab_empleado.getColumna("FIRMA_ADEMPLE").setNombreVisual("FIRMA");
        
        tab_empleado.getColumna("IDE_ADEMPLE").setOrden(0);
        tab_empleado.getColumna("IDE_ADTIDE").setOrden(3);
@@ -49,7 +51,11 @@ public class Empleado extends Pantalla{
        tab_empleado.getColumna("NOMBRES_ADEMPLE").setOrden(2);
        tab_empleado.getColumna("DIRECCION_ADEMPLE").setOrden(5);
        
-       tab_empleado.dibujar();
+       tab_empleado.getColumna("FIRMA_ADEMPLE").setUpload();
+        tab_empleado.getColumna("FIRMA_ADEMPLE").setImagen();
+       tab_empleado.setTipoFormulario(true);
+       tab_empleado.getGrid().setColumns(2);
+      tab_empleado.dibujar();
        
        PanelTabla pat_empleado = new PanelTabla();
       pat_empleado.setId("pat_empleado");

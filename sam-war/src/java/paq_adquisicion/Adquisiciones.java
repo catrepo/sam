@@ -28,17 +28,27 @@ public class Adquisiciones extends Pantalla {
     private Reporte rep_reporte = new Reporte(); //Listado de Reportes, siempre se llama rep_reporte
     private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
     private Map map_parametros = new HashMap();//Parametros del reporte
+    public static String par_ti_anulado;
 
     @EJB
     private final ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
 
     public Adquisiciones() {
         
+        
+         
         rep_reporte.setId("rep_reporte");
         agregarComponente(rep_reporte);
         bar_botones.agregarReporte();
         
         Boton bot_agregar_solicitante= new Boton();
+        
+        Boton bot_anular = new Boton();
+        bot_anular.setIcon("ui-icon-search");
+        bot_anular.setValue("ANULAR LA SOLICITUD");
+        bot_anular.setMetodo("anular");
+        
+        bar_botones.agregarBoton(bot_anular);
         
         
         Tabulador tab_tabulador = new Tabulador();
@@ -53,23 +63,30 @@ public class Adquisiciones extends Pantalla {
         Object fila2[] = {"2", "NO"};
         Object fila5[] = {"1", "COMPRA EN STOCK"};
         Object fila6[] = {"2", "COMPRA DE CONSUMO DIRECTO"};
+        Object fila7[] = {"1", "BODEGA MUNICIPAL"};
+        Object fila8[] = {"2", "ACTIVOS FIJOS"};
         lista.add(fila1);
         lista.add(fila2);
         lista2.add(fila5);
         lista2.add(fila6);
+        lista1.add(fila7);
+        lista1.add(fila8);
         tab_adquisiones.getColumna("existe_adcomp").setRadio(lista, "1");
         tab_adquisiones.getColumna("tipo_compra_adcomp").setCombo(lista2);
+        tab_adquisiones.getColumna("INGRESO_ADCOMP").setCombo(lista1);
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
         tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
-        tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba());
-        tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento());
+        tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("3","","",""));
+        tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
         tab_adquisiones.getColumna("IDE_ADEMPLE").setCombo(ser_adquisiciones.getEmpleado());
-        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento());
-        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setCombo(ser_adquisiciones.getEmpleadoDepartamento());
+        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
+        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
         tab_adquisiones.agregarRelacion(tab_certificacion);
         tab_adquisiones.agregarRelacion(tab_compra_bienes);
         tab_adquisiones.setTipoFormulario(true);
         tab_adquisiones.getGrid().setColumns(6);
+                tab_adquisiones.getColumna("IDE_ADEMAP").setNombreVisual("SOLICITANTE");
+        tab_adquisiones.getColumna("IDE_ADEMDE").setNombreVisual("RESPONSABLE SOLICITUD");
         tab_adquisiones.getColumna("IDE_ADCOMP").setNombreVisual("CODIGO");
         tab_adquisiones.getColumna("IDE_ADAPRO").setNombreVisual("APROBACION");
         tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setNombreVisual("TIPO DE COMPRA");
@@ -112,17 +129,17 @@ public class Adquisiciones extends Pantalla {
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("NUMERO_ORDEN_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("FECHA_SOLICITUD_ADCOMP").setVisible(true);
-        tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("VALOR_PRESUPUESTADO_ADCOMP").setVisible(false);
+        tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);*/
+        tab_adquisiones.getColumna("VALOR_PRESUPUESTADO_ADCOMP").setVisible(false);/*
         tab_adquisiones.getColumna("VALOR_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("FECHA_ADJUDICADO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("ADJUDICADOR_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("PROVEEDOR_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("RUC_PROVEEDOR_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("CODIGO_SIS_PROV_ADCOMP").setVisible(false);
+        tab_adquisiones.getColumna("CODIGO_SIS_PROV_ADCOMP").setVisible(false);*/
         tab_adquisiones.getColumna("DESCUENTO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("SUBTOTAL_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("IVA_ADCOMP").setVisible(false);
+        tab_adquisiones.getColumna("IVA_ADCOMP").setVisible(false);/*
         tab_adquisiones.getColumna("NUMERO_PROFORMA_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("FECHA_PROFORMA_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("NOMBRE_OFERENTE1_ADCOMP").setVisible(false);
@@ -173,9 +190,9 @@ public class Adquisiciones extends Pantalla {
         tab_compra_bienes.setId("tab_compra_bienes");
         tab_compra_bienes.setIdCompleto("tab_tabulador:tab_compra_bienes");
         tab_compra_bienes.setTabla("ADQ_COMPRA_BIENES", "IDE_ADCOBI", 3);
-        tab_compra_bienes.getColumna("IDE_ADPAMA").setCombo(ser_adquisiciones.getPartidaMaterial());
+        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial());
         tab_compra_bienes.getColumna("IDE_ADCOBI").setNombreVisual("CODIGO");
-        tab_compra_bienes.getColumna("IDE_ADPAMA").setNombreVisual("PARTIDA MATERIAL");
+        tab_compra_bienes.getColumna("IDE_ADMATE").setNombreVisual("MATERIAL");
         tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setNombreVisual("CANTIDAD");
         tab_compra_bienes.getColumna("VALOR_UNITARIO_ADCOBI").setNombreVisual("VALOR UNITARIO");
         tab_compra_bienes.getColumna("DECUENTO_ADCOBI").setNombreVisual("DESCUENTO");
@@ -184,6 +201,26 @@ public class Adquisiciones extends Pantalla {
         tab_compra_bienes.getColumna("IVA_ADCOBI").setNombreVisual("IVA");
         tab_compra_bienes.getColumna("TOTAL_ADCOBI").setNombreVisual("TOTAL");
         tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setNombreVisual("CANTIDAD");
+
+        tab_compra_bienes.getColumna("IDE_ADCOBI").setOrden(1);
+        tab_compra_bienes.getColumna("IDE_ADMATE").setOrden(2);
+        tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setOrden(3);        
+        
+        tab_compra_bienes.getColumna("VALOR_UNITARIO_ADCOBI").setVisible(false);
+        tab_compra_bienes.getColumna("DECUENTO_ADCOBI").setVisible(false);
+        tab_compra_bienes.getColumna("PORCENTAJE_DESCUENTO_ADCOBI").setVisible(false);
+        tab_compra_bienes.getColumna("SUBTOTAL_ADCOBI").setVisible(false);
+        tab_compra_bienes.getColumna("IVA_ADCOBI").setVisible(false);
+        tab_compra_bienes.getColumna("TOTAL_ADCOBI").setVisible(false);
+        tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setVisible(false);
+         tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setValorDefecto("0");
+       
+        tab_compra_bienes.getColumna("VALOR_UNITARIO_ADCOBI").setValorDefecto("0");
+        tab_compra_bienes.getColumna("DECUENTO_ADCOBI").setValorDefecto("0");
+        tab_compra_bienes.getColumna("PORCENTAJE_DESCUENTO_ADCOBI").setValorDefecto("0");
+        tab_compra_bienes.getColumna("SUBTOTAL_ADCOBI").setValorDefecto("0");
+        tab_compra_bienes.getColumna("IVA_ADCOBI").setValorDefecto("0");
+        tab_compra_bienes.getColumna("TOTAL_ADCOBI").setValorDefecto("0");
         tab_compra_bienes.dibujar();
         PanelTabla pat_panel_compra_bienes = new PanelTabla();
         pat_panel_compra_bienes.setId("pat_panel_compra_bienes");
@@ -209,17 +246,17 @@ public class Adquisiciones extends Pantalla {
       }
     @Override
       public void aceptarReporte() {
-         if (rep_reporte.getReporteSelecionado().equals("ReporteDefinicionHora")){
-             abrirperfilesSistemas();
-         }
-      }
-      private void abrirperfilesSistemas(){
-         rep_reporte.cerrar();
+         if (rep_reporte.getReporteSelecionado().equals("Solicitu de Compra")){
+                      rep_reporte.cerrar();
          map_parametros.clear();
-         map_parametros.put("titulo", "Definicion Hora");
+         map_parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("ide_adcomp")));
+         
+         map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
          sel_rep.setSeleccionFormatoReporte(map_parametros, rep_reporte.getPath());
          sel_rep.dibujar();
+         }
       }
+
 
     public Reporte getRep_reporte() {
         return rep_reporte;
