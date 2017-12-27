@@ -87,7 +87,7 @@ public class ServiciosAdquisiones {
             sql +=" and IDE_ADEMAP in ("+empleado+")";
         }
         if(tipo.equals("2")){
-            sql +=" and ACTIVO_ADEMAP in ("+estado+") and IDE_ADEMAP ="+departamento;
+            sql +=" and ACTIVO_ADEMAP in ("+estado+") and a.IDE_ADEMDE  ="+departamento;
         }
         sql+=" order by NOMBRES_ADEMPLE";
         return sql;
