@@ -32,6 +32,7 @@ public class Parametros {
         lis_parametros.add(new Parametro("0", "p_tipo_bodeguero", "Indica el paramtro de tipo bodeguero", "1", "ADQ_TIPO_APROBADOR", "IDE_ADTIAP", "DETALLE_ADTIAP"));
         lis_parametros.add(new Parametro("0", "p_tipo_generador_gasto", "Indica el paramtro de tipo generador de gasto", "1", "ADQ_TIPO_APROBADOR", "IDE_ADTIAP", "DETALLE_ADTIAP"));
         lis_parametros.add(new Parametro("0", "p_tipo_aprueba_solicitud", "Indica el paramtro de tipo aprueba solicitud es el director", "1", "ADQ_TIPO_APROBADOR", "IDE_ADTIAP", "DETALLE_ADTIAP"));
+        lis_parametros.add(new Parametro("0", "p_tipo_registra_compra", "Indica el paramtro de tipo aprueba solicitud es el director", "1", "ADQ_TIPO_APROBADOR", "IDE_ADTIAP", "DETALLE_ADTIAP"));
 
 
 //////////////////////////////////////////////////////////////////////
