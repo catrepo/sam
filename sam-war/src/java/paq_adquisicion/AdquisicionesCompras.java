@@ -37,6 +37,7 @@ public class AdquisicionesCompras extends Pantalla {
     public static String par_aprueba_gasto="";
     public static String par_aprueba_solicitud="";
     public static String par_anulado="";
+    public static String par_registra_compra="";
     
     private Reporte rep_reporte = new Reporte(); //Listado de Reportes, siempre se llama rep_reporte
     private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
@@ -54,6 +55,7 @@ public class AdquisicionesCompras extends Pantalla {
          par_aprueba_gasto=utilitario.getVariable("p_tipo_generador_gasto");
          par_aprueba_solicitud=utilitario.getVariable("p_tipo_aprueba_solicitud");
          par_anulado=utilitario.getVariable("p_tipo_anulado");
+         par_registra_compra=utilitario.getVariable("p_tipo_registra_compra");
          
          bar_botones.getBot_insertar().setRendered(false);
          
@@ -184,29 +186,14 @@ public class AdquisicionesCompras extends Pantalla {
         tab_adquisiones.getColumna("FECHA_SOLICITUD_ADCOMP").setVisible(true);
         //tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("VALOR_PRESUPUESTADO_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("VALOR_ADCOMP").setVisible(false);
+
         tab_adquisiones.getColumna("FECHA_ADJUDICADO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("ADJUDICADOR_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("PROVEEDOR_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("RUC_PROVEEDOR_ADCOMP").setVisible(false);
+
         tab_adquisiones.getColumna("CODIGO_SIS_PROV_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("DESCUENTO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("SUBTOTAL_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("IVA_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("NUMERO_PROFORMA_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("FECHA_PROFORMA_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("NOMBRE_OFERENTE1_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("FACTURA_PROFORMA_OF1_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("VALOR_PROFORMA_OF1_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("FECHA_PROFORMA_OF1_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("NOMBRE_OFERENTE2_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("FACTURA_PROFORA_OF2_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("VALOR_PROFORMA_OF2_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("FECHA_PROFORMA_OF2_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("DETALLE_ADCOMP").setVisible(true);
-        tab_adquisiones.getColumna("USO_ADCOMP").setVisible(true);
-        tab_adquisiones.getColumna("OBSERVACIONES_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("DESTINO_DEL_BIEN_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("APLICA_ADCOMP").setVisible(false);
         //tab_adquisiones.getColumna("IDE_ADEMAP").setVisible(false);
@@ -216,9 +203,11 @@ public class AdquisicionesCompras extends Pantalla {
         //tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setVisible(false);
         //tab_adquisiones.getColumna("PRUEBA_DIRECTOR_ADCOMP").setVisible(false);
         //tab_adquisiones.getColumna("ATIENDE_BODEGA_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("APRUEBA_GASTO_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("REGISTRA_COMPRAS_ADCOMP").setVisible(false);   
+        tab_adquisiones.getColumna("APRUEBA_GASTO_ADCOMP").setLectura(false);
+        tab_adquisiones.getColumna("REGISTRA_COMPRAS_ADCOMP").setLectura(false); 
+        tab_adquisiones.getColumna("IDE_ADEMPLE").setVisible(false);
         //tab_adquisiones.setLectura(true);
+        tab_adquisiones.getColumna("DETALLE_ADCOMP").setLectura(false);
         tab_adquisiones.dibujar();
 
         PanelTabla pat_adquisiciones = new PanelTabla();
@@ -277,6 +266,7 @@ public class AdquisicionesCompras extends Pantalla {
         tab_compra_bienes.getColumna("SUBTOTAL_ADCOBI").setValorDefecto("0");
         tab_compra_bienes.getColumna("IVA_ADCOBI").setValorDefecto("0");
         tab_compra_bienes.getColumna("TOTAL_ADCOBI").setValorDefecto("0");
+        //tab_compra_bienes.getColumna("").setLectura(true);
         tab_compra_bienes.setLectura(true);
         tab_compra_bienes.dibujar();
         PanelTabla pat_panel_compra_bienes = new PanelTabla();
@@ -304,7 +294,7 @@ public class AdquisicionesCompras extends Pantalla {
      String cedula="";
      String ide_ademple="";
 private boolean tienePerfilSecretaria() {
-        List sql = utilitario.getConexion().consultar(ser_adquisiciones.getUsuarioSistema(utilitario.getVariable("IDE_USUA"), "1",par_aprueba_gasto));
+        List sql = utilitario.getConexion().consultar(ser_adquisiciones.getUsuarioSistema(utilitario.getVariable("IDE_USUA"), "1",par_registra_compra));
 
         if (!sql.isEmpty()) {
             Object[] fila = (Object[]) sql.get(0);
@@ -378,7 +368,7 @@ public void guardarAprobacion(){
         
     public void filtroDireccion() {
 
-        tab_adquisiones.setCondicion("IDE_ADARAD=" + com_direccion.getValue().toString()+" and APLICA_ADCOMP=1 AND ATIENDE_BODEGA_ADCOMP=1 AND APRUEBA_GASTO_ADCOMP=0 ");
+        tab_adquisiones.setCondicion("IDE_ADARAD=" + com_direccion.getValue().toString()+" and APLICA_ADCOMP=1 AND ATIENDE_BODEGA_ADCOMP=1 AND APRUEBA_GASTO_ADCOMP=1 and REGISTRA_COMPRAS_ADCOMP=0 ");
         tab_adquisiones.ejecutarSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
@@ -408,6 +398,8 @@ public void guardarAprobacion(){
     @Override
     public void guardar() {
         if (tab_adquisiones.isFocus()) {
+            tab_adquisiones.setValor("REGISTRA_COMPRAS_ADCOMP", "true");
+            utilitario.addUpdate("tab_adquisiones");
             tab_adquisiones.guardar();
         } else if (tab_certificacion.isFocus()) {
             tab_certificacion.guardar();
@@ -415,6 +407,7 @@ public void guardarAprobacion(){
             tab_compra_bienes.guardar();
         }
         guardarPantalla();
+        filtroDireccion();
     }
 
     @Override
