@@ -9,6 +9,7 @@ package paq_adquisicion;
  *
  * @author Andres
  */
+import framework.aplicacion.TablaGenerica;
 import framework.componentes.Boton;
 import framework.componentes.Combo;
 import framework.componentes.Confirmar;
@@ -351,6 +352,14 @@ public void guardarAprobacion(){
     tab_adquisiones.setValor("ATIENDE_BODEGA_ADCOMP", "true");
     tab_adquisiones.setValor("ADQ_IDE_ADEMDE2", ide_ademple);
     tab_adquisiones.setValor("APLICA_ADCOMP", "true");
+    
+    TablaGenerica tab_materiales = utilitario.consultar(ser_adquisiciones.getMateriales(tab_adquisiones.getValor("ide_adcomp")));
+    
+    for(int i=0; i<tab_materiales.getTotalFilas();i++){
+        
+        utilitario.getConexion().ejecutarSql("update ADQ_COMPRA_BIENES set NO_EXISTE_ADCOBI=1 where IDE_ADCOBI ="+tab_materiales.getValor(i, "IDE_ADCOBI"));
+    }
+    
     
     tab_adquisiones.modificar(tab_adquisiones.getFilaActual());
 
