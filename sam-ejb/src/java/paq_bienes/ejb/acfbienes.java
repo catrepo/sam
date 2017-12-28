@@ -40,12 +40,44 @@ public class acfbienes {
         conSqlcy.ejecutarSql(auSql);
         desConSqlcy();
     }
-    
+
+    public void setUpdateActa(Integer codigo) {
+        String auSql = "update ACF_INMUEBLES\n"
+                + "set acta_baja = 0 \n"
+                + "where id_inmueble = " + codigo;
+        conSqlcy();
+        conSqlcy.ejecutarSql(auSql);
+        desConSqlcy();
+    }
+
     public TablaGenerica getInforCuenta() {
         conSqlcy();
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSqlcy);
         tabPersona.setSql("select  distinct gru_id, gru_nombre  from activo INNER join GRUPO G on activo.GRU_ID1= G.GRU_ID order by gru_nombre");
+        desConSqlcy();
+        return tabPersona;
+    }
+
+    public TablaGenerica getInfoTotales(Integer numero) {
+        conSqlcy();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSqlcy);
+        tabPersona.setSql("SELECT c.CUSTODIO,SUM(c.VALOR) AS TOTAL,SUM(c.CANTIDAD) AS ITEM ,year(cast(c.fecha_acta as date))  as anio,c.numero,c.fecha_acta\n"
+                + "FROM ACF c,\n"
+                + "(select * from ACF where ide_acta = " + numero + ") as a\n"
+                + "WHERE c.numero = a.numero and c.fecha_acta  = a.fecha_acta and c.CUSTODIO = a.CUSTODIO\n"
+                + "GROUP BY c.CUSTODIO,c.fecha_acta,c.numero");
+        tabPersona.ejecutarSql();
+        desConSqlcy();
+        return tabPersona;
+    }
+
+    public TablaGenerica getActivoTotales(Integer numero) {
+        conSqlcy();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSqlcy);
+        tabPersona.setSql("select count(*) as item, sum(act_valorcompra) as total from ACTIVO where CUS_ID1 = " + numero);
         tabPersona.ejecutarSql();
         desConSqlcy();
         return tabPersona;
@@ -124,6 +156,30 @@ public class acfbienes {
         return mensaje;
     }
 
+    public TablaGenerica buscaDatosAvaluos(String clave) {
+        conSqlcy();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSqlcy);
+        tabPersona.setSql("select * from vw_ActivosInmuebles\n"
+                + "inner join  vw_CatastroUrbanoRural  on MAE_CLVACT = clave\n"
+                + "where MAE_CLVACT = '"+clave+"'");
+        tabPersona.ejecutarSql();
+        desConSqlcy();
+        return tabPersona;
+    }
+
+    public TablaGenerica buscaFirmaAvaluos(String descripcion) {
+        conSqlcy();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSqlcy);
+        tabPersona.setSql("SELECT * FROM SIGAG.dbo.SIS_AUXREPOR "
+                + "where SIGAG.dbo.SIS_AUXREPOR.REPT_NOMBRE like '"+descripcion+"'");
+        tabPersona.ejecutarSql();
+        tabPersona.imprimirSql();
+        desConSqlcy();
+        return tabPersona;
+    }
+    
     private void conSqlcy() {
         if (conSqlcy == null) {
             conSqlcy = new Conexion();

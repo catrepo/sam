@@ -1,5 +1,6 @@
 package paq_bienes;
 
+import framework.aplicacion.TablaGenerica;
 import framework.componentes.AutoCompletar;
 import framework.componentes.Boton;
 import framework.componentes.Combo;
@@ -11,6 +12,7 @@ import framework.componentes.PanelTabla;
 import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
 import framework.componentes.Tabla;
+import framework.componentes.Texto;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -30,6 +32,8 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
     private Tabla tabDenuncia = new Tabla();
     private Tabla tabMovimiento = new Tabla();
     private Tabla tabConsulta = new Tabla();
+    private Texto txtItems = new Texto();
+    private Texto txtValor = new Texto();
     private Dialogo diaDialogo = new Dialogo();
     private Grid grid = new Grid();
     private Grid gridD = new Grid();
@@ -49,11 +53,6 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
 
         aut_busca.setId("aut_busca");
         aut_busca.setConexion(CAYMAN);
-
-
-//        aut_busca.setAutoCompletar("SELECT * from ACF ");
-//        aut_busca.setMetodoChange("buscarPersona");
-        aut_busca.setSize(70);
 
         tabConsulta.setId("tab_consulta");
         tabConsulta.setSql("SELECT u.IDE_USUA,u.NOM_USUA,u.NICK_USUA,u.IDE_PERF,p.NOM_PERF,p.PERM_UTIL_PERF\n"
@@ -76,14 +75,7 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         botBuscar.setIcon("ui-icon-search");
         botBuscar.setMetodo("busquedaInfo");
         bar_botones.agregarBoton(botBuscar);
-        bar_botones.agregarSeparador();
 
-        Boton botSearch = new Boton();
-        botSearch.setValue("Buscar Actas");
-        botSearch.setExcluirLectura(true);
-        botSearch.setIcon("ui-icon-document-b");
-        botSearch.setMetodo("buscaActas");
-        bar_botones.agregarBoton(botSearch);
 
         diaDialogo.setId("diaDialogo");
         diaDialogo.setTitle("Seleccione Acta"); //titulo
@@ -140,19 +132,24 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         PanelTabla pnt = new PanelTabla();
         pnt.setPanelTabla(tabDenuncia);
 
-
-
+        Grid gri_busca = new Grid();
+        gri_busca.setColumns(2);
+        txtItems.setId("txtItems");
+        txtItems.setSize(5);
+        gri_busca.getChildren().add(new Etiqueta("<B>Total Items: </B>"));
+        gri_busca.getChildren().add(txtItems);
+        txtValor.setId("txtValor");
+        txtValor.setSize(10);
+        gri_busca.getChildren().add(new Etiqueta("<B>Total Valor: </B>"));
+        gri_busca.getChildren().add(txtValor);
+        
+        Division dic = new Division();
+        dic.setId("dic");
+        dic.dividir2(pnt, gri_busca, "70%", "v");
+        
         tabMovimiento.setId("tabMovimiento");
         tabMovimiento.setConexion(CAYMAN);
         tabMovimiento.setTabla("activo", "ACT_ID", 2);
-//  
-//        tabMovimiento.getColumna("fecha_ingreso").setNombreVisual("FECHA INGRESO");
-//        tabMovimiento.getColumna("num_titulo").setNombreVisual("NUM. LIQUIDACION");
-//        tabMovimiento.getColumna("valor_pago").setNombreVisual("VALOR");
-//        tabMovimiento.getColumna("anio_inicio").setNombreVisual("DESDE");
-//        tabMovimiento.getColumna("anio_fin").setNombreVisual("HASTA");
-//        tabMovimiento.getColumna("observaciones").setNombreVisual("OBSERVACIONES");
-//        tabMovimiento.getColumna("anio_arrendamiento").setNombreVisual("PERIODO(AÑOS)");
         tabMovimiento.getColumna("EMP_ID").setVisible(false);
         tabMovimiento.getColumna("ACT_FECHACREACION").setVisible(false);
         tabMovimiento.getColumna("ACT_FECHAINIDEPRE").setVisible(false);
@@ -238,7 +235,7 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
 
         Division div = new Division();
         div.setId("div");
-        div.dividir2(pnt, pnr, "20%", "h");
+        div.dividir2(dic, pnr, "20%", "h");
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
         agregarComponente(rep_reporte); //2 agregar el listado de reportes
         sef_formato.setId("sef_formato");
@@ -275,11 +272,12 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
     }
 
     public void buscaCedula() {
-
+        limpieza();
         if (!getBuscaCedula().isEmpty()) {
             tabMovimiento.setCondicion(getBuscaCedula());
             tabMovimiento.ejecutarSql();
             utilitario.addUpdate("tabMovimiento");
+            datosTotal();
         }
     }
 
@@ -294,10 +292,26 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
             utilitario.agregarMensaje("No se encuentra número para acta", "");
             return null;
         }
-
     }
 
-    private void buscaActas() {
+    public void limpieza() {
+        txtItems.setValue("");
+        txtValor.setValue("");
+        utilitario.addUpdate("txtItems,txtValor");
+    }
+    
+    public void datosTotal(){
+        TablaGenerica tabDatos = activos.getActivoTotales(Integer.parseInt(cmbTipo.getValue() + ""));
+        if (!tabDatos.isEmpty()) {
+            txtItems.setValue(tabDatos.getValor("item"));
+            txtValor.setValue(tabDatos.getValor("total"));
+            utilitario.addUpdate("txtItems,txtValor");
+        } else {
+            utilitario.agregarMensaje("Datos ocurrio un error", null);
+        }
+    }
+    
+    public void buscaActas() {
         diaDialogo.Limpiar();
         diaDialogo.setDialogo(grid);
         diaDialogo.setDialogo(gridD);
@@ -318,6 +332,9 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
             case "REPORTE ACTA":
                 aceptoOrden();
                 break;
+            case "REPORTE TOTAL DETALLE":
+                aceptoOrden();
+                break;
         }
     }
 
@@ -325,12 +342,14 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         System.out.println("voy por  akkk" + tabDenuncia.getValor("NUMero"));
         switch (rep_reporte.getNombre()) {
             case "REPORTE ACTA":
-//                p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 p_parametros.put("num_acta", tabDenuncia.getValor("numero") + "");
-                System.out.println(p_parametros);
-                System.out.println(rep_reporte.getPath());
                 rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
 
+            case "REPORTE TOTAL DETALLE":
+                rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
