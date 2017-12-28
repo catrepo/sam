@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_activos_general" language="groovy" pageWidth="2380" pageHeight="1684" orientation="Landscape" columnWidth="2340" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2a2a884e-6ee3-47d9-a13f-cca9bc7f7317">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="2228"/>
+	<property name="ireport.x" value="777"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
 		<![CDATA[SELECT
@@ -22,6 +22,7 @@ GGG.GRU_NOMBRE as descripcion,
 	MOD_NOMBRE as MODELO,
 	ACT_SERIE1 as serie,ACT_FECHACOMPRA as fechacompra,ACT_VALORCOMPRA as valorcompra,isnull(CAR_VALOR,0) AS CANTIDAD,G.gru_nombre AS CUENTA,
 		ACT_NUMFACT AS FACTURA
+,DEPreciacion AS val_depreciacion
 	FROM ACTIVO
 
 	INNER join ESTADO E
@@ -72,6 +73,9 @@ GGG.GRU_NOMBRE as descripcion,
 	on activo.PRO_ID= PRO.PRO_ID
 	left join caracteristica cAR ON ACTIVO.ACT_ID=cAR.ACT_ID
 left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
+LEFT JOIN (select a.act_id,DEP_DEPREACUM from DEPRECIACIONSRI a ,
+(select MAX(dep_id)as dep_id,act_id from DEPRECIACIONSRI  GROUP BY act_id )b where a.dep_id=b.dep_id
+) K ON K.ACT_ID=ACTIVO.ACT_ID
 	order by CAR_VALOR]]>
 	</queryString>
 	<field name="CODIGOBARRAS" class="java.lang.String"/>
@@ -92,6 +96,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 	<field name="valorcompra" class="java.math.BigDecimal"/>
 	<field name="CANTIDAD" class="java.lang.String"/>
 	<field name="FACTURA" class="java.math.BigDecimal"/>
+	<field name="val_depreciacion" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -124,7 +129,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[CodigoAnterior]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="4a84d3fb-7ec1-4749-8684-4b175df0967f" x="1577" y="0" width="171" height="15"/>
+				<reportElement uuid="4a84d3fb-7ec1-4749-8684-4b175df0967f" x="1526" y="0" width="171" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -137,7 +142,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Nombre]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="587155a8-6884-4d9f-a861-e5309778b888" x="605" y="0" width="145" height="15"/>
+				<reportElement uuid="587155a8-6884-4d9f-a861-e5309778b888" x="605" y="0" width="80" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -189,7 +194,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Custodio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="647c51e6-33e0-4d0f-a8f8-093fce38b575" x="1893" y="0" width="35" height="15"/>
+				<reportElement uuid="647c51e6-33e0-4d0f-a8f8-093fce38b575" x="1842" y="0" width="35" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -202,7 +207,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Estado]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="e1dcea50-a5ce-46fa-8516-b5f17e7808f1" x="1748" y="0" width="145" height="15"/>
+				<reportElement uuid="e1dcea50-a5ce-46fa-8516-b5f17e7808f1" x="1697" y="0" width="145" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -215,7 +220,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Descripción]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b64a87fd-3797-481b-b7d3-46ac0f2384e1" x="672" y="0" width="905" height="15"/>
+				<reportElement uuid="b64a87fd-3797-481b-b7d3-46ac0f2384e1" x="685" y="0" width="841" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -228,7 +233,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Observaciones]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="db47b266-1783-467a-a20f-6341b660254e" x="1928" y="0" width="75" height="15"/>
+				<reportElement uuid="db47b266-1783-467a-a20f-6341b660254e" x="1877" y="0" width="75" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -241,7 +246,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Marca]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="65f6ee5b-b0b5-4e35-b105-e3eac6b34bf5" x="2003" y="0" width="71" height="15"/>
+				<reportElement uuid="65f6ee5b-b0b5-4e35-b105-e3eac6b34bf5" x="1952" y="0" width="71" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -267,7 +272,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Dependencia]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="e3409ae7-634a-4d8c-ad5d-867bd7656943" x="2074" y="0" width="65" height="15"/>
+				<reportElement uuid="e3409ae7-634a-4d8c-ad5d-867bd7656943" x="2023" y="0" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -280,7 +285,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Serie]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="09bffddc-39bd-4237-a121-2cdc00f7cfa7" x="2139" y="0" width="60" height="15"/>
+				<reportElement uuid="09bffddc-39bd-4237-a121-2cdc00f7cfa7" x="2088" y="0" width="60" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -293,7 +298,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[FechaCompra]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="e9502620-60bd-4aba-a919-597d7f4c4869" x="2259" y="0" width="19" height="15"/>
+				<reportElement uuid="e9502620-60bd-4aba-a919-597d7f4c4869" x="2208" y="0" width="19" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -306,7 +311,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Q]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="46f7b5ab-91b0-44d3-b7e9-48746a90731f" x="2278" y="0" width="61" height="15"/>
+				<reportElement uuid="46f7b5ab-91b0-44d3-b7e9-48746a90731f" x="2279" y="0" width="61" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -319,7 +324,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<text><![CDATA[Factura]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="79d6d3f9-f111-451b-bced-a7853f83e481" x="2199" y="0" width="60" height="15"/>
+				<reportElement uuid="79d6d3f9-f111-451b-bced-a7853f83e481" x="2148" y="0" width="60" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -330,6 +335,19 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Val. Compra]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e0d47942-e3ec-42c1-8428-9d8021d6816e" x="2227" y="0" width="52" height="15"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Val. Deprec]]></text>
 			</staticText>
 		</band>
 	</title>
@@ -414,7 +432,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{custodio}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="fee46888-9fa6-4076-acdf-0c63a2bae1f2" x="605" y="0" width="145" height="15"/>
+				<reportElement uuid="fee46888-9fa6-4076-acdf-0c63a2bae1f2" x="605" y="0" width="80" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -427,7 +445,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" pattern="" isBlankWhenNull="true">
-				<reportElement uuid="4d6e0f4c-16bb-46b4-8ea4-b7b8dff61ff0" x="672" y="0" width="905" height="15"/>
+				<reportElement uuid="4d6e0f4c-16bb-46b4-8ea4-b7b8dff61ff0" x="685" y="0" width="841" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -440,7 +458,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="ff75e512-e825-458b-828f-a5053e591ef5" x="1577" y="0" width="171" height="15"/>
+				<reportElement uuid="ff75e512-e825-458b-828f-a5053e591ef5" x="1526" y="0" width="171" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -453,7 +471,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="7093c1b8-6fa3-4e3a-b838-3afc2b015a60" x="1748" y="0" width="145" height="15"/>
+				<reportElement uuid="7093c1b8-6fa3-4e3a-b838-3afc2b015a60" x="1697" y="0" width="145" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -466,7 +484,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="3c5295d1-1ecd-4b93-8830-a3f6420d31e2" x="1893" y="0" width="35" height="15"/>
+				<reportElement uuid="3c5295d1-1ecd-4b93-8830-a3f6420d31e2" x="1842" y="0" width="35" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -479,7 +497,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="5571a18f-d650-4616-90fb-945140980d9d" x="1928" y="0" width="75" height="15"/>
+				<reportElement uuid="5571a18f-d650-4616-90fb-945140980d9d" x="1877" y="0" width="75" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -492,7 +510,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{MARCA}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="596c7e03-8719-48ec-849f-7d94cd5fc750" x="2003" y="0" width="71" height="15"/>
+				<reportElement uuid="596c7e03-8719-48ec-849f-7d94cd5fc750" x="1952" y="0" width="71" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -505,7 +523,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{MODELO}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" isBlankWhenNull="true">
-				<reportElement uuid="6cd5b2cb-f502-4344-93e0-06abf09968a4" x="2074" y="0" width="65" height="15"/>
+				<reportElement uuid="6cd5b2cb-f502-4344-93e0-06abf09968a4" x="2023" y="0" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -518,7 +536,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{serie}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" pattern="" isBlankWhenNull="true">
-				<reportElement uuid="bb6fe613-5dfd-46a7-94d9-67f71c871bea" x="2139" y="0" width="60" height="15"/>
+				<reportElement uuid="bb6fe613-5dfd-46a7-94d9-67f71c871bea" x="2088" y="0" width="60" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -531,7 +549,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{fechacompra}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" pattern="" isBlankWhenNull="true">
-				<reportElement uuid="f2f5017c-aa56-4e90-b511-55d8c6749da6" x="2259" y="0" width="19" height="15"/>
+				<reportElement uuid="f2f5017c-aa56-4e90-b511-55d8c6749da6" x="2208" y="0" width="19" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -544,7 +562,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{CANTIDAD}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" pattern="" isBlankWhenNull="true">
-				<reportElement uuid="34a7511d-4208-45c6-941c-f76c56a4c758" x="2278" y="0" width="61" height="15"/>
+				<reportElement uuid="34a7511d-4208-45c6-941c-f76c56a4c758" x="2279" y="0" width="61" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -557,7 +575,7 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 				<textFieldExpression><![CDATA[$F{FACTURA}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Band" pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
-				<reportElement uuid="1947b74a-8501-461f-926d-b720ae70cdda" x="2199" y="0" width="60" height="15"/>
+				<reportElement uuid="1947b74a-8501-461f-926d-b720ae70cdda" x="2148" y="0" width="60" height="15"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -568,6 +586,19 @@ left join TIPO_SEGURO ts on ts.SEG_ID=ACTIVO.ACT_TIPOSEGURO
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{valorcompra}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" evaluationTime="Band" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="db1cd567-4bc5-4baa-8297-691caf538500" x="2227" y="0" width="52" height="15"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{val_depreciacion}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

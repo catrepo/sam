@@ -58,7 +58,7 @@ order by CODIGOBARRAS]]>
 	<pageHeader>
 		<band height="69" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="066791cd-b8a2-43f6-8473-86639bf5651c" key="staticText-33" x="13" y="49" width="28" height="9" forecolor="#000000"/>
+				<reportElement uuid="066791cd-b8a2-43f6-8473-86639bf5651c" key="staticText-33" x="8" y="49" width="58" height="9" forecolor="#000000"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -68,7 +68,7 @@ order by CODIGOBARRAS]]>
 				<textElement verticalAlignment="Top">
 					<font size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[Còdigo]]></text>
+				<text><![CDATA[Código Barras]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="e688fb0a-1bf4-48a3-a19a-0b56338204e0" key="staticText-35" x="353" y="60" width="67" height="9" forecolor="#000000"/>
@@ -246,7 +246,7 @@ order by CODIGOBARRAS]]>
 				<text><![CDATA[Valor]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="dd61ff03-8557-4d1b-8eb3-f1e202335f87" key="staticText-37" x="13" y="58" width="58" height="9" forecolor="#000000"/>
+				<reportElement uuid="dd61ff03-8557-4d1b-8eb3-f1e202335f87" key="staticText-37" x="71" y="58" width="58" height="9" forecolor="#000000"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -317,6 +317,19 @@ order by CODIGOBARRAS]]>
 				</textElement>
 				<text><![CDATA[Repotenciacion]]></text>
 			</staticText>
+			<staticText>
+				<reportElement uuid="d3fee785-f6ed-416d-a3a5-c710ca06ed63" key="staticText-33" x="8" y="58" width="58" height="9" forecolor="#000000"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Còdigo Secun.]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<detail>
@@ -328,7 +341,7 @@ order by CODIGOBARRAS]]>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement uuid="ccebfd17-4504-416f-856e-4dbec323cc28" x="13" y="4" width="58" height="13"/>
+				<reportElement uuid="ccebfd17-4504-416f-856e-4dbec323cc28" x="8" y="3" width="58" height="10"/>
 				<textElement>
 					<font size="6"/>
 				</textElement>
@@ -377,7 +390,7 @@ order by CODIGOBARRAS]]>
 				<textFieldExpression><![CDATA[$F{ubicacion}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="84515cf3-e89d-4fbf-9d2c-db898aea3030" x="13" y="14" width="137" height="10"/>
+				<reportElement uuid="84515cf3-e89d-4fbf-9d2c-db898aea3030" x="71" y="14" width="79" height="10"/>
 				<textElement>
 					<font size="6"/>
 				</textElement>
@@ -424,6 +437,13 @@ order by CODIGOBARRAS]]>
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7cf07293-bcba-494f-8ac7-53f170907ff9" x="8" y="14" width="58" height="10"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -4,7 +4,7 @@
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="43"/>
+	<property name="ireport.y" value="0"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
@@ -15,9 +15,15 @@
 	<queryString>
 		<![CDATA[select DISTINCT (case when codigo is null then RIGHT(barras, 6) else codigo end ) as codigo,dependencia,direccion,oficina,custodio,
 cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_entrega,valor as costo,descripcion+' '+ISNULL(observaciones,'') as des_activo
-,custodio as responsable1,CUS_APELLIDOS+' '+ISNULL(CUS_NOMBRES,'') as delegado_direccion,numero,cast(format(fecha_acta,'dd MMMM yyyy')as varchar(max))as fecha_acta,cantidad from acf a ,custodio b
-
- where responsable=CUS_ID and numero=$P{num_acta} order by codigo]]>
+,custodio as responsable1,CUS_APELLIDOS+' '+ISNULL(CUS_NOMBRES,'') as delegado_direccion,(case when LEN(numero)=1 then '000'+cast(numero as varchar)
+when LEN(numero)=2 then '00'+cast(numero as varchar)
+when LEN(numero)=3 then '0'+cast(numero as varchar)
+when LEN(numero)=4 then cast(numero as varchar) end ) as numero,cast(format(fecha_acta,'dd MMMM yyyy')as varchar(max))as fecha_acta,cantidad ,
+(select anio from numericos where tipo = 'ACF' and estado = 1) as anio
+from acf a ,custodio b
+where responsable=CUS_ID and numero=$P{num_acta}
+and year (cast(fecha_acta as date)) = (select anio from numericos where tipo = 'ACF' and estado = 1)
+order by codigo]]>
 	</queryString>
 	<field name="codigo" class="java.lang.String"/>
 	<field name="dependencia" class="java.lang.String"/>
@@ -37,9 +43,10 @@ cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_
 	<field name="des_activo" class="java.lang.String"/>
 	<field name="responsable1" class="java.lang.String"/>
 	<field name="delegado_direccion" class="java.lang.String"/>
-	<field name="numero" class="java.lang.Integer"/>
+	<field name="numero" class="java.lang.String"/>
 	<field name="fecha_acta" class="java.lang.String"/>
 	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="anio" class="java.lang.Integer"/>
 	<variable name="SUM_costo_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{costo}]]></variableExpression>
 	</variable>
@@ -101,10 +108,10 @@ cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_
 				<textElement textAlignment="Left">
 					<font fontName="Georgia" size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{numero}+" - "+$F{anio}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="false">
-				<reportElement uuid="b49e4e11-47b6-48d7-b7d9-bc67a502c3df" key="textField" x="0" y="112" width="304" height="16"/>
+				<reportElement uuid="b49e4e11-47b6-48d7-b7d9-bc67a502c3df" key="textField" x="0" y="112" width="331" height="16"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -112,7 +119,7 @@ cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Georgia" size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<font fontName="Georgia" size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{responsable1}]]></textFieldExpression>
 			</textField>
@@ -156,7 +163,7 @@ cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_
 				<text><![CDATA[Equipos partes, piezas y accesorios de propiedad del GADMUR,  interviniendo las siguientes  personas:   Sr(a) (ita).]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="0ab20e0e-81fb-44fd-9ed4-3dd29ad5a9ae" key="staticText-25" mode="Opaque" x="305" y="111" width="203" height="12"/>
+				<reportElement uuid="0ab20e0e-81fb-44fd-9ed4-3dd29ad5a9ae" key="staticText-25" mode="Opaque" x="331" y="111" width="203" height="12"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -368,7 +375,7 @@ cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font size="9"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{delegado_direccion}]]></textFieldExpression>
 			</textField>
@@ -626,7 +633,7 @@ cuenta,observaciones,nombre,descripcion,estado, marca,modelo,serie,fecha as fec_
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
-			<textField pattern="">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement uuid="bddbe2ad-288e-4525-9814-b2388875ddbe" x="451" y="2" width="16" height="7"/>
 				<textElement>
 					<font fontName="Georgia" size="6"/>

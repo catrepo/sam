@@ -2,9 +2,9 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_acta_inmuebles" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="20" uuid="09494356-4e4f-46ac-aa2b-d5bc48e87383">
 	<property name="ireport.zoom" value="1.4641000000000017"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="103"/>
 	<parameter name="clave" class="java.lang.String"/>
-	<parameter name="acta" class="java.lang.String"/>
+	<parameter name="acta" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="codigo" class="java.lang.String"/>
 	<parameter name="valor" class="java.lang.String"/>
@@ -17,40 +17,48 @@
 		<defaultValueExpression><![CDATA["el que imprimio"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT clave,numero_acta,codigo,propietario,parroquia,barrio,calles,predio,area_terreno,area_cons,
-val_catastro,val_bienes,estado,ubicacion,canton_notario,fecha_notaria,cuenta,
-(select nombres from srh_empleado where cod_empleado =responsable_bienes) as bienesr,
-(select nombres from srh_empleado where cod_empleado =responsable_administrativo) as administrativor ,
-(select nombres from srh_empleado where cod_empleado =delegado_avaluos) as valuosd,
-(select nombres from srh_empleado where cod_empleado =delegado_financiero) as financierod,
-fechad
-FROM cust_bien_inmuebles
-where  clave = $P{clave} and  numero_acta = $P{acta}]]>
+		<![CDATA[select codigo,(case when len(numero_acta)= 1 then '00'+numero_acta
+when len(numero_acta)= 2 then '0'+numero_acta
+when len(numero_acta)= 3 then numero_acta end) numero_acta
+,clave,propietario,parroquia,barrio,calles,area_terreno,area_cons,val_catastro,val_bienes
+,estado,ubicacion,cuenta,canton_notario,fecha_notaria
+,predio
+,(case when len(clave)=12 then 'm2' when len(clave)=9  then 'ha' end) as medida
+,upper(rb.CUS_APELLIDOS+' '+rb.CUS_NOMBRES) as bienesr
+,upper(ra.CUS_APELLIDOS+' '+ra.CUS_NOMBRES) as administrativor
+,upper(df.CUS_APELLIDOS+' '+df.CUS_NOMBRES) as financierod
+,upper(da.CUS_APELLIDOS+' '+da.CUS_NOMBRES) as valuosd
+,anio
+from ACF_INMUEBLES
+inner join CUSTODIO rb on rb.CUS_ID = responsable_bienes
+inner join CUSTODIO ra on ra.CUS_ID = responsable_administrativo
+inner join CUSTODIO df on df.CUS_ID = delegado_financiero
+inner join CUSTODIO da on da.CUS_ID = delegado_avaluos
+where id_inmueble = $P{acta}]]>
 	</queryString>
-	<field name="clave" class="java.lang.String"/>
+	<field name="codigo" class="java.lang.Long"/>
 	<field name="numero_acta" class="java.lang.String"/>
-	<field name="codigo" class="java.lang.Integer"/>
+	<field name="clave" class="java.lang.String"/>
 	<field name="propietario" class="java.lang.String"/>
 	<field name="parroquia" class="java.lang.String"/>
 	<field name="barrio" class="java.lang.String"/>
 	<field name="calles" class="java.lang.String"/>
-	<field name="predio" class="java.lang.String"/>
 	<field name="area_terreno" class="java.math.BigDecimal"/>
 	<field name="area_cons" class="java.math.BigDecimal"/>
 	<field name="val_catastro" class="java.math.BigDecimal"/>
 	<field name="val_bienes" class="java.math.BigDecimal"/>
 	<field name="estado" class="java.lang.String"/>
-	<field name="ubicacion" class="java.lang.String">
-		<fieldDescription><![CDATA[ubicacion]]></fieldDescription>
-	</field>
-	<field name="canton_notario" class="java.lang.String"/>
-	<field name="fecha_notaria" class="java.sql.Date"/>
+	<field name="ubicacion" class="java.lang.String"/>
 	<field name="cuenta" class="java.lang.String"/>
+	<field name="canton_notario" class="java.lang.String"/>
+	<field name="fecha_notaria" class="java.lang.String"/>
+	<field name="predio" class="java.lang.String"/>
+	<field name="medida" class="java.lang.String"/>
 	<field name="bienesr" class="java.lang.String"/>
 	<field name="administrativor" class="java.lang.String"/>
-	<field name="valuosd" class="java.lang.String"/>
 	<field name="financierod" class="java.lang.String"/>
-	<field name="fechad" class="java.sql.Date"/>
+	<field name="valuosd" class="java.lang.String"/>
+	<field name="anio" class="java.lang.Long"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -146,9 +154,9 @@ where  clave = $P{clave} and  numero_acta = $P{acta}]]>
 				</textElement>
 				<text><![CDATA[DIRECCIÓN  ADMINISTRATIVA]]></text>
 			</staticText>
-			<image>
-				<reportElement uuid="e39c86e7-3487-4c55-a59c-7f62e37cb2a9" x="17" y="7" width="117" height="59"/>
-				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo.png"]]></imageExpression>
+			<image hAlign="Center">
+				<reportElement uuid="e39c86e7-3487-4c55-a59c-7f62e37cb2a9" x="0" y="15" width="125" height="57"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logor.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>
@@ -186,10 +194,10 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Propietario                   : ]]></text>
+				<text><![CDATA[Propietario              : ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="98040e72-155c-45e7-a675-e254797585fd" x="141" y="125" width="306" height="20"/>
+				<reportElement uuid="98040e72-155c-45e7-a675-e254797585fd" x="118" y="125" width="414" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -200,10 +208,10 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Clave Catastral             :]]></text>
+				<text><![CDATA[Clave Catastral        :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="345e4b15-72ef-4ab8-b83f-34dd91235bc9" x="141" y="109" width="150" height="20"/>
+				<reportElement uuid="345e4b15-72ef-4ab8-b83f-34dd91235bc9" x="118" y="109" width="150" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -228,59 +236,59 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Barrio                           :]]></text>
+				<text><![CDATA[Barrio                      :]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="2f714a4c-6319-4ff2-95a7-0758a84169dd" x="28" y="205" width="123" height="20"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Area de Terreno mts    :]]></text>
+				<text><![CDATA[Area de Terreno     :]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="02c2f452-9ef4-42b9-85d3-c57697ff4610" x="28" y="221" width="123" height="20"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Area Construcción mts :]]></text>
+				<text><![CDATA[Area Construc. mts :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="f0d7e7e5-aec3-4a0d-8f6a-fbd8658d8992" x="241" y="243" width="89" height="20"/>
+				<reportElement uuid="f0d7e7e5-aec3-4a0d-8f6a-fbd8658d8992" x="220" y="243" width="89" height="20"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Registro Bienes: ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="1a87e87b-3225-4cb1-ad15-d16b18b6aadc" x="117" y="337" width="135" height="20"/>
+				<reportElement uuid="1a87e87b-3225-4cb1-ad15-d16b18b6aadc" x="116" y="337" width="135" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{canton_notario}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="716aee12-353c-4882-9509-b327aa1528fb" x="141" y="157" width="306" height="20"/>
+				<reportElement uuid="716aee12-353c-4882-9509-b327aa1528fb" x="118" y="157" width="306" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barrio}]]></textFieldExpression>
 			</textField>
 			<textField pattern="##########.##" isBlankWhenNull="true">
-				<reportElement uuid="ea85c13d-8b0e-42a8-ade2-a51af19f52b7" x="141" y="221" width="100" height="20"/>
+				<reportElement uuid="ea85c13d-8b0e-42a8-ade2-a51af19f52b7" x="118" y="221" width="100" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{area_cons}]]></textFieldExpression>
 			</textField>
 			<textField pattern="##########.##" isBlankWhenNull="true">
-				<reportElement uuid="7eb414e1-fc1d-4e54-a8e0-eaf66ea521bc" x="141" y="205" width="100" height="20"/>
+				<reportElement uuid="7eb414e1-fc1d-4e54-a8e0-eaf66ea521bc" x="118" y="205" width="100" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{area_terreno}]]></textFieldExpression>
 			</textField>
-			<textField pattern="##########.##" isBlankWhenNull="true">
-				<reportElement uuid="7007b10d-1ef2-43ac-8f6b-ae06fb996e1a" x="134" y="243" width="69" height="20"/>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="7007b10d-1ef2-43ac-8f6b-ae06fb996e1a" x="118" y="243" width="69" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
@@ -298,10 +306,10 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Calles                           :]]></text>
+				<text><![CDATA[Calles                      :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="c6bc4d67-3bbd-42a7-8115-56de14c39de4" x="141" y="173" width="414" height="20"/>
+				<reportElement uuid="c6bc4d67-3bbd-42a7-8115-56de14c39de4" x="118" y="173" width="414" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -312,10 +320,10 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Parroquia                     :]]></text>
+				<text><![CDATA[Parroquia                :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="5e5b0941-e3db-4c74-85c0-865e74df8668" x="141" y="141" width="158" height="20"/>
+				<reportElement uuid="5e5b0941-e3db-4c74-85c0-865e74df8668" x="118" y="141" width="158" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -326,10 +334,10 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Predio                          :]]></text>
+				<text><![CDATA[Predio                     :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="ea9a8331-59ab-411a-b2c7-cb35557131cf" x="141" y="189" width="310" height="20"/>
+				<reportElement uuid="ea9a8331-59ab-411a-b2c7-cb35557131cf" x="118" y="189" width="310" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -343,28 +351,28 @@ Bienes Inmuebles]]></text>
 				<text><![CDATA[Fecha Registro : ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="ca1412f6-6e0b-428f-980f-3b68620160fb" x="117" y="353" width="100" height="20"/>
+				<reportElement uuid="ca1412f6-6e0b-428f-980f-3b68620160fb" x="116" y="353" width="100" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fecha_notaria}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="220d0f12-cbf3-4b2d-b1a0-a9be6cc0b6b4" x="394" y="16" width="118" height="17"/>
-				<textElement>
+				<reportElement uuid="220d0f12-cbf3-4b2d-b1a0-a9be6cc0b6b4" x="385" y="16" width="61" height="17"/>
+				<textElement textAlignment="Right">
 					<font fontName="Georgia" size="14" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{acta}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{numero_acta}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement uuid="dfccf052-2544-4922-b1c8-9060b36b2d7b" x="28" y="93" width="113" height="20"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Codigo                          :]]></text>
+				<text><![CDATA[Codigo                     :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="c82a31ff-6748-4151-91fd-d4783a2403b2" x="141" y="93" width="100" height="20"/>
+				<reportElement uuid="c82a31ff-6748-4151-91fd-d4783a2403b2" x="118" y="93" width="100" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -375,10 +383,10 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Avaluo Catastral          :  ]]></text>
+				<text><![CDATA[Avaluo Catastral     :  ]]></text>
 			</staticText>
-			<textField pattern="##########.##" isBlankWhenNull="true">
-				<reportElement uuid="6caf56d3-d4ce-458e-a8a9-f4a9b497a994" x="299" y="243" width="67" height="20"/>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="6caf56d3-d4ce-458e-a8a9-f4a9b497a994" x="278" y="243" width="67" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
@@ -389,24 +397,24 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Estado                          : ]]></text>
+				<text><![CDATA[Estado                    : ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="78be3a34-6036-47e1-8937-6f95e4572a6b" x="241" y="267" width="89" height="20"/>
+				<reportElement uuid="78be3a34-6036-47e1-8937-6f95e4572a6b" x="220" y="267" width="89" height="20"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Ubicación         : ]]></text>
+				<text><![CDATA[Ubicación          : ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="731fda94-a750-4cda-8b94-2ec9bce40868" x="139" y="267" width="95" height="20"/>
+				<reportElement uuid="731fda94-a750-4cda-8b94-2ec9bce40868" x="116" y="267" width="95" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement uuid="6b4bdebe-e79e-4f14-a4d7-6f1e733c00d1" x="323" y="267" width="232" height="20"/>
+				<reportElement uuid="6b4bdebe-e79e-4f14-a4d7-6f1e733c00d1" x="302" y="267" width="253" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -417,14 +425,28 @@ Bienes Inmuebles]]></text>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Cuenta                         : ]]></text>
+				<text><![CDATA[Cuenta                   : ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="676c13f9-e892-44b7-ac09-8778341a8211" x="139" y="287" width="95" height="20"/>
+				<reportElement uuid="676c13f9-e892-44b7-ac09-8778341a8211" x="116" y="287" width="95" height="20"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="57a99551-081a-4976-a19b-43947e89f1f6" x="447" y="16" width="61" height="17"/>
+				<textElement>
+					<font fontName="Georgia" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["- "+$F{anio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="88006f6e-43b7-4f81-81b8-9fe81f2effdc" x="217" y="205" width="35" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medida}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -606,7 +628,7 @@ Bienes Inmuebles]]></text>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="1191d511-7f0e-4eb0-a8cf-f34298e8b20f" x="29" y="170" width="189" height="13"/>
 				<textElement textAlignment="Center">
-					<font fontName="Georgia" size="9"/>
+					<font fontName="Georgia" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bienesr}]]></textFieldExpression>
 			</textField>
