@@ -829,6 +829,17 @@ public class BeanRemuneracion {
         return tabDatos;
     }
 
+     public TablaGenerica getGeneraListaCedula(String fecha0, String fecha1) {
+         conNomina();
+        TablaGenerica tabDatos = new TablaGenerica();
+        conNomina();
+        tabDatos.setConexion(conNomina);
+        tabDatos.setSql("");
+        tabDatos.ejecutarSql();
+        desNomina();
+        return tabDatos;
+     }
+    
     public TablaGenerica getVerificaDatos(String cedula) {
         conNomina();
         TablaGenerica tabDatos = new TablaGenerica();

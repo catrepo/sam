@@ -6,6 +6,7 @@ package paq_remuneraciones;
 
 import framework.aplicacion.TablaGenerica;
 import framework.componentes.Boton;
+import framework.componentes.Calendario;
 import framework.componentes.Combo;
 import framework.componentes.Dialogo;
 import framework.componentes.Division;
@@ -23,6 +24,7 @@ import javax.ejb.EJB;
 import paq_remuneraciones.ejb.BeanRemuneracion;
 import sistema.aplicacion.Pantalla;
 import paq_utilitario.ejb.ClaseGenerica;
+import persistencia.Conexion;
 
 /**
  *
@@ -30,6 +32,7 @@ import paq_utilitario.ejb.ClaseGenerica;
  */
 public class ReporteAnticipos extends Pantalla {
 
+    private Conexion Nomina = new Conexion();
     private Tabla tabTabla1 = new Tabla();
     private Tabla tabTabla2 = new Tabla();
     private Tabla tabConsulta = new Tabla();
@@ -39,32 +42,45 @@ public class ReporteAnticipos extends Pantalla {
     private Combo cmbPeriodo = new Combo();
     private Combo cmbDistributivo = new Combo();
     private Combo cmbTipo = new Combo();
+    private Calendario fechaInicio = new Calendario();
+    private Calendario fechaFin = new Calendario();
     private Etiqueta txeAnio = new Etiqueta("AÑO :");
     private Etiqueta txeAnio1 = new Etiqueta("AÑO :");
     private Etiqueta txeTipo = new Etiqueta("TIPO :");
     private Etiqueta txePeriodo = new Etiqueta(" PERIODO : ");
     private Etiqueta txeDistributivo = new Etiqueta("TIPO : ");
+    private Etiqueta txeIni = new Etiqueta("FECHA INICIO :");
+    private Etiqueta txeFin = new Etiqueta("FECHA FIN :");
     //Declaración para reportes
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
     private Map p_parametros = new HashMap();
+       
     private Dialogo diaDialogor = new Dialogo();
     private Dialogo diaDialogo = new Dialogo();
     private Dialogo diaDialogot = new Dialogo();
     private Dialogo diaDiaAnticipo = new Dialogo();
+    private Dialogo diaDiaCedula = new Dialogo();
     private Grid gridD = new Grid();
     private Grid gridR = new Grid();
     private Grid gridT = new Grid();
     private Grid gridA = new Grid();
+    private Grid gridC = new Grid();
     private Grid grid = new Grid();
     private Grid grir = new Grid();
     private Grid grit = new Grid();
     private Grid gria = new Grid();
+    private Grid gric = new Grid();
     @EJB
     private BeanRemuneracion adminRemuneracion = (BeanRemuneracion) utilitario.instanciarEJB(BeanRemuneracion.class);
     private ClaseGenerica generico = (ClaseGenerica) utilitario.instanciarEJB(ClaseGenerica.class);
 
     public ReporteAnticipos() {
+               
+        Nomina.setUnidad_persistencia(utilitario.getPropiedad("oraclejdb"));
+        Nomina.NOMBRE_MARCA_BASE = "oracle";
+        
+        
         Boton bot_busca = new Boton();
         bot_busca.setValue("BUSCAR");
         bot_busca.setExcluirLectura(true);
@@ -178,6 +194,14 @@ public class ReporteAnticipos extends Pantalla {
         gridA.setColumns(4);
         agregarComponente(diaDiaAnticipo);
         
+        diaDiaCedula.setId("diaDiaCedula");
+        diaDiaCedula.setWidth("25%"); //siempre en porcentajes  ancho
+        diaDiaCedula.setHeight("20%");//siempre porcentaje   alto
+        diaDiaCedula.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaDiaCedula.getBot_aceptar().setMetodo("aceptoAnticipo");
+        gridC.setColumns(4);
+        agregarComponente(diaDiaCedula);
+        
         filtraLista();
 
         /*         * CONFIGURACIÓN DE OBJETO REPORTE         */
@@ -269,6 +293,10 @@ public class ReporteAnticipos extends Pantalla {
         }
     }
 
+    public void generaCedulas(String fecha0, String fecha1){
+        adminRemuneracion.getGeneraListaCedula(fecha0, fecha1);
+    }
+    
     @Override
     public void abrirListaReportes() {
         rep_reporte.dibujar();
@@ -322,12 +350,25 @@ public class ReporteAnticipos extends Pantalla {
                 diaDialogot.setDialogo(gridT);
                 diaDialogot.dibujar();
                 break;
+                case "REPORTE CEDULAS":
+                diaDiaCedula.setDialogo(gric);
+                Grid griBu = new Grid();
+                griBu.setColumns(2);
+                griBu.getChildren().add(txeIni);
+                griBu.getChildren().add(fechaInicio);
+                griBu.getChildren().add(txeFin);
+                griBu.getChildren().add(fechaFin);
+                gridC.getChildren().add(griBu);
+                diaDiaCedula.setDialogo(gridC);
+                diaDiaCedula.dibujar();
+                break;
         }
     }
 
     public void aceptoAnticipo() {
         switch (rep_reporte.getNombre()) {
             case "CONFIDENCIAL ANTICIPO":
+                sef_formato.setConexion(getConexion());
                 TablaGenerica tabDato = adminRemuneracion.getIdSolicitud(Integer.parseInt(tabTabla2.getValorSeleccionado()));
                 if (!tabDato.isEmpty()) {
                     p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
@@ -343,6 +384,7 @@ public class ReporteAnticipos extends Pantalla {
                 sef_formato.dibujar();
                 break;
             case "DESCUENTO ANTICIPO POR MES":
+                sef_formato.setConexion(getConexion());
                 listaRol();
                 p_parametros.put("anio", cmbAnio.getValue() + "");
                 p_parametros.put("periodo", cmbPeriodo.getValue() + "");
@@ -358,12 +400,14 @@ public class ReporteAnticipos extends Pantalla {
                 sef_formato.dibujar();
                 break;
             case "TOTAL ANTICIPOS GENERAL":
+                sef_formato.setConexion(getConexion());
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
             case "REPORTE GENERAL DE ANTICIPOS":
+                sef_formato.setConexion(getConexion());
                 p_parametros.put("anio", cmbAnio1.getValue() + "");
                 p_parametros.put("anioAnt", String.valueOf(Integer.parseInt(cmbAnio1.getValue().toString())-1) +"");
                 p_parametros.put("fecha", utilitario.getFechaActual() + "");
@@ -373,8 +417,33 @@ public class ReporteAnticipos extends Pantalla {
                 sef_formato.dibujar();
                 break;
             case "REPORTE ANTICIPOS GENERAL ESTADO":
+                sef_formato.setConexion(getConexion());
                 p_parametros.put("estado", Integer.parseInt(cmbTipo.getValue()+""));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+                case "REPORTE CEDULAS":
+                    sef_formato.setConexion(Nomina);
+                    //genera lista de cedulas en SQL
+//                    generaCedulas(fechaInicio.getFecha(), fechaInicio.getFecha());
+                String mes12,
+                 mes13;
+                if (String.valueOf((utilitario.getMes(fechaInicio.getFecha()))).length() > 1) {
+                    mes12 = String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
+                } else {
+                    mes12 = "0" + String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
+                }
+                if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
+                    mes13 = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                } else {
+                    mes13 = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                }
+                p_parametros.put("inicial", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "14"));
+                p_parametros.put("reforma", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15"));
+                p_parametros.put("fechai", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaInicio.getFecha()))).substring(2, 4) + "" + mes12));
+                p_parametros.put("fechaf", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaFin.getFecha()))).substring(2, 4) + "" + mes13));
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
@@ -444,4 +513,13 @@ public class ReporteAnticipos extends Pantalla {
     public void setP_parametros(Map p_parametros) {
         this.p_parametros = p_parametros;
     }
+
+    public Conexion getNomina() {
+        return Nomina;
+    }
+
+    public void setNomina(Conexion Nomina) {
+        this.Nomina = Nomina;
+    }
+    
 }
