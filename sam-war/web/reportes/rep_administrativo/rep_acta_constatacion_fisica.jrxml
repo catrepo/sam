@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_acta_constatacion_fisica" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e10ae2f0-8177-4101-ab0b-bdb5a65a5370">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_acta_constatacion_fisica" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e10ae2f0-8177-4101-ab0b-bdb5a65a5370">
 	<property name="ireport.zoom" value="1.2100000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -66,21 +66,21 @@ and fec_entrega = (SELECT fec_entrega FROM cust_custodio where num_acta=$P{acta}
 	<title>
 		<band height="148" splitType="Stretch">
 			<textField>
-				<reportElement uuid="3f158624-d972-4680-8774-51ff056ffa61" x="0" y="64" width="555" height="20"/>
+				<reportElement x="0" y="64" width="555" height="20" uuid="3f158624-d972-4680-8774-51ff056ffa61"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Acta Constatación Fisica   N° "+$F{num_acta}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement uuid="97416677-85f0-46b2-bd31-a540c0cfe9c0" x="0" y="90" width="555" height="57"/>
+				<reportElement x="0" y="90" width="555" height="57" uuid="97416677-85f0-46b2-bd31-a540c0cfe9c0"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Georgia" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["En la ciudad de Sangolqui "+$F{fec_entrega}+", se realiza la presente acta de Constatación Fisica de Bienes, equipos, partes, piezas y accesoriosde propieda del GADMUR, interviniendo las siguientes personas : "+$F{responsable}+" en su calidad de usuario constatado, "+$F{direccion}+"; "+$F{delegado_direccion}+" delegado de la Dirección; "+$F{jefa}+" Jefa de bienes y seguros, verificando los bienes que acontinuación se detallan : "]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="d7d41d03-2fd4-4a05-83bf-0a9df7943efb" x="146" y="3" width="283" height="40"/>
+				<reportElement x="146" y="3" width="283" height="40" uuid="d7d41d03-2fd4-4a05-83bf-0a9df7943efb"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="14"/>
 					<paragraph lineSpacing="1_1_2"/>
@@ -89,19 +89,19 @@ and fec_entrega = (SELECT fec_entrega FROM cust_custodio where num_acta=$P{acta}
 BIENES Y SEGUROS]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="2ac34937-6042-48d7-8d69-09b4842fa14f" x="146" y="3" width="1" height="48"/>
+				<reportElement x="146" y="3" width="1" height="48" uuid="2ac34937-6042-48d7-8d69-09b4842fa14f"/>
 			</line>
 			<line>
-				<reportElement uuid="2a0bc427-0c8a-4657-845c-edd9f038bbb8" x="429" y="3" width="1" height="48"/>
+				<reportElement x="429" y="3" width="1" height="48" uuid="2a0bc427-0c8a-4657-845c-edd9f038bbb8"/>
 			</line>
 			<line>
-				<reportElement uuid="368fb17d-d5d4-4ac9-9373-59d17fb6417d" x="0" y="54" width="555" height="1"/>
+				<reportElement x="0" y="54" width="555" height="1" uuid="368fb17d-d5d4-4ac9-9373-59d17fb6417d"/>
 			</line>
 			<line>
-				<reportElement uuid="f1a1c9c9-5498-4cec-9bbd-a7680939331d" x="0" y="147" width="555" height="1"/>
+				<reportElement x="0" y="147" width="555" height="1" uuid="f1a1c9c9-5498-4cec-9bbd-a7680939331d"/>
 			</line>
 			<staticText>
-				<reportElement uuid="45f734c9-c069-4e39-9013-731a29b72738" x="435" y="3" width="112" height="51"/>
+				<reportElement x="435" y="3" width="112" height="51" uuid="45f734c9-c069-4e39-9013-731a29b72738"/>
 				<textElement>
 					<font fontName="Georgia" size="8"/>
 					<paragraph lineSpacing="1_1_2"/>
@@ -112,7 +112,7 @@ Telf: 2998-300/Ext. 1066
 Sangolquí-Ecuador]]></text>
 			</staticText>
 			<image scaleImage="RetainShape">
-				<reportElement uuid="10c2257d-49ad-42b1-91d8-53e0c76f9939" x="42" y="0" width="191" height="51"/>
+				<reportElement x="42" y="0" width="191" height="51" uuid="10c2257d-49ad-42b1-91d8-53e0c76f9939"/>
 				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logoP.png"]]></imageExpression>
 			</image>
 		</band>
@@ -123,133 +123,133 @@ Sangolquí-Ecuador]]></text>
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="88b073bf-0b6a-4fec-8bc9-6ce1f5773b39" x="0" y="0" width="42" height="20"/>
+				<reportElement x="0" y="0" width="42" height="20" uuid="88b073bf-0b6a-4fec-8bc9-6ce1f5773b39"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[COD. DETALLE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5d3d795a-0bc6-4801-ab27-cd72b2351f70" x="42" y="0" width="146" height="20"/>
+				<reportElement x="42" y="0" width="146" height="20" uuid="5d3d795a-0bc6-4801-ab27-cd72b2351f70"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[NOMBRE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="3f9bb662-5e4e-49de-bd2a-6f8ccad991a6" x="161" y="0" width="100" height="20"/>
+				<reportElement x="161" y="0" width="100" height="20" uuid="3f9bb662-5e4e-49de-bd2a-6f8ccad991a6"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MARCA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="eb7753be-1d99-4974-879a-ee75e78b10b3" x="249" y="0" width="100" height="20"/>
+				<reportElement x="249" y="0" width="100" height="20" uuid="eb7753be-1d99-4974-879a-ee75e78b10b3"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MODELO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="392ab340-b97c-4941-b870-2a001afffad8" x="347" y="0" width="100" height="20"/>
+				<reportElement x="347" y="0" width="100" height="20" uuid="392ab340-b97c-4941-b870-2a001afffad8"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SERIE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="9f0681f2-a463-4485-8bf9-d6883150a7a9" x="447" y="0" width="58" height="20"/>
+				<reportElement x="447" y="0" width="58" height="20" uuid="9f0681f2-a463-4485-8bf9-d6883150a7a9"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[E]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7313b399-9006-4390-b3cf-938d2948c438" x="505" y="0" width="18" height="20"/>
+				<reportElement x="505" y="0" width="18" height="20" uuid="7313b399-9006-4390-b3cf-938d2948c438"/>
 				<textElement>
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Q]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b45afc72-fa5b-423a-a15c-89d3e0ce6acb" x="523" y="0" width="32" height="20"/>
+				<reportElement x="523" y="0" width="32" height="20" uuid="b45afc72-fa5b-423a-a15c-89d3e0ce6acb"/>
 				<textElement textAlignment="Right">
 					<font fontName="Georgia" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[COSTO]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="6e178280-662b-4f36-8242-c6f9e896454d" x="0" y="19" width="555" height="1"/>
+				<reportElement x="0" y="19" width="555" height="1" uuid="6e178280-662b-4f36-8242-c6f9e896454d"/>
 			</line>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="31" splitType="Stretch">
 			<textField>
-				<reportElement uuid="9f059ae3-1516-4efd-b5b7-f46b674a341d" x="0" y="0" width="42" height="14"/>
+				<reportElement x="0" y="0" width="42" height="14" uuid="9f059ae3-1516-4efd-b5b7-f46b674a341d"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="7825b57e-6503-405f-a8c0-a5a29824532f" x="161" y="0" width="100" height="14"/>
+				<reportElement x="161" y="0" width="100" height="14" uuid="7825b57e-6503-405f-a8c0-a5a29824532f"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{marca}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="d2023647-c0c3-44a6-9244-785d37d326cd" x="42" y="0" width="146" height="14"/>
+				<reportElement x="42" y="0" width="146" height="14" uuid="d2023647-c0c3-44a6-9244-785d37d326cd"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="8b0bfa0e-a43d-4f82-8596-4bdddb1a8f81" x="249" y="0" width="100" height="14"/>
+				<reportElement x="249" y="0" width="100" height="14" uuid="8b0bfa0e-a43d-4f82-8596-4bdddb1a8f81"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{modelo}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="668a8ef9-c980-4cf4-82e1-827fa7e1e006" x="347" y="0" width="100" height="14"/>
+				<reportElement x="347" y="0" width="100" height="14" uuid="668a8ef9-c980-4cf4-82e1-827fa7e1e006"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{serie}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="90ac2f02-02dc-4913-b143-b97f0b7c95cb" x="0" y="11" width="555" height="20"/>
+				<reportElement x="0" y="11" width="555" height="20" uuid="90ac2f02-02dc-4913-b143-b97f0b7c95cb"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{des_activo}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="02c599d8-a89e-4db6-b6ee-041bfccbfa45" x="447" y="0" width="58" height="14"/>
+				<reportElement x="447" y="0" width="58" height="14" uuid="02c599d8-a89e-4db6-b6ee-041bfccbfa45"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="e855fd14-f335-4ba1-bb58-08b40cb2a640" x="505" y="0" width="18" height="14"/>
+				<reportElement x="505" y="0" width="18" height="14" uuid="e855fd14-f335-4ba1-bb58-08b40cb2a640"/>
 				<textElement>
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="1600d199-676f-431f-9b2c-2d243145d1fe" x="523" y="0" width="32" height="14"/>
+				<reportElement x="523" y="0" width="32" height="14" uuid="1600d199-676f-431f-9b2c-2d243145d1fe"/>
 				<textElement textAlignment="Right">
 					<font fontName="Georgia" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{costo}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="1599ec55-65a1-41b4-bd61-cc3efda64ab9" x="0" y="28" width="555" height="1"/>
+				<reportElement x="0" y="28" width="555" height="1" uuid="1599ec55-65a1-41b4-bd61-cc3efda64ab9"/>
 			</line>
 		</band>
 	</detail>
@@ -262,195 +262,195 @@ Sangolquí-Ecuador]]></text>
 	<lastPageFooter>
 		<band height="125">
 			<staticText>
-				<reportElement uuid="20274a0d-ed35-47e6-a795-ce296227f899" x="475" y="9" width="18" height="13"/>
+				<reportElement x="475" y="9" width="18" height="13" uuid="20274a0d-ed35-47e6-a795-ce296227f899"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Q]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="024a7ada-aa4e-4366-9471-f6c8286ae867" x="417" y="9" width="58" height="13"/>
+				<reportElement x="417" y="9" width="58" height="13" uuid="024a7ada-aa4e-4366-9471-f6c8286ae867"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[E]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="4e28f12a-d82b-455b-812c-f776fa15c180" x="174" y="9" width="100" height="13"/>
+				<reportElement x="174" y="9" width="100" height="13" uuid="4e28f12a-d82b-455b-812c-f776fa15c180"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MARCA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="49352c74-30e6-427a-b079-0c492c54483b" x="76" y="9" width="146" height="13"/>
+				<reportElement x="76" y="9" width="146" height="13" uuid="49352c74-30e6-427a-b079-0c492c54483b"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[NOMBRE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="962f39b4-ea0e-4852-b106-1d5a57105c0b" x="317" y="9" width="100" height="13"/>
+				<reportElement x="317" y="9" width="100" height="13" uuid="962f39b4-ea0e-4852-b106-1d5a57105c0b"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SERIE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="98f109a5-1d5c-412d-b0b8-d60c4de9545b" x="493" y="9" width="32" height="13"/>
+				<reportElement x="493" y="9" width="32" height="13" uuid="98f109a5-1d5c-412d-b0b8-d60c4de9545b"/>
 				<textElement textAlignment="Right">
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[COSTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="4c8ae2d0-e302-4b04-9dcc-840a2544c784" x="246" y="9" width="100" height="13"/>
+				<reportElement x="246" y="9" width="100" height="13" uuid="4c8ae2d0-e302-4b04-9dcc-840a2544c784"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MODELO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="cfcc97d1-2fe8-4a13-9da8-6179e36711a2" x="33" y="9" width="42" height="13"/>
+				<reportElement x="33" y="9" width="42" height="13" uuid="cfcc97d1-2fe8-4a13-9da8-6179e36711a2"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[COD. DETALLE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b6c4add9-e0f5-4724-be1d-80ecebced0e4" x="31" y="-1" width="146" height="16"/>
+				<reportElement x="31" y="-1" width="146" height="16" uuid="b6c4add9-e0f5-4724-be1d-80ecebced0e4"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA[OBSERVACIONES:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="16c1fd10-205c-4dab-b5c4-7525d07a7e1a" x="0" y="75" width="555" height="20"/>
+				<reportElement x="0" y="75" width="555" height="20" uuid="16c1fd10-205c-4dab-b5c4-7525d07a7e1a"/>
 				<textElement>
 					<font fontName="Georgia" size="6"/>
 				</textElement>
 				<text><![CDATA[NOTA: Deberá darse cumplimiento a los dispuesto en el Artículo 3 del Reglamento General sustitutivo para el Manejo y Administración de Bienes del Sector Público, que textualmente dice:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="a1916944-bd56-4012-a6d5-6d7a99941932" x="0" y="85" width="555" height="40"/>
+				<reportElement x="0" y="85" width="555" height="40" uuid="a1916944-bd56-4012-a6d5-6d7a99941932"/>
 				<textElement>
 					<font fontName="Georgia" size="6" isBold="true"/>
 				</textElement>
 				<text><![CDATA["Art 3.- La conservacion, buen uso y mantenimiento de los bienes , sera de responsabilidad directa del servidor que los ha recibido paara el desempeño de sus funciones y labores oficiales. El daño , perdida o destruccion del bien por negligencia comprobada o su mal uso, no imputable añ deterioro normal de las cosas, será de responsabilidad del servidor que lo tiene a su cargo, y de los servidores que de cualquier manera tienen acceso al bien, cuando realizen accciones de mantenimiento o reparacion por requerimiento propio o del usuario; salvo que se conozca o compruebe la identidad de la persona causante de la afectacion al bien".]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="c109cf96-0923-4c60-b0bd-3b1992ce36a3" x="0" y="118" width="555" height="7"/>
+				<reportElement x="0" y="118" width="555" height="7" uuid="c109cf96-0923-4c60-b0bd-3b1992ce36a3"/>
 				<textElement>
 					<font fontName="Georgia" size="6"/>
 				</textElement>
 				<text><![CDATA[Con esta disposición, está  usted en la obligación de informar a esta unidad sobre cualquier tipo de cambio y/o novedad que se haya presentado o realizado con la utilización de los bienes.]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="3dd9fa0d-0673-461d-adb3-e51f5cdca736" x="30" y="8" width="500" height="1"/>
+				<reportElement x="30" y="8" width="500" height="1" uuid="3dd9fa0d-0673-461d-adb3-e51f5cdca736"/>
 			</line>
 			<line>
-				<reportElement uuid="6d56ee66-a64b-469c-ab6f-8fd461234980" x="30" y="18" width="500" height="1"/>
+				<reportElement x="30" y="18" width="500" height="1" uuid="6d56ee66-a64b-469c-ab6f-8fd461234980"/>
 			</line>
 			<line>
-				<reportElement uuid="db4f7ee3-e8af-4d52-bcfb-a67322a32e73" x="30" y="32" width="500" height="1"/>
+				<reportElement x="30" y="32" width="500" height="1" uuid="db4f7ee3-e8af-4d52-bcfb-a67322a32e73"/>
 			</line>
 			<line>
-				<reportElement uuid="b50c11ca-ebd3-4560-98e3-e0cd2c2f86b0" x="30" y="45" width="500" height="1"/>
+				<reportElement x="30" y="45" width="500" height="1" uuid="b50c11ca-ebd3-4560-98e3-e0cd2c2f86b0"/>
 			</line>
 			<line>
-				<reportElement uuid="2820eb52-978c-402e-8582-95e094f77f14" x="30" y="58" width="500" height="1"/>
+				<reportElement x="30" y="58" width="500" height="1" uuid="2820eb52-978c-402e-8582-95e094f77f14"/>
 			</line>
 			<line>
-				<reportElement uuid="429cfe78-f175-4e55-a406-2e8c231b7980" x="0" y="115" width="555" height="1"/>
+				<reportElement x="0" y="115" width="555" height="1" uuid="429cfe78-f175-4e55-a406-2e8c231b7980"/>
 			</line>
 			<line>
-				<reportElement uuid="92a47730-e670-4809-b805-574e34edf3cd" x="0" y="74" width="555" height="1"/>
+				<reportElement x="0" y="74" width="555" height="1" uuid="92a47730-e670-4809-b805-574e34edf3cd"/>
 			</line>
 		</band>
 	</lastPageFooter>
 	<summary>
 		<band height="183" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="c51502d2-e1b1-4991-8bb9-e0f263155d06" x="407" y="4" width="100" height="20"/>
+				<reportElement x="407" y="4" width="100" height="20" uuid="c51502d2-e1b1-4991-8bb9-e0f263155d06"/>
 				<textElement>
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL : ]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="a774987e-9d9e-4a53-88ae-aa0316ea6f0b" x="455" y="4" width="100" height="20"/>
+				<reportElement x="455" y="4" width="100" height="20" uuid="a774987e-9d9e-4a53-88ae-aa0316ea6f0b"/>
 				<textElement textAlignment="Right">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{variable1}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="36df5ea6-281b-4218-be5e-8febd850567e" x="30" y="23" width="500" height="28"/>
+				<reportElement x="30" y="23" width="500" height="28" uuid="36df5ea6-281b-4218-be5e-8febd850567e"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<text><![CDATA[Los cuales despues de verificar uno a uno los bienes, partes, piezas y estado queda a entera satisfacción la constatación entrega recepción y verificación.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7e923b76-bc5b-4db7-81e0-1a3d3ea28746" x="30" y="51" width="500" height="32"/>
+				<reportElement x="30" y="51" width="500" height="32" uuid="7e923b76-bc5b-4db7-81e0-1a3d3ea28746"/>
 				<textElement textAlignment="Justified">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<text><![CDATA[Para constancia de lo actuado y en fe de conformidad y aceptación, afirman, ratifican, firman y se suscribe la presente acta en dos ejemplares de igual tenor y afecto las personas que han intervenido en esta diligencia.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="37c504b9-aab9-4c44-9cbb-ac44ccf82ba4" x="29" y="116" width="132" height="20"/>
+				<reportElement x="29" y="116" width="132" height="20" uuid="37c504b9-aab9-4c44-9cbb-ac44ccf82ba4"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<text><![CDATA[Custodio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b53b1f5d-2989-4d29-b4c6-b11ff2b84b1b" x="373" y="116" width="132" height="20"/>
+				<reportElement x="373" y="116" width="132" height="20" uuid="b53b1f5d-2989-4d29-b4c6-b11ff2b84b1b"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<text><![CDATA[Delegado de Dirección]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="ed76b5de-66cd-45d8-87e8-e39827bb95e0" x="215" y="170" width="132" height="13"/>
+				<reportElement x="215" y="170" width="132" height="13" uuid="ed76b5de-66cd-45d8-87e8-e39827bb95e0"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<text><![CDATA[Jefe de Bienes y Seguros]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="2d23f0ad-6842-4cd2-8f27-99115c0cf20c" x="15" y="105" width="162" height="20"/>
+				<reportElement x="15" y="105" width="162" height="20" uuid="2d23f0ad-6842-4cd2-8f27-99115c0cf20c"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{responsable}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="fdb47445-f90b-4e73-84b1-d0c3873750cd" x="359" y="105" width="162" height="20"/>
+				<reportElement x="359" y="105" width="162" height="20" uuid="fdb47445-f90b-4e73-84b1-d0c3873750cd"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{delegado_direccion}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="323d6e7a-bf69-41df-8f8d-c91a8344a470" x="201" y="159" width="162" height="20"/>
+				<reportElement x="201" y="159" width="162" height="20" uuid="323d6e7a-bf69-41df-8f8d-c91a8344a470"/>
 				<textElement textAlignment="Center">
 					<font fontName="Georgia" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{jefa}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="f62f3748-9558-4eb0-94f8-35b2873b4b82" x="15" y="105" width="162" height="1"/>
+				<reportElement x="15" y="105" width="162" height="1" uuid="f62f3748-9558-4eb0-94f8-35b2873b4b82"/>
 			</line>
 			<line>
-				<reportElement uuid="3d35b002-31e5-4207-995b-8fe88f7e027f" x="359" y="104" width="162" height="1"/>
+				<reportElement x="359" y="104" width="162" height="1" uuid="3d35b002-31e5-4207-995b-8fe88f7e027f"/>
 			</line>
 			<line>
-				<reportElement uuid="139da6f0-59d6-4f5e-ae5a-92417f3fcbbd" x="201" y="159" width="162" height="1"/>
+				<reportElement x="201" y="159" width="162" height="1" uuid="139da6f0-59d6-4f5e-ae5a-92417f3fcbbd"/>
 			</line>
 			<line>
-				<reportElement uuid="2d89b05e-3e01-476c-bcfd-58c9062f3337" x="0" y="0" width="555" height="1"/>
+				<reportElement x="0" y="0" width="555" height="1" uuid="2d89b05e-3e01-476c-bcfd-58c9062f3337"/>
 			</line>
 		</band>
 	</summary>
