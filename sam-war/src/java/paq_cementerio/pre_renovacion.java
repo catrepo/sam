@@ -285,7 +285,7 @@ public class pre_renovacion extends Pantalla {
         tab_tabla2.getColumna("DOCUMENTO_IDENTIDAD_CMREP").setRequerida(true);
         tab_tabla2.getColumna("IDE_CMTID").setRequerida(true);
         tab_tabla2.getColumna("TELEFONOS_CMREP").setRequerida(true);
-        tab_tabla2.getColumna("NOMBRES_APELLIDOS_CMREP").setLectura(true);
+//        tab_tabla2.getColumna("NOMBRES_APELLIDOS_CMREP").setLectura(true);
         tab_tabla2.getGrid().setColumns(6);
         tab_tabla2.setTipoFormulario(true);
         tab_tabla2.dibujar();

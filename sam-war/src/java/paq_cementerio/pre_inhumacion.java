@@ -266,9 +266,6 @@ public class pre_inhumacion extends Pantalla {
         tab_tabla4.setCondicion("IDE_DET_MOVIMIENTO=-1");
         tab_tabla4.getColumna("IDE_CATASTRO").setVisible(false);
         tab_tabla4.getColumna("IDE_CMREP").setVisible(false);
-        tab_tabla4.getColumna("IDE_TIPO_MOVIMIENTO").setVisible(false);
-        tab_tabla4.getColumna("IDE_TIPO_MOVIMIENTO").setValorDefecto("1");
-        tab_tabla4.getColumna("IDE_TIPO_MOVIMIENTO").setRequerida(true);
         tab_tabla4.getColumna("FECHA_INGRESA ").setValorDefecto(utilitario.getFechaActual());
         tab_tabla4.getColumna("FECHA_INGRESA").setLectura(true);
         tab_tabla4.getColumna("PERIODO_ARRENDAMIENTO").setRequerida(true);
@@ -378,6 +375,7 @@ public class pre_inhumacion extends Pantalla {
             Date nueva_fecha = utilitario.sumarDiasFecha(fecha_a_sumar, numero_dias);
             String str_fecha = utilitario.DeDateAString(nueva_fecha);
             tab_tabla4.setValor("FECHA_HASTA", str_fecha);
+            tab_tabla4.setValor("IDE_TIPO_MOVIMIENTO", tab_tabla1.getValor("TIPO_PAGO"));
             utilitario.addUpdateTabla(tab_tabla4, "FECHA_HASTA", "");
             System.out.println("FECHA_HASTA  " + str_fecha);
         } else {
@@ -623,14 +621,7 @@ public class pre_inhumacion extends Pantalla {
     }
 
     public void ejecutaSP() {
-        cementerioM.setRegistroLiquidacion(dep_codigo, "'" + utilitario.getAnio(utilitario.getFechaActual()) + "'", "'" + dep_abreviatura + "'", null
-                , "'" + tab_tabla2.getValor("DOCUMENTO_IDENTIDAD_CMREP") + "'", "'" + tab_tabla2.getValor("NOMBRES_APELLIDOS_CMREP") + "'", null, null
-                , "'" + tab_tabla2.getValor("DIRECCION_CMREP") + "'", null, "'" + tab_tabla4.getValor("ANTECEDENTES") + "'"
-                , "'" + tab_tabla4.getValor("OBSERVACION") + "'", null, "'" + tabConsulta.getValor("NICK_USUA") + "'"
-                , Double.parseDouble(tab_tabla4.getValor("VALOR_LIQUIDACION")), "'" + cod + "'", "'" + compuestoPlazo + "'", "'" + giro_producto + "'"
-                , "'" + tab_tabla1.getValor("CEDULA_FALLECIDO") + "'", "'" + tab_tabla1.getValor("NOMBRES") + "'", "'" + tab_tabla1.getValor("IDE_CATASTRO") + "'"
-                , "'" + (Integer.parseInt(maximo_bloq) + 1) + "'", "'" + str_fecha1 + "'", "'" + str_fecha2 + "'", null, "'" + tab_tabla4.getValor("PERIODO_ARRENDAMIENTO") + "'"
-                , "'" + tab_tabla4.getValor("CODIGO_LIQUIDACION") + "'", "'" + tab_tabla4.getValor("NUM_LIQUIDACION") + "'");
+        cementerioM.setRegistroLiquidacion(dep_codigo, "'" + utilitario.getAnio(utilitario.getFechaActual()) + "'", "'" + dep_abreviatura + "'", null, "'" + tab_tabla2.getValor("DOCUMENTO_IDENTIDAD_CMREP") + "'", "'" + tab_tabla2.getValor("NOMBRES_APELLIDOS_CMREP") + "'", null, null, "'" + tab_tabla2.getValor("DIRECCION_CMREP") + "'", null, "'" + tab_tabla4.getValor("ANTECEDENTES") + "'", "'" + tab_tabla4.getValor("OBSERVACION") + "'", null, "'" + tabConsulta.getValor("NICK_USUA") + "'", Double.parseDouble(tab_tabla4.getValor("VALOR_LIQUIDACION")), "'" + cod + "'", "'" + compuestoPlazo + "'", "'" + giro_producto + "'", "'" + tab_tabla1.getValor("CEDULA_FALLECIDO") + "'", "'" + tab_tabla1.getValor("NOMBRES") + "'", "'" + tab_tabla1.getValor("IDE_CATASTRO") + "'", "'" + (Integer.parseInt(maximo_bloq) + 1) + "'", "'" + str_fecha1 + "'", "'" + str_fecha2 + "'", null, "'" + tab_tabla4.getValor("PERIODO_ARRENDAMIENTO") + "'", "'" + tab_tabla4.getValor("CODIGO_LIQUIDACION") + "'", "'" + tab_tabla4.getValor("NUM_LIQUIDACION") + "'");
         System.out.println("actualizando numericos");
         cementerioM.setUpdateNumLiquidacion(dep_codigo, perLiq);
         cementerioM.setUpdateCodLiquidacion(periodo);
@@ -644,9 +635,7 @@ public class pre_inhumacion extends Pantalla {
             TablaGenerica tab_lugar = cementerioM.getLugarCatastro(Integer.parseInt(tab_tabla1.getValor("IDE_CATASTRO")));
             if (!tab_lugar.isEmpty()) {
                 String maximo = cementerioM.getDetalleMaxLiqui(String.valueOf(utilitario.getAnio(utilitario.getFechaActual())), String.valueOf(utilitario.getAnio(utilitario.getFechaActual())));
-                cementerioM.setGuardaDetalle(tab_tabla4.getValor("CODIGO_LIQUIDACION"), String.valueOf(utilitario.getAnio(utilitario.getFechaActual())), maximo
-                        , String.valueOf(utilitario.getAnio(utilitario.getFechaActual())), tab_lugar.getValor("codigofiscal_cuenta")
-                        , tab_lugar.getValor("dsc_cuenta"), tab_tabla4.getValor("VALOR_LIQUIDACION") + "", "1");
+                cementerioM.setGuardaDetalle(tab_tabla4.getValor("CODIGO_LIQUIDACION"), String.valueOf(utilitario.getAnio(utilitario.getFechaActual())), maximo, String.valueOf(utilitario.getAnio(utilitario.getFechaActual())), tab_lugar.getValor("codigofiscal_cuenta"), tab_lugar.getValor("dsc_cuenta"), tab_tabla4.getValor("VALOR_LIQUIDACION") + "", "1");
             } else {
                 utilitario.agregarMensajeError("Faltan datos de catastro o lugar ", null);
             }
@@ -848,7 +837,24 @@ public class pre_inhumacion extends Pantalla {
         cedulaF = cementerioM.cedulaFallecido(tab_tabla1.getValor("CEDULA_FALLECIDO"));
         if (!cedulaF.equals(tab_tabla1.getValor("CEDULA_FALLECIDO"))) {
             if (utilitario.validarCedula(tab_tabla1.getValor("CEDULA_FALLECIDO"))) {
-                usu = "cementerio";
+                buscaCedulaFallecido();
+            } else {
+                utilitario.agregarMensaje("Número de Cédula Incorrecto", null);
+            }
+        } else {
+            tab_tabla1.setValor("NOMBRES", null);
+            tab_tabla1.setValor("IDE_CMGEN", null);
+            tab_tabla1.setValor("FECHA_NACIMIENTO", null);
+            tab_tabla1.setValor("FECHA_DEFUNCION", null);
+            utilitario.addUpdate("tab_tabla1");
+            utilitario.agregarMensajeInfo("Fallecido", "ya se encuentra registrado");
+        }
+    }
+
+    public void buscaCedulaFallecido() {
+         String usu, pass, cedula, date_fallecido, str_fechad2, str_fecha2;
+        Date str_fechad1, str_fecha1;
+                        usu = "cementerio";
                 pass = "cmtr2016$";
                 cedula = tab_tabla1.getValor("CEDULA_FALLECIDO");
                 paq_webservice.ConsultaCiudadano service = new paq_webservice.ConsultaCiudadano();
@@ -860,7 +866,7 @@ public class pre_inhumacion extends Pantalla {
                 } else {
                     sexo = 1;
                 }
-
+                
                 str_fecha1 = utilitario.DeStringADateformato3(persona.getFechaNacimiento());
                 System.out.println("str_fecha1<<<<<" + str_fecha1);
                 str_fecha2 = utilitario.DeDateAString(str_fecha1);
@@ -892,44 +898,39 @@ public class pre_inhumacion extends Pantalla {
 
                 tab_tabla1.setValor("FECHA_DEFUNCION", str_fechad2);
                 utilitario.addUpdate("tab_tabla1");
-            } else {
-                utilitario.agregarMensaje("Número de Cédula Incorrecto", null);
-            }
-        } else {
-            tab_tabla1.setValor("NOMBRES", null);
-            tab_tabla1.setValor("IDE_CMGEN", null);
-            tab_tabla1.setValor("FECHA_NACIMIENTO", null);
-            tab_tabla1.setValor("FECHA_DEFUNCION", null);
-            utilitario.addUpdate("tab_tabla1");
-            utilitario.agregarMensajeInfo("Fallecido", "ya se encuentra registrado");
-        }
     }
-
+    
     public void buscaPersonaDatos() {
-        String usu, pass, cedula, nombre, direccion, telefono, correo, lugar;
-
         if (tab_tabla2.getValor("IDE_CMTID").equals("3")) {
             if (utilitario.validarCedula(tab_tabla2.getValor("DOCUMENTO_IDENTIDAD_CMREP"))) {
-                usu = "cementerio";
-                pass = "cmtr2016$";
-                cedula = tab_tabla2.getValor("DOCUMENTO_IDENTIDAD_CMREP");
-                paq_webservice.ConsultaCiudadano service = new paq_webservice.ConsultaCiudadano();
-                ClassCiudadania persona = service.getConsultaCiudadanoSoap().busquedaPorCedula(cedula, usu, pass);
-
-                tab_tabla2.setValor("NOMBRES_APELLIDOS_CMREP", persona.getNombre());
-                tab_tabla2.setValor("DIRECCION_CMREP", persona.getDireccion());
-                tab_tabla2.setValor("TELEFONOS_CMREP", persona.getTelefono());
-                tab_tabla2.setValor("EMAIL_CMREP", persona.getMail());
-                utilitario.addUpdate("tab_tabla2");
+                buscaCedulaRepresentante();
             } else {
                 utilitario.agregarMensaje("Número de Cédula Incorrecto", null);
             }
         } else if (tab_tabla2.getValor("IDE_CMTID").equals("1")) {
             if (utilitario.validarRUC(tab_tabla2.getValor("DOCUMENTO_IDENTIDAD_CMREP"))) {
+                buscaCedulaRepresentante();
             } else {
                 utilitario.agregarMensajeInfo("El Número de RUC ingresado no existe", "");
             }
+        } else if (tab_tabla2.getValor("IDE_CMTID").equals("2")) {
+            buscaCedulaRepresentante();
         }
+    }
+
+    public void buscaCedulaRepresentante() {
+        String usu, pass, cedula;
+        usu = "cementerio";
+        pass = "cmtr2016$";
+        cedula = tab_tabla2.getValor("DOCUMENTO_IDENTIDAD_CMREP");
+        paq_webservice.ConsultaCiudadano service = new paq_webservice.ConsultaCiudadano();
+        ClassCiudadania persona = service.getConsultaCiudadanoSoap().busquedaPorCedula(cedula, usu, pass);
+
+        tab_tabla2.setValor("NOMBRES_APELLIDOS_CMREP", persona.getNombre());
+        tab_tabla2.setValor("DIRECCION_CMREP", persona.getDireccion());
+        tab_tabla2.setValor("TELEFONOS_CMREP", persona.getTelefono());
+        tab_tabla2.setValor("EMAIL_CMREP", persona.getMail());
+        utilitario.addUpdate("tab_tabla2");
     }
 
     @Override
@@ -947,7 +948,7 @@ public class pre_inhumacion extends Pantalla {
                     + " from CMT_CATASTRO a left join cmt_lugar b on a.ide_lugar=b.ide_lugar\n"
                     + " left join  (select max(fecha_hasta)as fecha_hasta, ide_catastro from CMT_DETALLE_MOVIMIENTO  group by ide_catastro,ide_fallecido)c  on  c.IDE_CATASTRO=a.IDE_CATASTRO  \n"
                     + "where (case when total_ingresa is null then 0 else  total_ingresa end) <3 \n"
-                    + "and   a.IDE_lugar ='" + cmbTipo.getValue() + "' or habilita=1  group by a.IDE_CATASTRO,DETALLE_LUGAR,SECTOR,NUMERO,MODULO,(case when total_ingresa is null then 0 else total_ingresa end),habilita  order by DETALLE_LUGAR,SECTOR,MODULO,NUMERO");
+                    + "and   a.IDE_lugar ='" + cmbTipo.getValue() + "' or habilita=1  group by a.IDE_CATASTRO,DETALLE_LUGAR,SECTOR,NUMERO,MODULO,(case when total_ingresa is null then 0 else total_ingresa end),habilita  order by SECTOR,MODULO,NUMERO");
             setRegistros.getTab_seleccion().ejecutarSql();
             setRegistros.getTab_seleccion().imprimirSql();
         } else {

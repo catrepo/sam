@@ -819,17 +819,18 @@ public class pre_cambioRepresentante extends Pantalla {
 //        paq_webservice.ConsultaCiudadanoSoap port = service.getConsultaCiudadanoSoap();
 //        return port.busquedaCedulaActual(cedula, usuario, password);
 //    }
-    private static ClassCiudadania busquedaCedulaActual(java.lang.String cedula, java.lang.String usuario, java.lang.String password) {
-        paq_webservice.ConsultaCiudadano service = new paq_webservice.ConsultaCiudadano();
-        paq_webservice.ConsultaCiudadanoSoap port = service.getConsultaCiudadanoSoap();
-        return port.busquedaCedulaActual(cedula, usuario, password);
-    }
-
+   
     public Conexion getConSqler() {
         return conSqler;
     }
 
     public void setConSqler(Conexion conSqler) {
         this.conSqler = conSqler;
+    }
+
+    private static ClassCiudadania busquedaCedulaActual_1(java.lang.String cedula, java.lang.String usuario, java.lang.String password) {
+        paq_webservice.ConsultaCiudadano service = new paq_webservice.ConsultaCiudadano();
+        paq_webservice.ConsultaCiudadanoSoap port = service.getConsultaCiudadanoSoap();
+        return port.busquedaCedulaActual(cedula, usuario, password);
     }
 }
