@@ -254,7 +254,6 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
 
             tabDenuncia.setFilaActual(aut_busca.getValor());
             utilitario.addUpdate("tabDenuncia");
-
         }
     }
     /*
@@ -262,9 +261,7 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
      */
 
     public void busquedaInfo() {
-        System.err.println("cmbTipo.getValue()<<<<<<<<<<" + cmbTipo.getValue());
         if (cmbTipo.getValue() != null && cmbTipo.getValue().toString().isEmpty() == false) {
-
             buscaCedula();
         } else {
             utilitario.agregarMensaje("Parametros de busqueda no seleccionados", null);
@@ -285,6 +282,7 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         if (Integer.parseInt(activos.listaMax("ACF")) > 0) {
             tabDenuncia.insertar();
             tabDenuncia.setValor("numero", activos.listaMax("ACF"));
+                    System.err.println("cmbTipo.getValue()<<<<<<<<<<" + cmbTipo.getValue());
             String str_filtros = "";
             str_filtros = "CUS_ID1 = '" + cmbTipo.getValue() + "'";
             return str_filtros;

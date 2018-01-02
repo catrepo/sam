@@ -238,7 +238,7 @@ public class pre_index {
         dibuja.getChildren().clear();
 
         Alerta ale_inicio = new Alerta();
-        ale_inicio.setAlertaCeleste("<strong>Bienvenido </strong> al Sistema de Administracion Municipal v1.0 <span class='pull-right'> " + utilitario.getFechaLarga(utilitario.getFechaActual()) + " &nbsp;  </span>");
+        ale_inicio.setAlertaCeleste("<strong>Bienvenido </strong> al Sistema de Administracion Municipal v2.0 <span class='pull-right'> " + utilitario.getFechaLarga(utilitario.getFechaActual()) + " &nbsp;  </span>");
         dibuja.getChildren().add(ale_inicio);
 
         RowBootstrap row_cajas = new RowBootstrap();
@@ -268,62 +268,62 @@ public class pre_index {
         cb4.setIcono("fa fa-calendar", "bg-yellow");
         row_cajas.getChildren().add(cb4);
 
-        RowBootstrap row_util = new RowBootstrap();
-        dibuja.getChildren().add(row_util);
-        ContenidoBootstrap cb_izquierda = new ContenidoBootstrap("col-md-6");
-        row_util.getChildren().add(cb_izquierda);
+//        RowBootstrap row_util = new RowBootstrap();
+//        dibuja.getChildren().add(row_util);
+//        ContenidoBootstrap cb_izquierda = new ContenidoBootstrap("col-md-6");
+//        row_util.getChildren().add(cb_izquierda);
+//
+//        PanelBootstrap pb_empresa = new PanelBootstrap();
+//        cb_izquierda.getChildren().add(pb_empresa);
+//        pb_empresa.setPanelVerde();
+//        pb_empresa.setTitulo(tab_empresa.getValor("nom_empr"));
+//        pb_empresa.agregarComponenteContenido(new Etiqueta("<h3  style='font-weight: bold;text-align:center'>" + tab_sucursal.getValor("nom_sucu") + "</h3> <p align='center'>"));
+//        Imagen ima_empresa = new Imagen();
+//        ima_empresa.setValueExpression("value", "pre_index.logo");
+//        ima_empresa.setStyleClass("img-responsive");
+//        pb_empresa.agregarComponenteContenido(ima_empresa);
+//        pb_empresa.agregarComponenteContenido(new Etiqueta("</p>"));
+//        if (dia_sucu_usuario != null) {
+//            BotonBootstrap bb_cambia = new BotonBootstrap();
+//            bb_cambia.setMetodoRuta("pre_index.cambiarSucursal");
+//            bb_cambia.setValue("Cambiar Sucursal");
+//            bb_cambia.setBotonVerde();
+//            bb_cambia.setValueExpression("rendered", "pre_index.dia_sucu_usuario !=null");
+//            pb_empresa.agregarComponenteFooter(bb_cambia);
+//
+//        }
+//
+//        ContenidoBootstrap cb_derecha = new ContenidoBootstrap("col-md-6");
+//        row_util.getChildren().add(cb_derecha);
 
-        PanelBootstrap pb_empresa = new PanelBootstrap();
-        cb_izquierda.getChildren().add(pb_empresa);
-        pb_empresa.setPanelVerde();
-        pb_empresa.setTitulo(tab_empresa.getValor("nom_empr"));
-        pb_empresa.agregarComponenteContenido(new Etiqueta("<h3  style='font-weight: bold;text-align:center'>" + tab_sucursal.getValor("nom_sucu") + "</h3> <p align='center'>"));
-        Imagen ima_empresa = new Imagen();
-        ima_empresa.setValueExpression("value", "pre_index.logo");
-        ima_empresa.setStyleClass("img-responsive");
-        pb_empresa.agregarComponenteContenido(ima_empresa);
-        pb_empresa.agregarComponenteContenido(new Etiqueta("</p>"));
-        if (dia_sucu_usuario != null) {
-            BotonBootstrap bb_cambia = new BotonBootstrap();
-            bb_cambia.setMetodoRuta("pre_index.cambiarSucursal");
-            bb_cambia.setValue("Cambiar Sucursal");
-            bb_cambia.setBotonVerde();
-            bb_cambia.setValueExpression("rendered", "pre_index.dia_sucu_usuario !=null");
-            pb_empresa.agregarComponenteFooter(bb_cambia);
+//        PanelBootstrap pb_busca_pantalla = new PanelBootstrap();
+//        cb_derecha.getChildren().add(pb_busca_pantalla);
+//        pb_busca_pantalla.setPanelNaranja();
+//        pb_busca_pantalla.setTitulo("BUSCAR PANTALLA");
+//
+//        GrupoBootstrap grb_abrir = new GrupoBootstrap();
+//        grb_abrir.setAutocompletar(aut_pantalla);
+//        BotonBootstrap bot_abrir = new BotonBootstrap();
+//        bot_abrir.setId("bot_buscaPantalla");
+//        bot_abrir.setBotonAzul();
+//        bot_abrir.setBotonUpdate("dibuja,:fortitulo");
+//        bot_abrir.setOnclick("dimensionesDisponibles()");
+//        bot_abrir.setActionListenerRuta("pre_index.cargar");
+//        bot_abrir.setValue("Abrir");
+//        grb_abrir.setBotonBootstrap(bot_abrir);
+//        pb_busca_pantalla.agregarComponenteContenido(grb_abrir);
 
-        }
-
-        ContenidoBootstrap cb_derecha = new ContenidoBootstrap("col-md-6");
-        row_util.getChildren().add(cb_derecha);
-
-        PanelBootstrap pb_busca_pantalla = new PanelBootstrap();
-        cb_derecha.getChildren().add(pb_busca_pantalla);
-        pb_busca_pantalla.setPanelNaranja();
-        pb_busca_pantalla.setTitulo("BUSCAR PANTALLA");
-
-        GrupoBootstrap grb_abrir = new GrupoBootstrap();
-        grb_abrir.setAutocompletar(aut_pantalla);
-        BotonBootstrap bot_abrir = new BotonBootstrap();
-        bot_abrir.setId("bot_buscaPantalla");
-        bot_abrir.setBotonAzul();
-        bot_abrir.setBotonUpdate("dibuja,:fortitulo");
-        bot_abrir.setOnclick("dimensionesDisponibles()");
-        bot_abrir.setActionListenerRuta("pre_index.cargar");
-        bot_abrir.setValue("Abrir");
-        grb_abrir.setBotonBootstrap(bot_abrir);
-        pb_busca_pantalla.agregarComponenteContenido(grb_abrir);
-
-        PanelBootstrap pb_pantallas = new PanelBootstrap();
-        pb_pantallas.setPanelAzul();
-        pb_pantallas.setTitulo("PANTALLAS MÁS USADAS");
-        cb_derecha.getChildren().add(pb_pantallas);
-
-        ListaBootstrap lib_pantallas = new ListaBootstrap();
-        lib_pantallas.setActionListenerRuta("pre_index.cargar");
-        lib_pantallas.setUpdate("dibuja,:fortitulo");
-        lib_pantallas.setOnClick("dimensionesDisponibles()");
-        lib_pantallas.setListaBootstrap(ser_seguridad.getSqlPantallasMasUsadas(utilitario.getVariable("ide_usua")));
-        pb_pantallas.agregarComponenteContenido(lib_pantallas);
+//        PanelBootstrap pb_pantallas = new PanelBootstrap();
+//        pb_pantallas.setPanelAzul();
+//        pb_pantallas.setTitulo("PANTALLAS MÁS USADAS");
+//        cb_derecha.getChildren().add(pb_pantallas);
+//
+//        ListaBootstrap lib_pantallas = new ListaBootstrap();
+//        lib_pantallas.setActionListenerRuta("pre_index.cargar");
+//        lib_pantallas.setUpdate("dibuja,:fortitulo");
+//        lib_pantallas.setOnClick("dimensionesDisponibles()");
+//        lib_pantallas.setListaBootstrap(ser_seguridad.getSqlPantallasMasUsadas(utilitario.getVariable("ide_usua")));
+//        pb_pantallas.agregarComponenteContenido(lib_pantallas);
 
         utilitario.addUpdate("dibuja");
     }
