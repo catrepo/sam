@@ -6,25 +6,44 @@
     <h:head>
         <title>SAM</title>
     </h:head>     
-    <script type="text/javascript" src="resources/sistema/sistema.js"/>
-    <link rel="stylesheet" type="text/css" href="resources/components/bootstrap/dist/css/bootstrap.min.css"/>    
-    <link rel="stylesheet" type="text/css" href="resources/login/css/home.css"/>
-    <h:body  onload="abrirPopUp('login.jsf');">
+    <style type="text/css">
+            .login-box {
+                width: 980px;
+                margin: 7% auto;
+                background: rgba(255,255,255,1);
+                background: -moz-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%, rgba(172,198,220,1) 100%);
+                background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(172,198,220,1)));
+                background: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%, rgba(172,198,220,1) 100%);
+                background: -o-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%, rgba(172,198,220,1) 100%);
+                background: -ms-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%, rgba(172,198,220,1) 100%);
+                background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(172,198,220,1) 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#acc6dc', GradientType=1 );
+
+            }
+        </style>
+        <script type="text/javascript" src="resources/sistema/sistema.js"/>
+        <link rel="stylesheet" type="text/css" href="resources/components/bootstrap/dist/css/bootstrap.min.css"/>
+    <h:body style="background-color: #d2d6de" onload="abrirPopUp('login.jsf');">
         <p:growl autoUpdate="true" showDetail="true" sticky="true"/>  
-        <div class="site-wrapper">
-            <div class="site-wrapper-inner">
-                <div class="cover-container">
-                    <div class="masthead clearfix">
-                        <img class="logo" src="imagenes/logo.png" />
-                    </div>
-                    <div class="inner cover">
-                        <h1 class="cover-heading">SISTEMA DE ADMINISTRACION MUNICIPAL (SAM)<small> 2.0</small> </h1> 
-                        <p  class="texto">Se ha abierto una nueva ventana para que ingrese al sistema, si no puede verla, por favor presione el botón.</p>
-                        <p>
-                            <a onclick="abrirPopUp('login.jsf');" class="btn btn-lg btn-success">Abrir Sistema</a>
-                        </p>
-                    </div>
-                </div>
+        <div class ="login-box">
+            <div align="center">
+                <img src="imagenes/MasterPage_r1_c1.jpg" alt=""/>
+                <img src="imagenes/MasterPage_r1_c3.jpg" alt=""/>
+                <img src="imagenes/MasterPage_r1_c4.jpg" alt=""/>
+            </div>
+            <br></br>
+            <br></br>
+            <div align="center">
+                <h1>Por favor presione el botón.</h1>
+                <br></br>
+                <p>
+                    <a onclick="abrirPopUp('login.jsf');" class="btn btn-lg btn-success">Abrir Sistema</a>
+                </p>
+            </div>
+            <br></br>
+            <br></br>
+            <div align="center">
+                <small>  <a href="http://www.ruminahui.gob.ec" target="_blank">www.ruminahui.gob.ec</a></small>
             </div>
         </div>
     </h:body>

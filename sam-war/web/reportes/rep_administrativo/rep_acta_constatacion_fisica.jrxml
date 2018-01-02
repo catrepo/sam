@@ -113,7 +113,7 @@ Sangolquí-Ecuador]]></text>
 			</staticText>
 			<image scaleImage="RetainShape">
 				<reportElement x="42" y="0" width="191" height="51" uuid="10c2257d-49ad-42b1-91d8-53e0c76f9939"/>
-				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logoP.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logor.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>

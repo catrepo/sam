@@ -77,7 +77,7 @@ order by responsable]]>
 			</staticText>
 			<image>
 				<reportElement x="0" y="-17" width="149" height="60" uuid="be793b22-949c-400f-a844-8a37994f41e4"/>
-				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_reporte.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logor.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
