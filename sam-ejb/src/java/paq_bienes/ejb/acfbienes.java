@@ -26,16 +26,16 @@ public class acfbienes {
         conSqlcy();
         tabFuncionario.setConexion(conSqlcy);
 //        tabFuncionario.setSql("select 0 as id, (case when max(numero) is null then 1 else max(numero)+1 end) as maximo from acf");
-        tabFuncionario.setSql("select id, (case when max(numero) is null then 1 else max(numero)+1 end) as maximo from numericos where anio = year(GETDATE()) and estado=1 and tipo ='"+tipo+"' group by id");
+        tabFuncionario.setSql("select id, (case when max(numero) is null then 1 else max(numero)+1 end) as maximo from numericos where (case when anio = year(GETDATE()) then 1 when anio = (year(GETDATE())-1) then 1 else 0 end)=1 and estado=1 and tipo ='" + tipo + "' group by id");
         tabFuncionario.ejecutarSql();
         ValorMax = tabFuncionario.getValor("maximo");
         return ValorMax;
     }
 
-    public void setUpdateFallecido(Integer codigo,String tipo) {
+    public void setUpdateFallecido(Integer codigo, String tipo) {
         String auSql = "update numericos\n"
-                + "set numero="+codigo+"\n"
-                + "where id =(select id from numericos where anio = year(GETDATE()) and estado=1 and tipo ='"+tipo+"')";
+                + "set numero=" + codigo + "\n"
+                + "where id =(select id from numericos where (case when anio = year(GETDATE()) then 1 when anio = (year(GETDATE())-1) then 1 else 0 end)=1 and estado=1 and tipo ='" + tipo + "')";
         conSqlcy();
         conSqlcy.ejecutarSql(auSql);
         desConSqlcy();
