@@ -146,8 +146,8 @@ public class IgualarAnticipo extends Pantalla {
                 System.err.println("" + tabDetalle.getValorSeleccionado());
                 TablaGenerica tabDato = admin.getSolicitudID(Integer.parseInt(tabDetalle.getValorSeleccionado() + ""));
                 if (!tabDato.isEmpty()) {
-                    if(Integer.parseInt(tabDato.getValor("ide_periodo"))< utilitario.getMes(utilitario.getFechaActual())
-                            && Integer.parseInt(tabDato.getValor("anio")) <= utilitario.getAnio(utilitario.getFechaActual())){
+//                    if(Integer.parseInt(tabDato.getValor("ide_periodo"))< utilitario.getMes(utilitario.getFechaActual())
+//                            && Integer.parseInt(tabDato.getValor("anio")) <= utilitario.getAnio(utilitario.getFechaActual())){
                         String codigo = "";
                         codigo = numDocumento();
                         admin.regCuotaAbono(Integer.parseInt(tabDato.getValor("id_solicitud")), codigo.substring(3, 10), Integer.parseInt(codigo.substring(0, 2)), Double.parseDouble(txtValor.getValue() + ""), txaObservacion.getValue() + "", utilitario.getVariable("NICK"), Integer.parseInt(tabDetalle.getValorSeleccionado() + ""));
@@ -158,9 +158,9 @@ public class IgualarAnticipo extends Pantalla {
                         diaDialogo.cerrar();
                         utilitario.agregarMensaje("Operacion ejecutada", null);
                         utilitario.addUpdate("tabDetalle");
-                    }else{
-                        utilitario.agregarMensaje("Las cuotas solo pueden ser igualadas a un mes anterior de lo mostrado", null);
-                    }
+//                    }else{
+//                        utilitario.agregarMensaje("Las cuotas solo pueden ser igualadas a un mes anterior de lo mostrado", null);
+//                    }
                     }else {
                         utilitario.agregarMensaje("Cedula no encontrada", null);
                     }

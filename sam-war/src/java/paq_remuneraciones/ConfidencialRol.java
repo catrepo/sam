@@ -178,12 +178,9 @@ public class ConfidencialRol extends Pantalla {
                  mes = 0,
                  anio = 0,
                  anioa = 0,
-                 mesa = 0,
-                        dia1=0
-                 ;
+                 mesa = 0;
                 String cedula = "",
-                 tabla = "",
-                 aux = "";
+                 tabla = "";
                 double ingreso = 0.0,
                  egreso = 0.0,
                  liquido = 0.0;
@@ -216,7 +213,12 @@ public class ConfidencialRol extends Pantalla {
                         }
                     }
                 } else {
-                    tabla = "0";
+                     TablaGenerica tabValida = adminRemuneracion.getActualServidores(cedula, generico.meses(Integer.parseInt(cmbPeriodo.getValue() + "")), cmbAnio.getValue() + "", "1");
+                        if (!tabValida.isEmpty()) {
+                            tabla = "1";
+                        } else {
+                            tabla = "0";
+                        }
                 }
 
                 TablaGenerica tabValidar = adminRemuneracion.getActualServidores(cedula, generico.meses(Integer.parseInt(cmbPeriodo.getValue() + "")), cmbAnio.getValue() + "", tabla);
@@ -242,6 +244,7 @@ public class ConfidencialRol extends Pantalla {
                 p_parametros.put("liquido", liquido);
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                System.out.println("->> " + p_parametros);
                 sef_formato.dibujar();
                 break;
         }
