@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_meses_decimo_tercero" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="0" rightMargin="20" topMargin="0" bottomMargin="0" uuid="bb5b2a39-860f-4f87-a41e-daa9aa335919">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_meses_decimo_tercero" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="0" rightMargin="20" topMargin="0" bottomMargin="0" uuid="bb5b2a39-860f-4f87-a41e-daa9aa335919">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -152,101 +152,101 @@ $F{julio}+$F{agosto}+$F{septiembre}+$F{octubre}+$F{noviembre}]]></variableExpres
 	<columnHeader>
 		<band height="21" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="786b8d34-be7c-4561-873e-4773ce998507" x="329" y="0" width="64" height="20"/>
+				<reportElement x="329" y="0" width="64" height="20" uuid="786b8d34-be7c-4561-873e-4773ce998507"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{junio}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="b0da3974-3266-469a-91d0-2687e818a66f" x="548" y="0" width="64" height="20"/>
+				<reportElement x="548" y="0" width="64" height="20" uuid="b0da3974-3266-469a-91d0-2687e818a66f"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{octubre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="d11cbbc5-2aac-4255-a62e-a84e030d3ed8" x="274" y="0" width="64" height="20"/>
+				<reportElement x="274" y="0" width="64" height="20" uuid="d11cbbc5-2aac-4255-a62e-a84e030d3ed8"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{mayo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="6563dfe2-4915-4c20-ab50-d6a996e26fe8" x="438" y="0" width="64" height="20"/>
+				<reportElement x="438" y="0" width="64" height="20" uuid="6563dfe2-4915-4c20-ab50-d6a996e26fe8"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{agosto}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement uuid="77ec6c72-f799-46bf-8165-c425f9d6a1c4" x="0" y="0" width="64" height="20"/>
+				<reportElement x="0" y="0" width="64" height="20" uuid="77ec6c72-f799-46bf-8165-c425f9d6a1c4"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{diciembre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="cbacba12-15e7-4330-9825-3a86b1782cd4" x="494" y="0" width="64" height="20"/>
+				<reportElement x="494" y="0" width="64" height="20" uuid="cbacba12-15e7-4330-9825-3a86b1782cd4"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{septiembre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="af6fb4d2-2e49-45ca-a75c-2acde563ef0e" x="55" y="0" width="64" height="20"/>
+				<reportElement x="55" y="0" width="64" height="20" uuid="af6fb4d2-2e49-45ca-a75c-2acde563ef0e"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{enero}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="e3816612-133c-45d3-94ec-fa21c390d981" x="383" y="0" width="64" height="20"/>
+				<reportElement x="383" y="0" width="64" height="20" uuid="e3816612-133c-45d3-94ec-fa21c390d981"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{julio}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="e22ff2a3-718e-4ac5-8574-a5ddcbefa69b" x="220" y="0" width="64" height="20"/>
+				<reportElement x="220" y="0" width="64" height="20" uuid="e22ff2a3-718e-4ac5-8574-a5ddcbefa69b"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{abril}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="80792199-6443-4d73-8eea-4127d5aa2c08" x="602" y="0" width="64" height="20"/>
+				<reportElement x="602" y="0" width="64" height="20" uuid="80792199-6443-4d73-8eea-4127d5aa2c08"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{noviembre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="ad80c3e0-3f4d-4b00-a9f1-5ca1ed2adfbb" x="107" y="0" width="64" height="20"/>
+				<reportElement x="107" y="0" width="64" height="20" uuid="ad80c3e0-3f4d-4b00-a9f1-5ca1ed2adfbb"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{febrero}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="c095b5d6-fd9c-4c9a-8c4c-407424187e08" x="166" y="0" width="64" height="20"/>
+				<reportElement x="166" y="0" width="64" height="20" uuid="c095b5d6-fd9c-4c9a-8c4c-407424187e08"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{marzo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="c0f5c44a-13c3-42a6-aedd-32b80326201a" x="669" y="0" width="64" height="20"/>
+				<reportElement x="669" y="0" width="64" height="20" uuid="c0f5c44a-13c3-42a6-aedd-32b80326201a"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="0964534c-c650-4a37-8e15-2a7d22166c75" x="0" y="20" width="733" height="1"/>
+				<reportElement x="0" y="20" width="733" height="1" uuid="0964534c-c650-4a37-8e15-2a7d22166c75"/>
 			</line>
 			<line>
-				<reportElement uuid="cdbccf2c-9d2e-438a-8c7c-7f93cd318f5d" x="0" y="0" width="733" height="1"/>
+				<reportElement x="0" y="0" width="733" height="1" uuid="cdbccf2c-9d2e-438a-8c7c-7f93cd318f5d"/>
 			</line>
 		</band>
 	</columnHeader>

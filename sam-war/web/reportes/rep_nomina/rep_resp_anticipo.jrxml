@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_resp_anticipo" language="groovy" pageWidth="210" pageHeight="297" columnWidth="210" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2b21559a-7bcb-46ba-a780-19ec3e82c113">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_resp_anticipo" pageWidth="210" pageHeight="297" columnWidth="210" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2b21559a-7bcb-46ba-a780-19ec3e82c113">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -13,8 +13,7 @@
 	<detail>
 		<band height="13" splitType="Stretch">
 			<textField>
-				<reportElement uuid="13a8c9e2-46e7-4672-8653-2ba8f4174446" x="0" y="0" width="100" height="13"/>
-				<textElement/>
+				<reportElement x="0" y="0" width="100" height="13" uuid="13a8c9e2-46e7-4672-8653-2ba8f4174446"/>
 				<textFieldExpression><![CDATA[$F{ide_responsable}]]></textFieldExpression>
 			</textField>
 		</band>
