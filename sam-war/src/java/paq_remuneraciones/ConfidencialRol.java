@@ -239,6 +239,7 @@ public class ConfidencialRol extends Pantalla {
                 p_parametros.put("cedula", cedula);
                 p_parametros.put("mes1", meses(Integer.parseInt(cmbPeriodo.getValue() + "")));
                 p_parametros.put("bandera", tabla);
+                System.out.println("->>1 ");
                 p_parametros.put("ingreso", ingreso);
                 p_parametros.put("egreso", egreso);
                 p_parametros.put("liquido", liquido);
