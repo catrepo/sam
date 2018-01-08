@@ -53,16 +53,25 @@ public class ServiciosAdquisiones {
             "order by CODIGO_ADPAMA";
         return sql;
     }
-     public String getMaterial() {
-        String sql="";
-        sql="select IDE_ADMATE,CODIGO_ADMATE,DETALLE_ADMATE\n" +
-            "from ADQ_MATERIAL " +
-            "order by CODIGO_ADMATE";
+     public String getMaterial(String tipo,String tipo_compra) {
+         
+        String sql="select IDE_ADMATE,CODIGO_ADMATE,DETALLE_ADMATE\n" +
+            "from ADQ_MATERIAL ";            
+        if (tipo.equals("1")){
+            sql +=" where tipo_bien_admate in ("+tipo_compra+") ";
+        }
+            sql+=" order by CODIGO_ADMATE";
         return sql;
     }
-    public String getAreaAdministrativa() {
-        String sql="";
-        sql="SELECT IDE_ADARAD, CODIGO_ADARAD, DETALLE_ADARAD FROM ADQ_AREA_ADMINISTRATIVA";
+    public String getAreaAdministrativa(String tipo, String empleado) {
+        String sql="SELECT IDE_ADARAD, CODIGO_ADARAD, DETALLE_ADARAD FROM ADQ_AREA_ADMINISTRATIVA ";
+        if(tipo.equals("1")){
+            sql +=" where IDE_ADARAD in (select IDE_ADARAD from ADQ_EMPLEADO_DEPARTAMENTO where IDE_ADEMDE ="+empleado+") ";
+        }
+        if(tipo.equals("2")){
+            sql +=" select IDE_ADARAD from ADQ_EMPLEADO_DEPARTAMENTO where IDE_ADEMDE in (select IDE_ADEMDE from ADQ_EMPLEADO_APRUEBA where IDE_ADEMAP="+empleado+") ";
+        } 
+        sql+=" order by DETALLE_ADARAD ";
         return sql;
     }
     public String getEmpleado() {
@@ -110,7 +119,7 @@ public class ServiciosAdquisiones {
     }
     public String getUsuario(String activo) {
         String sql="";
-        sql="SELECT IDE_USUA, NICK_USUA, NOM_USUA FROM SIS_USUARIO WHERE ACTIVO_USUA in ("+activo+")";
+        sql="SELECT IDE_USUA, NICK_USUA, NOM_USUA,NOM_PERF FROM SIS_USUARIO a , SIS_PERFIL b WHERE a.IDE_PERF = b.IDE_PERF and ACTIVO_USUA in ("+activo+")";
         return sql;
     }
     public String getUsuarioSistema(String ide_usua,String activo,String tipo_aprobador) {
