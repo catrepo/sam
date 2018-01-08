@@ -59,7 +59,7 @@ public class AdquisicionesSecretarias extends Pantalla {
         agregarComponente(sel_rep);
          
             com_direccion.setId("com_direccion");
-            com_direccion.setCombo(ser_adquisiciones.getAreaAdministrativa());
+           com_direccion.setCombo(ser_adquisiciones.getAreaAdministrativa("1",ide_ademple));
             agregarComponente(com_direccion);
             bar_botones.agregarComponente(com_direccion);
             com_direccion.setMetodo("filtroDireccion");
@@ -71,19 +71,20 @@ public class AdquisicionesSecretarias extends Pantalla {
         tab_adquisiones.setId("tab_adquisiones");   //identificador
         tab_adquisiones.setTabla("adq_compra", "ide_adcomp", 1);
         tab_adquisiones.setCondicion("ide_adcomp=-1");
+        tab_adquisiones.setCampoOrden("ide_adcomp desc");
         List lista = new ArrayList();
         List lista1 = new ArrayList();
         List lista2 = new ArrayList();
         Object fila1[] = {"1", "SI"};
         Object fila2[] = {"2", "NO"};
         Object fila5[] = {"1", "COMPRA EN STOCK"};
-        Object fila6[] = {"2", "COMPRA DE CONSUMO DIRECTO"};
+        //Object fila6[] = {"2", "COMPRA DE CONSUMO DIRECTO"};
         Object fila7[] = {"1", "BODEGA MUNICIPAL"};
         Object fila8[] = {"2", "ACTIVOS FIJOS"};        
         lista.add(fila1);
         lista.add(fila2);
         lista2.add(fila5);
-        lista2.add(fila6);
+        //lista2.add(fila6);
         lista1.add(fila7);
         lista1.add(fila8);        
         tab_adquisiones.getColumna("existe_adcomp").setRadio(lista, "1");
@@ -106,6 +107,7 @@ public class AdquisicionesSecretarias extends Pantalla {
         tab_adquisiones.agregarRelacion(tab_compra_bienes);
         tab_adquisiones.setTipoFormulario(true);
         tab_adquisiones.getGrid().setColumns(6);
+        tab_adquisiones.getColumna("NUMERO_ORDEN_ADCOMP").setLectura(true);
         tab_adquisiones.getColumna("IDE_ADEMAP").setNombreVisual("SOLICITANTE");
         tab_adquisiones.getColumna("IDE_ADEMDE").setNombreVisual("RESGITRO SOLICITUD");        
         tab_adquisiones.getColumna("IDE_ADCOMP").setNombreVisual("CODIGO");
@@ -197,9 +199,9 @@ public class AdquisicionesSecretarias extends Pantalla {
         tab_certificacion.setTabla("ADQ_CERTIFICACION", "IDE_ADCERT", 2);
         List lista3 = new ArrayList();
         Object fila3[] = {"1", "CERTIFICACION"};
-        Object fila4[] = {"2", "COMPROMISO"};
+        //Object fila4[] = {"2", "COMPROMISO"};
         lista3.add(fila3);
-        lista3.add(fila4);
+        //lista3.add(fila4);
         tab_certificacion.getColumna("tipo_documento_adcert").setCombo(lista3);
         tab_certificacion.getColumna("IDE_ADCERT").setNombreVisual("CODIGO");
         tab_certificacion.getColumna("TIPO_DOCUMENTO_ADCERT").setNombreVisual("TIPO DOCUMENTO");
@@ -214,7 +216,8 @@ public class AdquisicionesSecretarias extends Pantalla {
         tab_compra_bienes.setId("tab_compra_bienes");
         tab_compra_bienes.setIdCompleto("tab_tabulador:tab_compra_bienes");
         tab_compra_bienes.setTabla("ADQ_COMPRA_BIENES", "IDE_ADCOBI", 3);
-        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial());
+        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial("0","0"));
+        tab_compra_bienes.getColumna("IDE_ADMATE").setAutoCompletar();
         tab_compra_bienes.getColumna("IDE_ADCOBI").setNombreVisual("CODIGO");
         tab_compra_bienes.getColumna("IDE_ADMATE").setNombreVisual("MATERIAL");
         tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setNombreVisual("CANTIDAD");
@@ -304,6 +307,7 @@ private boolean tienePerfilSecretaria() {
             tab_certificacion.insertar();
         } else if (tab_compra_bienes.isFocus()) {
             tab_compra_bienes.insertar();
+
         }
                }
     }
@@ -312,12 +316,29 @@ private boolean tienePerfilSecretaria() {
     public void guardar() {
         if (tab_adquisiones.isFocus()) {
             tab_adquisiones.guardar();
-        } else if (tab_certificacion.isFocus()) {
+                    } else if (tab_certificacion.isFocus()) {
             tab_certificacion.guardar();
         } else if (tab_compra_bienes.isFocus()) {
             tab_compra_bienes.guardar();
         }
         guardarPantalla();
+        //System.out.println("imprimo "+tab_adquisiones.getValorSeleccionado());
+        //System.out.println("imprimoss "+tab_adquisiones.getFilaActual());
+        //System.out.println("imprimodd "+tab_adquisiones.getValor("IDE_ADCOMP"));
+        utilitario.getConexion().ejecutarSql("update ADQ_COMPRA\n" +
+                                                "set NUMERO_ORDEN_ADCOMP=numero\n" +
+                                                "from (\n" +
+                                                "select (case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 as maximo,\n" +
+                                                "len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 )as longitu,\n" +
+                                                "(case when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =1 then concat('00000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n" +
+                                                "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =2 then concat('0000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n" +
+                                                "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =3 then concat('000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n" +
+                                                "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =4 then concat('00',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n" +
+                                                "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =5 then concat('0',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n" +
+                                                "end) as numero\n" +
+                                                "from ADQ_COMPRA\n" +
+                                                ") a where ADQ_COMPRA.IDE_ADCOMP ="+tab_adquisiones.getValorSeleccionado());
+       tab_adquisiones.ejecutarSql();
     }
 
     @Override

@@ -30,7 +30,7 @@ public class EmpleadoDepartamentoAprueba extends Pantalla{
     public EmpleadoDepartamentoAprueba (){
         
         aut_emple_depa_aprue.setId("aut_emple_depa_aprue");
-        aut_emple_depa_aprue.setAutoCompletar(ser_adquisiciones.getAreaAdministrativa());
+        aut_emple_depa_aprue.setAutoCompletar(ser_adquisiciones.getAreaAdministrativa("0","0"));
         aut_emple_depa_aprue.setSize(75);
         aut_emple_depa_aprue.setMetodoChange("selecionoAutocompletar");
         aut_emple_depa_aprue.setTitle("EMPLEADOS INSTITUCIONALES");
@@ -42,7 +42,7 @@ public class EmpleadoDepartamentoAprueba extends Pantalla{
        tab_emp_depar.setTabla("adq_empleado_departamento", "ide_ademde", 1);
        tab_emp_depar.setCondicion("ide_adarad=-1");
        tab_emp_depar.getColumna("ide_adarad").setVisible(false);
-       tab_emp_depar.getColumna("ide_adarad").setCombo(ser_adquisiciones.getAreaAdministrativa());
+       tab_emp_depar.getColumna("ide_adarad").setCombo(ser_adquisiciones.getAreaAdministrativa("0","0"));
        tab_emp_depar.getColumna("ide_ademple").setCombo(ser_adquisiciones.getEmpleado());
        tab_emp_depar.getColumna("ide_adcarg").setCombo(ser_adquisiciones.getCargo());
        tab_emp_depar.getColumna("ide_adtiap").setCombo(ser_adquisiciones.getTipoAprobador());

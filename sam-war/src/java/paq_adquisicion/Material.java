@@ -33,6 +33,12 @@ public class Material extends Pantalla {
        tab_material.getColumna("DETALLE_ADMATE").setNombreVisual("DETALLE");
        tab_material.getColumna("CODIGO_ADMATE").setNombreVisual("CODIGO MATERIAL");
        tab_material.getColumna("APLICA_COD_PRESU_ADMATE").setNombreVisual("APLICA CODIGO PRESUPUESTARIO");
+       List lista = new ArrayList();
+       Object fila1[] = {"1", "ACTIVO FIJO"};
+       Object fila2[] = {"2", "STOCK EN BODEGA"};
+       lista.add(fila1);
+       lista.add(fila2);
+       tab_material.getColumna("tipo_bien_admate").setCombo(lista);
        tab_material.dibujar();
        
       PanelTabla pat_material = new PanelTabla();
@@ -45,6 +51,8 @@ public class Material extends Pantalla {
        tab_partida_material.getColumna("IDE_ADPAMA").setNombreVisual("CODIGO");
        tab_partida_material.getColumna("IDE_ADARPA").setNombreVisual("AREA PARTIDA");
        tab_partida_material.getColumna("CODIGO_ADPAMA").setNombreVisual("CODIGO PARTIDA MATERIAL");
+     
+       
        tab_partida_material.dibujar();
        
       PanelTabla pat_partida_material = new PanelTabla();

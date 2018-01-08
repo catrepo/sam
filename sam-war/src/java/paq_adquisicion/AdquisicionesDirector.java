@@ -70,7 +70,7 @@ public class AdquisicionesDirector extends Pantalla {
         agregarComponente(sel_rep);
          
             com_direccion.setId("com_direccion");
-            com_direccion.setCombo(ser_adquisiciones.getAreaAdministrativa());
+            com_direccion.setCombo(ser_adquisiciones.getAreaAdministrativa("2",ide_ademple));
             agregarComponente(com_direccion);
             bar_botones.agregarComponente(com_direccion);
             com_direccion.setMetodo("filtroDireccion");
@@ -226,7 +226,7 @@ public class AdquisicionesDirector extends Pantalla {
         tab_compra_bienes.setId("tab_compra_bienes");
         tab_compra_bienes.setIdCompleto("tab_tabulador:tab_compra_bienes");
         tab_compra_bienes.setTabla("ADQ_COMPRA_BIENES", "IDE_ADCOBI", 3);
-        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial());
+        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial("0","0"));
         tab_compra_bienes.getColumna("IDE_ADCOBI").setNombreVisual("CODIGO");
         tab_compra_bienes.getColumna("IDE_ADMATE").setNombreVisual("MATERIAL");
         tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setNombreVisual("CANTIDAD");
