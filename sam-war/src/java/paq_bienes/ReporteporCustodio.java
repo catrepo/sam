@@ -9,6 +9,8 @@
 package paq_bienes;
 
 import framework.componentes.Boton;
+import framework.componentes.Combo;
+import framework.componentes.Etiqueta;
 import framework.componentes.Grid;
 import framework.componentes.Imagen;
 import framework.componentes.Panel;
@@ -16,7 +18,10 @@ import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
 import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
+import framework.componentes.Texto;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import paq_beans.Archivo;
@@ -30,8 +35,11 @@ public class ReporteporCustodio extends Pantalla {
     private Conexion CAYMAN = new Conexion();
     //declaracion de tablas
     private Tabla tabConsulta = new Tabla();
+    private SeleccionTabla setActivo = new SeleccionTabla();
     private SeleccionTabla setCuentas = new SeleccionTabla();
     private SeleccionTabla setCustodios = new SeleccionTabla();
+    private Combo cmbOpcion = new Combo();
+    private Texto texBusqueda = new Texto();
     ///REPORTES
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
@@ -117,6 +125,98 @@ public class ReporteporCustodio extends Pantalla {
         setCustodios.setHeader("SELECCIONAR PROGRAMA");
         agregarComponente(setCustodios);
 
+        List list = new ArrayList();
+        Object fila1[] = {
+            "0", "Cod. Barras"
+        };
+        Object fila2[] = {
+            "1", "Custodio"
+        };
+        Object fila3[] = {
+            "2", "Cod. Antiguo"
+        };
+        list.add(fila1);;
+        list.add(fila2);;
+        list.add(fila3);;
+
+        cmbOpcion.setCombo(list);
+        cmbOpcion.eliminarVacio();
+
+        Grid griPri = new Grid();
+        griPri.setColumns(3);
+
+        Grid gri_busca1 = new Grid();
+        gri_busca1.setColumns(5);
+        gri_busca1.getChildren().add(new Etiqueta("Buscar por :"));
+        gri_busca1.getChildren().add(cmbOpcion);
+        griPri.getChildren().add(gri_busca1);
+
+        gri_busca1.getChildren().add(new Etiqueta("Ingrese: "));
+        texBusqueda.setSize(50);
+        gri_busca1.getChildren().add(texBusqueda);
+
+        griPri.getChildren().add(gri_busca1);
+        bar_botones.agregarComponente(griPri);
+
+        Boton bot_buscar1 = new Boton();
+        bot_buscar1.setValue("Buscar");
+        bot_buscar1.setIcon("ui-icon-search");
+        bot_buscar1.setMetodo("busquedaInfo");
+        bar_botones.agregarBoton(bot_buscar1);
+        gri_busca1.getChildren().add(bot_buscar1);
+
+        setActivo.setId("setActivo");
+        setActivo.getTab_seleccion().setConexion(CAYMAN);
+        setActivo.setSeleccionTabla("select CODIGOBARRAS,CODIGOBARRAS as codigo, des_activo,nombre_t,nombre from vw_ActivosFijos where CODIGOBARRAS='" + texBusqueda.getValue() + "'", "CODIGOBARRAS");
+        setActivo.getTab_seleccion().getColumna("codigo").setLongitud(30);
+        setActivo.getTab_seleccion().getColumna("des_activo").setLongitud(35);
+        setActivo.getTab_seleccion().getColumna("nombre_t").setLongitud(35);
+        setActivo.getTab_seleccion().getColumna("nombre_t").setFiltro(true);
+        setActivo.getTab_seleccion().setRows(10);
+        setActivo.setRadio();
+        setActivo.getGri_cuerpo().setHeader(gri_busca1);//consultaFallecido
+        setActivo.getBot_aceptar().setMetodo("dibujarReporte");
+        setActivo.setHeader("SELECCIONAR ARTICULO");
+        agregarComponente(setActivo);
+    }
+
+    public void busquedaInfo() {
+        if (cmbOpcion.getValue().equals("0")) {
+            buscarSolicitud();
+        } else if (cmbOpcion.getValue().equals("1")) {
+            buscarSolicitud1();
+        } else if (cmbOpcion.getValue().equals("2")) {
+            buscarSolicitud2();
+        } else {
+            utilitario.agregarMensaje("Parametros de busqueda no seleccionados", null);
+        }
+    }
+
+    public void buscarSolicitud() {
+        if (texBusqueda.getValue() != null && texBusqueda.getValue().toString().isEmpty() == false) {
+            setActivo.getTab_seleccion().setSql("select CODIGOBARRAS,CODIGOBARRAS as codigo, des_activo,nombre_t,nombre from vw_ActivosFijos where CODIGOBARRAS LIKE '%" + texBusqueda.getValue() + "'");
+            setActivo.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
+        }
+    }
+
+    public void buscarSolicitud1() {
+        if (texBusqueda.getValue() != null && texBusqueda.getValue().toString().isEmpty() == false) {
+            setActivo.getTab_seleccion().setSql("select CODIGOBARRAS, CODIGOBARRAS as codigo,des_activo,nombre_t,nombre from vw_ActivosFijos where responsable LIKE '%" + texBusqueda.getValue() + "%'");
+            setActivo.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
+        }
+    }
+
+    public void buscarSolicitud2() {
+        if (texBusqueda.getValue() != null && texBusqueda.getValue().toString().isEmpty() == false) {
+            setActivo.getTab_seleccion().setSql("select CODIGOBARRAS, CODIGOBARRAS as codigo,des_activo,nombre_t,nombre from vw_ActivosFijos where codigo LIKE '%" + texBusqueda.getValue() + "%'");
+            setActivo.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
+        }
     }
 
     @Override
@@ -130,6 +230,9 @@ public class ReporteporCustodio extends Pantalla {
         switch (rep_reporte.getNombre()) {
             case "ACTIVOS POR CUENTAS":
                 setCuentas.dibujar();
+                break;
+            case "ACTIVOS INDIVIDUAL":
+                setActivo.dibujar();
                 break;
             case "ACTIVOS POR CUSTODIO":
                 setCustodios.dibujar();
@@ -150,7 +253,15 @@ public class ReporteporCustodio extends Pantalla {
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
-
+            case "ACTIVOS INDIVIDUAL":
+                p_parametros.put("cuenta", setActivo.getValorSeleccionado() + "");
+                p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                System.err.println("->" + p_parametros);
+                System.err.println("->" + rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
             case "ACTIVOS POR CUSTODIO":
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 p_parametros.put("custodio", setCustodios.getValorSeleccionado() + "");
@@ -227,5 +338,13 @@ public class ReporteporCustodio extends Pantalla {
 
     public void setSetCustodios(SeleccionTabla setCustodios) {
         this.setCustodios = setCustodios;
+    }
+
+    public SeleccionTabla getSetActivo() {
+        return setActivo;
+    }
+
+    public void setSetActivo(SeleccionTabla setActivo) {
+        this.setActivo = setActivo;
     }
 }
