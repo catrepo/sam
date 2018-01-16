@@ -169,7 +169,7 @@ public class AnticipoRemuneracion extends Pantalla {
         tabSolicitud.getColumna("contr_empleado").setLectura(true);
         tabSolicitud.getColumna("TIPCONT_EMPLEADO").setLectura(true);
         tabSolicitud.getColumna("FECHA_SALIDA").setLectura(true);
-
+        tabSolicitud.getColumna("estado_solicitud").setValorDefecto("3");
         tabSolicitud.getColumna("anio").setVisible(false);
         tabSolicitud.getColumna("id_tipo").setVisible(false);
         tabSolicitud.getColumna("ide_periodo").setVisible(false);
