@@ -20,6 +20,7 @@ public class ServiciosAdquisiones {
      *
      * @return sql de aprobado
      */
+    
     public String getAprobado() {
         String sql="";
         sql="SELECT IDE_ADAPRO, DETALLE_ADAPRO FROM ADQ_APROBADO order by DETALLE_ADAPRO";
