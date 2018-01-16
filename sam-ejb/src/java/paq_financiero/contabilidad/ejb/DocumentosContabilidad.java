@@ -17,13 +17,13 @@ import persistencia.Conexion;
 public class DocumentosContabilidad {
 
     private Conexion conSql,//Conexion a la base de sigag
-            conPostgres;//Cnexion a la base de postgres 2014
+            conOracle;//Cnexion a la base de postgres 2014
     private Utilitario utilitario = new Utilitario();
 
     public TablaGenerica getOrdenPago(String fecha) {
         conPostgresql();
         TablaGenerica tabPersona = new TablaGenerica();
-        tabPersona.setConexion(conPostgres);
+        tabPersona.setConexion(conSql);
         tabPersona.setSql("select * from tes_orden_pago where tes_fecha_ingreso = '" + fecha + "' and tes_estado = 'Pendiente'");
         tabPersona.ejecutarSql();
         desPostgresql();
@@ -33,7 +33,7 @@ public class DocumentosContabilidad {
     public TablaGenerica getDocumentos(String fecha, String numero) {
         conPostgresql();
         TablaGenerica tabPersona = new TablaGenerica();
-        tabPersona.setConexion(conPostgres);
+        tabPersona.setConexion(conSql);
         tabPersona.setSql("select * from tes_documentos where doc_numero ='" + numero + "' and doc_fecha='" + fecha + "'");
         tabPersona.ejecutarSql();
         desPostgresql();
@@ -43,7 +43,7 @@ public class DocumentosContabilidad {
     public TablaGenerica getDocumentoValidar(Integer numero) {
         conPostgresql();
         TablaGenerica tabPersona = new TablaGenerica();
-        tabPersona.setConexion(conPostgres);
+        tabPersona.setConexion(conSql);
         tabPersona.setSql("SELECT doc_numero,doc_responsabe,doc_concepto,doc_valor,doc_revisiondev,doc_revisioncon \n"
                 + "FROM tes_documentos where id_documento =" + numero);
         tabPersona.ejecutarSql();
@@ -54,7 +54,7 @@ public class DocumentosContabilidad {
     public TablaGenerica getDocumentoAfectacion(String numero) {
         conPostgresql();
         TablaGenerica tabPersona = new TablaGenerica();
-        tabPersona.setConexion(conPostgres);
+        tabPersona.setConexion(conSql);
         tabPersona.setSql("SELECT\n"
                 + "fecha,\n"
                 + "ide_comprobante,\n"
@@ -71,7 +71,7 @@ public class DocumentosContabilidad {
         String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsabe,doc_valor,doc_concepto)\n"
                 + "select 1,tes_fecha_ingreso,tes_numero_orden,(case when tes_empleado is null then tes_proveedor else tes_empleado end),tes_valor,tes_concepto from tes_orden_pago where tes_numero_orden = '" + numero + "'";
         conPostgresql();
-        conPostgres.ejecutarSql(parametro);
+        conSql.ejecutarSql(parametro);
         desPostgresql();
     }
 
@@ -79,7 +79,7 @@ public class DocumentosContabilidad {
         String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsabe,doc_valor,doc_concepto)\n"
                 + "select 1,tes_fecha_ingreso,tes_numero_orden,(case when tes_empleado is null then tes_proveedor else tes_empleado end),tes_valor,tes_concepto  from tes_orden_pago where tes_numero_orden = (SELECT doc_numero FROM tes_documentos where id_documento=" + numero + ")";
         conPostgresql();
-        conPostgres.ejecutarSql(parametro);
+        conSql.ejecutarSql(parametro);
         desPostgresql();
     }
 
@@ -87,7 +87,7 @@ public class DocumentosContabilidad {
         String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsabe,doc_valor,doc_concepto,doc_revision,doc_fecharev,doc_loginrev)\n"
                 + "values (" + tipo + ",'" + fecha + "','" + numero + "','" + respon + "'," + valor + ",'" + concepto + "','" + revision + "','" + fechar + "','" + login + "')";
         conPostgresql();
-        conPostgres.ejecutarSql(parametro);
+        conSql.ejecutarSql(parametro);
         desPostgresql();
     }
 
@@ -99,7 +99,7 @@ public class DocumentosContabilidad {
                 + "" + login + "=" + valor2 + "\n"
                 + "where id_documento = " + codigo;
         conPostgresql();
-        conPostgres.ejecutarSql(strSqlr);
+        conSql.ejecutarSql(strSqlr);
         desPostgresql();
     }
 
@@ -110,7 +110,7 @@ public class DocumentosContabilidad {
                 + "" + descripcion1 + "=" + valor2 + "\n"
                 + "where id_documento = " + codigo;
         conPostgresql();
-        conPostgres.ejecutarSql(strSqlr);
+        conSql.ejecutarSql(strSqlr);
         desPostgresql();
     }
 
@@ -123,7 +123,7 @@ public class DocumentosContabilidad {
                 + "" + login + "=" + valor3 + "\n"
                 + "where id_documento = " + codigo;
         conPostgresql();
-        conPostgres.ejecutarSql(strSqlr);
+        conSql.ejecutarSql(strSqlr);
         desPostgresql();
     }
 
@@ -136,7 +136,7 @@ public class DocumentosContabilidad {
                 + "" + login + "=" + valor3 + "\n"
                 + "where id_documento = " + codigo;
         conPostgresql();
-        conPostgres.ejecutarSql(strSqlr);
+        conSql.ejecutarSql(strSqlr);
         desPostgresql();
     }
 
@@ -151,31 +151,89 @@ public class DocumentosContabilidad {
                 + "doc_observacion='" + observa + "'\n"
                 + "where id_documento= " + codigo;
         conPostgresql();
-        conPostgres.ejecutarSql(strSqlr);
+        conSql.ejecutarSql(strSqlr);
         desPostgresql();
     }
 
     public void setDeleteDocumento(Integer anti) {
         String auSql = "delete from tes_documentos where id_documento =" + anti;
         conPostgresql();
-        conPostgres.ejecutarSql(auSql);
+        conSql.ejecutarSql(auSql);
         desPostgresql();
+    }
+
+    public String maximOrden() {
+        conPostgresql();
+
+        String ValorMax;
+        TablaGenerica tabFuncionario = new TablaGenerica();
+        conPostgresql();
+        tabFuncionario.setConexion(conSql);
+        tabFuncionario.setSql("select 0 as id ,(case when max(tes_numero_orden) is null then '0' when max(tes_numero_orden)is not null then max(tes_numero_orden) end) AS maximo\n"
+                + "from tes_orden_pago where tes_estado_doc = '1'");
+        tabFuncionario.ejecutarSql();
+        ValorMax = tabFuncionario.getValor("maximo");
+        desPostgresql();
+        return ValorMax;
+    }
+
+    public void actOrden(String tipo, Integer numero, String usu, String comentario) {
+        // Forma el sql para actualizacion
+        String strSqlr = "update tes_orden_pago set tes_estado='Anulada'\n"
+                + ",tes_nota='ANULADA'\n"
+                + ",tes_login_anu ='" + usu + "'\n"
+                + ",tes_comentario_anula ='" + comentario + "'\n"
+                + ",tes_fecha_anu ='" + utilitario.getFechaActual() + "'\n"
+                + "where tes_ide_orden_pago =" + numero + " and tes_numero_orden ='" + tipo + "'";
+        conPostgresql();
+        conSql.ejecutarSql(strSqlr);
+        desPostgresql();
+    }
+
+    /*
+    conexion a oracle
+     */
+    public TablaGenerica getBuscar_Datos_Proveedores(String cedRuc) {
+        conOraclesql();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conOracle);
+        tabPersona.setSql("SELECT DISTINCT RUC_CI,NOMBRE,NNITMA,CODTRA \n"
+                + "from USFIMRU.VI_LISTA_PROVEEDORES \n"
+                + "left join USRRHH.nodattra on USRRHH.nodattra.cedciu = USFIMRU.VI_LISTA_PROVEEDORES.RUC_CI\n"
+                + "where ruc_ci = '" + cedRuc + "'");
+        tabPersona.ejecutarSql();
+        desOraclesql();
+        return tabPersona;
     }
 
     /*
      * sentencia de conexion a base de datos
      */
     private void conPostgresql() {
-        if (conPostgres == null) {
-            conPostgres = new Conexion();
-            conPostgres.setUnidad_persistencia(utilitario.getPropiedad("poolPostgres"));
+        if (conSql == null) {
+            conSql = new Conexion();
+            conSql.setUnidad_persistencia(utilitario.getPropiedad("recursojdbc"));
         }
     }
 
     private void desPostgresql() {
-        if (conPostgres != null) {
-            conPostgres.desconectar(true);
-            conPostgres = null;
+        if (conSql != null) {
+            conSql.desconectar(true);
+            conSql = null;
+        }
+    }
+
+    private void conOraclesql() {
+        if (conOracle == null) {
+            conOracle = new Conexion();
+            conOracle.setUnidad_persistencia(utilitario.getPropiedad("oraclejdbc"));
+        }
+    }
+
+    private void desOraclesql() {
+        if (conOracle != null) {
+            conOracle.desconectar(true);
+            conOracle = null;
         }
     }
 }
