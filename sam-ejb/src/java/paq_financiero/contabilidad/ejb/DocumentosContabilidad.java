@@ -44,7 +44,7 @@ public class DocumentosContabilidad {
         conPostgresql();
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSql);
-        tabPersona.setSql("SELECT doc_numero,doc_responsabe,doc_concepto,doc_valor,doc_revisiondev,doc_revisioncon \n"
+        tabPersona.setSql("SELECT doc_numero,doc_responsable,doc_concepto,doc_valor,doc_revisiondev,doc_revisioncon \n"
                 + "FROM tes_documentos where id_documento =" + numero);
         tabPersona.ejecutarSql();
         desPostgresql();
@@ -67,24 +67,33 @@ public class DocumentosContabilidad {
         return tabPersona;
     }
 
-    public void setOrdenPago(String numero) {
-        String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsabe,doc_valor,doc_concepto)\n"
-                + "select 1,tes_fecha_ingreso,tes_numero_orden,(case when tes_empleado is null then tes_proveedor else tes_empleado end),tes_valor,tes_concepto from tes_orden_pago where tes_numero_orden = '" + numero + "'";
+        public void setOrdenPago(String numero) {
+            String auSql = "EXEC SIGAG.dbo.TES_INSERT_DATOS_ORDEN "
+                + "@codigo ='" + numero + "',\n"
+                + "@tabla ='TES_DOCUMENTOS'";
+        conPostgresql();
+        conSql.ejecutarSql(auSql);
+        desPostgresql();
+    }
+    
+    public void setOrdenPago1(String numero) {
+        String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsable,doc_valor,doc_concepto)\n"
+                + "select 1,tes_fecha_ingreso,tes_numero_orden, tes_proveedor ,tes_valor,tes_concepto from tes_orden_pago where tes_numero_orden = '" + numero + "'";
         conPostgresql();
         conSql.ejecutarSql(parametro);
         desPostgresql();
     }
 
     public void setReingreso(Integer numero) {
-        String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsabe,doc_valor,doc_concepto)\n"
-                + "select 1,tes_fecha_ingreso,tes_numero_orden,(case when tes_empleado is null then tes_proveedor else tes_empleado end),tes_valor,tes_concepto  from tes_orden_pago where tes_numero_orden = (SELECT doc_numero FROM tes_documentos where id_documento=" + numero + ")";
+        String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsable,doc_valor,doc_concepto)\n"
+                + "select 1,tes_fecha_ingreso,tes_numero_orden,tes_proveedor,tes_valor,tes_concepto from tes_orden_pago where tes_numero_orden = (SELECT doc_numero FROM tes_documentos where id_documento=" + numero + ")";
         conPostgresql();
         conSql.ejecutarSql(parametro);
         desPostgresql();
     }
 
     public void setOtroDocumento(Integer tipo, String fecha, String numero, String respon, Double valor, String concepto, String revision, String fechar, String login) {
-        String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsabe,doc_valor,doc_concepto,doc_revision,doc_fecharev,doc_loginrev)\n"
+        String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsable,doc_valor,doc_concepto,doc_revision,doc_fecharev,doc_loginrev)\n"
                 + "values (" + tipo + ",'" + fecha + "','" + numero + "','" + respon + "'," + valor + ",'" + concepto + "','" + revision + "','" + fechar + "','" + login + "')";
         conPostgresql();
         conSql.ejecutarSql(parametro);
