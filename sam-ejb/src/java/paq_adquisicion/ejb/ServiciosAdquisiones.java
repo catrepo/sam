@@ -70,7 +70,7 @@ public class ServiciosAdquisiones {
             sql +=" where IDE_ADARAD in (select IDE_ADARAD from ADQ_EMPLEADO_DEPARTAMENTO where IDE_ADEMDE ="+empleado+") ";
         }
         if(tipo.equals("2")){
-            sql +=" select IDE_ADARAD from ADQ_EMPLEADO_DEPARTAMENTO where IDE_ADEMDE in (select IDE_ADEMDE from ADQ_EMPLEADO_APRUEBA where IDE_ADEMAP="+empleado+") ";
+            sql +="  where ide_adarad in  ( select IDE_ADARAD from ADQ_EMPLEADO_DEPARTAMENTO where IDE_ADEMDE in (select IDE_ADEMDE from ADQ_EMPLEADO_APRUEBA where IDE_ADEMAP="+empleado+")) ";
         } 
         sql+=" order by DETALLE_ADARAD ";
         return sql;
