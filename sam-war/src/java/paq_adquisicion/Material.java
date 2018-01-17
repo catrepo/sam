@@ -34,8 +34,8 @@ public class Material extends Pantalla {
        tab_material.getColumna("CODIGO_ADMATE").setNombreVisual("CODIGO MATERIAL");
        tab_material.getColumna("APLICA_COD_PRESU_ADMATE").setNombreVisual("APLICA CODIGO PRESUPUESTARIO");
        List lista = new ArrayList();
-       Object fila1[] = {"1", "ACTIVO FIJO"};
-       Object fila2[] = {"2", "STOCK EN BODEGA"};
+       Object fila1[] = {"2", "ACTIVO FIJO"};
+       Object fila2[] = {"1", "STOCK EN BODEGA"};
        lista.add(fila1);
        lista.add(fila2);
        tab_material.getColumna("tipo_bien_admate").setCombo(lista);
