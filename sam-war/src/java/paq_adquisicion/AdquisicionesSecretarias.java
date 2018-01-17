@@ -15,6 +15,7 @@ import framework.componentes.Division;
 import framework.componentes.PanelTabla;
 import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
+import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
 import framework.componentes.Tabulador;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class AdquisicionesSecretarias extends Pantalla {
     private Reporte rep_reporte = new Reporte(); //Listado de Reportes, siempre se llama rep_reporte
     private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
     private Map map_parametros = new HashMap();//Parametros del reporte    
+    private SeleccionTabla sel_tabla_material = new SeleccionTabla();
      
 
     @EJB
@@ -49,7 +51,7 @@ public class AdquisicionesSecretarias extends Pantalla {
          par_aprueba_gasto=utilitario.getVariable("p_tipo_generador_gasto");
          par_aprueba_solicitud=utilitario.getVariable("p_tipo_aprueba_solicitud");
          
- if (tienePerfilSecretaria()) {          
+       if (tienePerfilSecretaria()) {          
          Boton bot_agregar_solicitante= new Boton();
          
                  rep_reporte.setId("rep_reporte");
@@ -235,6 +237,8 @@ public class AdquisicionesSecretarias extends Pantalla {
         tab_compra_bienes.getColumna("TOTAL_ADCOBI").setVisible(false);
         tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setVisible(false);
          tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setValorDefecto("0");
+         
+         tab_compra_bienes.getColumna("IDE_ADMATE").setLectura(true);
 
         tab_compra_bienes.getColumna("IDE_ADCOBI").setOrden(1);
         tab_compra_bienes.getColumna("IDE_ADMATE").setOrden(2);
@@ -258,6 +262,22 @@ public class AdquisicionesSecretarias extends Pantalla {
         div_adquisiciones.setId("div_adquisiciones");
         div_adquisiciones.dividir2(pat_adquisiciones, tab_tabulador, "70%", "H");
         agregarComponente(div_adquisiciones);
+        
+        sel_tabla_material.setId("sel_tabla_material");
+        sel_tabla_material.setTitle("MATERIAL DE BODEGA");
+        sel_tabla_material.setSeleccionTabla(ser_adquisiciones.getMaterial("1", "-1"),"IDE_ADMATE");
+        sel_tabla_material.setWidth("80%");
+        sel_tabla_material.setHeight("70%");
+        sel_tabla_material.setRadio();
+        sel_tabla_material.getBot_aceptar().setMetodo("aceptarMaterial");
+        agregarComponente(sel_tabla_material);
+        
+        Boton bot_sel_material = new Boton();
+        bot_sel_material.setValue("SELECCIONAR MATERIAL");
+        bot_sel_material.setTitle("SELECCIONAR MATERIAL");
+        bar_botones.agregarBoton(bot_sel_material);    
+        bot_sel_material.setMetodo("seleccionarMaterial");
+        
  } else {
             utilitario.agregarNotificacionInfo("Mensaje", "EL usuario ingresado no registra permisos para el registro de Solicitudes de Compra. Consulte con el Administrador");
         }    
@@ -290,6 +310,22 @@ private boolean tienePerfilSecretaria() {
         utilitario.addUpdate("tab_adquisiones,tab_certificacion,tab_compra_bienes");
 
     }
+    
+    public void seleccionarMaterial() {
+        if(tab_adquisiones.getValor("INGRESO_ADCOMP")!=null){
+        sel_tabla_material.getTab_seleccion().setSql(ser_adquisiciones.getMaterial("1", tab_adquisiones.getValor("INGRESO_ADCOMP")));
+        sel_tabla_material.getTab_seleccion().ejecutarSql();
+        sel_tabla_material.dibujar();
+        }
+        else {
+            utilitario.agregarMensajeError("Seleccione el material", "Seleccione el tipo de ingreso");
+        }
+    }
+     public void aceptarMaterial(){
+         tab_compra_bienes.insertar();
+         tab_compra_bienes.setValor("IDE_ADMATE", sel_tabla_material.getValorSeleccionado());
+         utilitario.addUpdate("tab_compra_bienes");
+     }       
     @Override
     public void insertar() {
                if (com_direccion.getValue() == null) {
@@ -408,6 +444,14 @@ private boolean tienePerfilSecretaria() {
 
     public void setSel_rep(SeleccionFormatoReporte sel_rep) {
         this.sel_rep = sel_rep;
+    }
+
+    public SeleccionTabla getSel_tabla_material() {
+        return sel_tabla_material;
+    }
+
+    public void setSel_tabla_material(SeleccionTabla sel_tabla_material) {
+        this.sel_tabla_material = sel_tabla_material;
     }
 
 }
