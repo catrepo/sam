@@ -36,7 +36,7 @@ public class DistribucionDocumentos extends Pantalla {
      * Variable que permite conectar a base de datos diferente
      */
 
-    private Conexion conPostgres = new Conexion();
+//    private Conexion conPostgres = new Conexion();
     /*
      * Declaración de Tablas, para el formulario a utilizar
      */
@@ -84,14 +84,14 @@ public class DistribucionDocumentos extends Pantalla {
         /*
          * Cadena de conexión para otra base de datos
          */
-        conPostgres.setUnidad_persistencia(utilitario.getPropiedad("poolPostgres"));
-        conPostgres.NOMBRE_MARCA_BASE = "postgres";
+//        conPostgres.setUnidad_persistencia(utilitario.getPropiedad("poolPostgres"));
+//        conPostgres.NOMBRE_MARCA_BASE = "postgres";
 
         /*
          * formulario con ordenes de pago
          */
         tabTabla.setId("tabTabla");
-        tabTabla.setConexion(conPostgres);
+//        tabTabla.setConexion(conPostgres);
         tabTabla.setTabla("tes_documentos", "id_documento", 1);
         tabTabla.getColumna("doc_responsabe").setLongitud(45);
         tabTabla.getColumna("doc_valor").setLongitud(4);
@@ -123,12 +123,12 @@ public class DistribucionDocumentos extends Pantalla {
         pto.setPanelTabla(tabTabla);
 
         cmbFecha.setId("cmbFecha");
-        cmbFecha.setConexion(conPostgres);
+//        cmbFecha.setConexion(conPostgres);
         cmbFecha.setCombo("SELECT DISTINCT cast(doc_fechacon as date) as codigo, cast(doc_fechacon as date) as fecha FROM tes_documentos\n"
                 + "where cast(doc_fechacon as date) is not null");
 
         cmbDependencia.setId("cmbDependencia");
-        cmbDependencia.setConexion(conPostgres);
+//        cmbDependencia.setConexion(conPostgres);
         cmbDependencia.setCombo("SELECT  DISTINCT doc_dependencia as codigo,doc_dependencia FROM tes_documentos\n"
                 + "where doc_dependencia is not null");
 
@@ -200,7 +200,7 @@ public class DistribucionDocumentos extends Pantalla {
         ptt.getChildren().add(panPanel);
 
         tabMostra.setId("tabMostra");
-        tabMostra.setConexion(conPostgres);
+//        tabMostra.setConexion(conPostgres);
         tabMostra.setTabla("tes_documentos", "id_documento", 2);
         tabMostra.getColumna("doc_ejecutado").setMetodoChange("cargarDocumento");
         tabMostra.getColumna("id_documento").setVisible(false);
@@ -293,7 +293,6 @@ public class DistribucionDocumentos extends Pantalla {
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
         agregarComponente(rep_reporte); //2 agregar el listado de reportes
         sef_formato.setId("sef_formato");
-        sef_formato.setConexion(conPostgres);
         agregarComponente(sef_formato);
 
         actualizaLista();
@@ -643,15 +642,6 @@ public class DistribucionDocumentos extends Pantalla {
                 break;
         }
     }
-
-    public Conexion getConPostgres() {
-        return conPostgres;
-    }
-
-    public void setConPostgres(Conexion conPostgres) {
-        this.conPostgres = conPostgres;
-    }
-
     public Tabla getTabTabla() {
         return tabTabla;
     }
