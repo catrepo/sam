@@ -64,7 +64,6 @@ public class AdquisicionesConsulta extends Pantalla {
         
         bar_botones.agregarBoton(bot_imprimir);
         
-        
         Tabulador tab_tabulador = new Tabulador();
         tab_tabulador.setId("tab_tabulador");
 
