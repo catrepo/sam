@@ -120,7 +120,7 @@ public class ClasificadorGastos extends Pantalla {
                 if (!tabDato.isEmpty()) {
                 } else {
                     admin.setDatosParametrosGastos((maximo + i), tabIngreso.getValor(i, "cuendt"), tabIngreso.getValor(i, "TAAD01"), tabIngreso.getValor(i, "AUAD01"), tabIngreso.getValor(i, "CCIADT"),
-                            tabIngreso.getValor(i, "proyecto"), tabIngreso.getValor(i, "dep"), tabIngreso.getValor(i, "AUAD02"), utilitario.getAnio(utilitario.getFechaActual()), tabIngreso.getValor(i, "orientacion"));
+                            tabIngreso.getValor(i, "proyecto"), tabIngreso.getValor(i, "dep"), tabIngreso.getValor(i, "AUAD02"), utilitario.getAnio(fechaInicio.getFecha()), tabIngreso.getValor(i, "orientacion"));
                 }
             }
         } else {

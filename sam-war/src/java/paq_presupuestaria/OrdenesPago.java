@@ -75,6 +75,12 @@ public class OrdenesPago extends Pantalla {
         tabConsulta.setLectura(true);
         tabConsulta.dibujar();
 
+        tabConsulta.setId("tabConsulta");
+        tabConsulta.setSql("SELECT u.IDE_USUA,u.NOM_USUA,u.NICK_USUA,u.IDE_PERF,p.NOM_PERF,p.PERM_UTIL_PERF\n"
+                + "FROM SIS_USUARIO u,SIS_PERFIL p where u.IDE_PERF = p.IDE_PERF and IDE_USUA=" + utilitario.getVariable("IDE_USUA"));
+        tabConsulta.setCampoPrimaria("IDE_USUA");
+        tabConsulta.setLectura(true);
+        tabConsulta.dibujar();
         //cadena de conexión para otra base de datos
         conPostgres.setUnidad_persistencia(utilitario.getPropiedad("poolPostgres"));
         conPostgres.NOMBRE_MARCA_BASE = "postgres";
