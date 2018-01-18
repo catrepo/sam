@@ -109,7 +109,6 @@ public class AprobacionAnticipo extends Pantalla {
         botDescargo.setMetodo("diaDescargo");
         //bar_botones.agregarBoton(botDescargo);
 
-
         Boton botAnticipo = new Boton();
         botAnticipo.setValue("Descargo Rol Mes/Anio");
         botAnticipo.setExcluirLectura(true);
@@ -387,11 +386,18 @@ public class AprobacionAnticipo extends Pantalla {
     public void eliminar() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     /*
      * Proceso para generar detalle de anticipo
      */
 
     public void requisito() {
+        Integer dia = 0, mesa = 0, parametro = 0;
+
+        TablaGenerica tabDia = adminRemuneracion.getActivaCondicion("FCC", "NL,CT");
+        if (!tabDia.isEmpty()) {
+            parametro = Integer.parseInt(tabDia.getValor("parametro"));
+        }
         for (int i = 0; i < tabAnticipo.getTotalFilas(); i++) {
             if (tabAnticipo.getValor(i, "estado_solicitud") != null) {
                 if (tabAnticipo.getValor(i, "estado_solicitud").equals("4")) {
@@ -440,7 +446,7 @@ public class AprobacionAnticipo extends Pantalla {
                             for (int j = 1; j < (Integer.parseInt(tabAnticipo.getValor(i, "cuotas"))); j++) {
                                 Integer anio = utilitario.getAnio(utilitario.getFechaActual());
                                 Integer id;
-                                if (utilitario.getDia(utilitario.getFechaActual()) <= 15) {
+                                if (utilitario.getDia(utilitario.getFechaActual()) <= parametro) {
                                     id = utilitario.getMes(utilitario.getFechaActual());
                                 } else {
                                     id = utilitario.getMes(utilitario.getFechaActual()) + 1;
@@ -789,6 +795,7 @@ public class AprobacionAnticipo extends Pantalla {
             utilitario.agregarMensaje("Datos no encontrados", null);
         }
     }
+
     /*
      * registro de pago anticipado
      */
