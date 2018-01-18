@@ -842,12 +842,35 @@ public class pre_inhumacion extends Pantalla {
                 utilitario.agregarMensaje("Número de Cédula Incorrecto", null);
             }
         } else {
-            tab_tabla1.setValor("NOMBRES", null);
-            tab_tabla1.setValor("IDE_CMGEN", null);
-            tab_tabla1.setValor("FECHA_NACIMIENTO", null);
-            tab_tabla1.setValor("FECHA_DEFUNCION", null);
-            utilitario.addUpdate("tab_tabla1");
-            utilitario.agregarMensajeInfo("Fallecido", "ya se encuentra registrado");
+            TablaGenerica tab_dato = cementerioM.getCedulaFallecido(tab_tabla1.getValor("CEDULA_FALLECIDO"));
+            if (!tab_dato.isEmpty()) {
+                tab_tabla1.setValor("NOMBRES", tab_dato.getValor("NOMBRES"));
+                tab_tabla1.setValor("IDE_CMGEN", tab_dato.getValor("IDE_CMGEN"));
+                tab_tabla1.setValor("FECHA_NACIMIENTO", tab_dato.getValor("FECHA_NACIMIENTO"));
+                tab_tabla1.setValor("FECHA_DEFUNCION", tab_dato.getValor("FECHA_DEFUNCION"));
+                utilitario.addUpdate("tab_tabla1");
+                buscaGaranteExhumacion();
+            } else {
+                tab_tabla1.setValor("NOMBRES", null);
+                tab_tabla1.setValor("IDE_CMGEN", null);
+                tab_tabla1.setValor("FECHA_NACIMIENTO", null);
+                tab_tabla1.setValor("FECHA_DEFUNCION", null);
+                utilitario.addUpdate("tab_tabla1");
+                utilitario.agregarMensajeInfo("Fallecido", "ya se encuentra registrado");
+            }
+        }
+    }
+
+    public void buscaGaranteExhumacion() {
+        TablaGenerica tab_dato = cementerioM.getRepresentanteCedulaFallecido(tab_tabla1.getValor("CEDULA_FALLECIDO"));
+        if (!tab_dato.isEmpty()) {
+            tab_tabla2.setValor("IDE_CMTID", tab_dato.getValor("IDE_CMTID"));
+            tab_tabla2.setValor("DOCUMENTO_IDENTIDAD_CMREP", tab_dato.getValor("DOCUMENTO_IDENTIDAD_CMREP"));
+            tab_tabla2.setValor("NOMBRES_APELLIDOS_CMREP", tab_dato.getValor("NOMBRES_APELLIDOS_CMREP"));
+            tab_tabla2.setValor("DIRECCION_CMREP", tab_dato.getValor("DIRECCION_CMREP"));
+            tab_tabla2.setValor("TELEFONOS_CMREP", tab_dato.getValor("TELEFONOS_CMREP"));
+            tab_tabla2.setValor("EMAIL_CMREP", tab_dato.getValor("EMAIL_CMREP"));
+            utilitario.addUpdate("tab_tabla2");
         }
     }
 

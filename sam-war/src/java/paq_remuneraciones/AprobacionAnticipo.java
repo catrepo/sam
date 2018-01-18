@@ -149,7 +149,7 @@ public class AprobacionAnticipo extends Pantalla {
                 + "a.mes_sig \n"
                 + "FROM dbo.nom_solicitud s \n"
                 + "INNER JOIN dbo.nom_anticipo a ON a.id_solicitud = s.id_solicitud \n"
-                + "where s.estado_solicitud is null");
+                + "where s.estado_solicitud = 3");
         tabAnticipo.setCampoPrimaria("id_solicitud");
         tabAnticipo.setCampoOrden("nom_empleado");
         List lista = new ArrayList();

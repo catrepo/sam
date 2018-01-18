@@ -103,8 +103,8 @@ public class pre_renovacion extends Pantalla {
         bot_busca1.setMetodo("abrirBusqueda");
         bar_botones.agregarBoton(bot_busca1);
 
-        bar_botones.agregarComponente(aut_busca);
-        bar_botones.agregarComponente(new Etiqueta("Buscar Fallecido re-impresion:"));
+//        bar_botones.agregarComponente(aut_busca);
+//        bar_botones.agregarComponente(new Etiqueta("Buscar Fallecido re-impresion:"));
 
         aut_busca.setId("aut_busca");
         aut_busca.setAutoCompletar("SELECT IDE_FALLECIDO,FECHA_INGRE,liquidacion,CEDULA_FALLECIDO,NOMBRES,FECHA_DEFUNCION,CATASTRO,FECHA_DESDE,FECHA_HASTA\n"
@@ -452,7 +452,7 @@ public class pre_renovacion extends Pantalla {
             setSolicitud.getTab_seleccion().setSql("SELECT IDE_FALLECIDO,CEDULA_FALLECIDO,NOMBRES,FECHA_DEFUNCION,liquidacion,CATASTRO,FECHA_DESDE,FECHA_HASTA,\n"
                     + "representante,DETALLE_CMACC\n"
                     + "FROM CMT_FALLECIDO_RENOVACION\n"
-                    + "WHERE NOMBRES LIKE '%" + texBusqueda.getValue() + "%' order by NOMBRES");
+                    + "WHERE NOMBRES LIKE '%" + texBusqueda.getValue() + "%' and tipo_pago <> 4 order by NOMBRES");
             setSolicitud.getTab_seleccion().ejecutarSql();
         } else {
             utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
@@ -465,7 +465,7 @@ public class pre_renovacion extends Pantalla {
             setSolicitud.getTab_seleccion().setSql("SELECT IDE_FALLECIDO,CEDULA_FALLECIDO,NOMBRES,FECHA_DEFUNCION,liquidacion,CATASTRO,FECHA_DESDE,FECHA_HASTA,\n"
                     + "representante,DETALLE_CMACC\n"
                     + "FROM CMT_FALLECIDO_RENOVACION\n"
-                    + "WHERE CEDULA_FALLECIDO = '" + texBusqueda.getValue() + "' order by NOMBRES");
+                    + "WHERE CEDULA_FALLECIDO = '" + texBusqueda.getValue() + "' and tipo_pago <> 4 order by NOMBRES");
             setSolicitud.getTab_seleccion().ejecutarSql();
         } else {
             utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
@@ -478,7 +478,7 @@ public class pre_renovacion extends Pantalla {
             setSolicitud.getTab_seleccion().setSql("SELECT IDE_FALLECIDO,CEDULA_FALLECIDO,NOMBRES,FECHA_DEFUNCION,liquidacion,CATASTRO,FECHA_DESDE,FECHA_HASTA,\n"
                     + "representante,DETALLE_CMACC\n"
                     + "FROM CMT_FALLECIDO_RENOVACION\n"
-                    + "WHERE representante LIKE '%" + texBusqueda.getValue() + "%' order by NOMBRES");
+                    + "WHERE representante LIKE '%" + texBusqueda.getValue() + "%' and tipo_pago <> 4 order by NOMBRES");
             setSolicitud.getTab_seleccion().ejecutarSql();
         } else {
             utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
@@ -491,7 +491,7 @@ public class pre_renovacion extends Pantalla {
             setSolicitud.getTab_seleccion().setSql("SELECT IDE_FALLECIDO,CEDULA_FALLECIDO,NOMBRES,FECHA_DEFUNCION,liquidacion,CATASTRO,FECHA_DESDE,FECHA_HASTA,\n"
                     + "representante,DETALLE_CMACC\n"
                     + "FROM CMT_FALLECIDO_RENOVACION\n"
-                    + "WHERE liquidacion LIKE '%" + texBusqueda.getValue() + "%' order by NOMBRES");
+                    + "WHERE liquidacion LIKE '%" + texBusqueda.getValue() + "%' and tipo_pago <> 4 order by NOMBRES");
             setSolicitud.getTab_seleccion().ejecutarSql();
         } else {
             utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
@@ -504,7 +504,7 @@ public class pre_renovacion extends Pantalla {
             setSolicitud.getTab_seleccion().setSql("SELECT IDE_FALLECIDO,CEDULA_FALLECIDO,NOMBRES,FECHA_DEFUNCION,liquidacion,CATASTRO,FECHA_DESDE,FECHA_HASTA,\n"
                     + "representante,DETALLE_CMACC\n"
                     + "FROM CMT_FALLECIDO_RENOVACION\n"
-                    + "WHERE liquidacion LIKE '%" + texBusqueda.getValue() + "%' order by NOMBRES");
+                    + "WHERE liquidacion LIKE '%" + texBusqueda.getValue() + "%' and tipo_pago <> 4 order by NOMBRES");
             setSolicitud.getTab_seleccion().ejecutarSql();
         } else {
             utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
