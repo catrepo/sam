@@ -653,6 +653,30 @@ public class cementerio {
         return ValorMax;
     }
 
+    public TablaGenerica getCedulaFallecido(String codigo) {
+        conSql();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSql);
+        tabPersona.setSql("SELECT *  FROM CMT_FALLECIDO WHERE CEDULA_FALLECIDO='" + codigo + "' and tipo_pago = 4");
+//        tabPersona.imprimirSql();
+        tabPersona.ejecutarSql();
+        desConSql();
+        return tabPersona;
+    }
+
+    public TablaGenerica getRepresentanteCedulaFallecido(String codigo) {
+        conSql();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSql);
+        tabPersona.setSql("select TOP 1 * from CMT_REPRESENTANTE\n"
+                + "WHERE IDE_FALLECIDO = (select TOP 1 IDE_FALLECIDO from cmt_FALLECIDO where CEDULA_FALLECIDO ='"+codigo+"' AND tipo_pago = 4 order by fecha_ingre desc)\n"
+                + "order by fecha_ingre desc");
+//        tabPersona.imprimirSql();
+        tabPersona.ejecutarSql();
+        desConSql();
+        return tabPersona;
+    }
+
     public String certificadoDefuncion(String codigo) {
         conSqler();
         String ValorMax;
@@ -762,7 +786,7 @@ public class cementerio {
         conSql();
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSql);
-        tabPersona.setSql("select fecha_desde,fecha_hasta,FECHA_DEFUNCION from CMT_FALLECIDO_RENOVACION where IDE_FALLECIDO=" + mov);
+        tabPersona.setSql("select * from CMT_FALLECIDO_RENOVACION where IDE_FALLECIDO=" + mov);
         tabPersona.ejecutarSql();
         desConSql();
         return tabPersona;
