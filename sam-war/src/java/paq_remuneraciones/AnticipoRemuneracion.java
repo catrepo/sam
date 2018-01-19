@@ -404,7 +404,7 @@ public class AnticipoRemuneracion extends Pantalla {
 //                                            tabSolicitud.setValor("id_autoriza", PasId);
 //                                            utilitario.addUpdate("tabSolicitud");
 //                                            //
-                                            anticipoCond(tabActual.getValor("tipctt"), tabActual.getValor("tipafi"), tabActual.getValor("fecing"));
+                                        anticipoCond(tabActual.getValor("tipctt"), tabActual.getValor("tipafi"), tabActual.getValor("fecing"));
 //                                        } else {
 //                                            utilitario.agregarMensajeInfo("No puede Realizar Anticipo en este mes", "");
 //                                        }
@@ -442,28 +442,26 @@ public class AnticipoRemuneracion extends Pantalla {
             TablaGenerica tabValidar = adminRemuneracion.getVerificaCondicion1("AUT", distributivo, contrato);
             if (!tabValidar.isEmpty()) {
                 datosSolicitud(distributivo);
+            } else if (PasFecha.equals("SI")) {
+                datosSolicitud(distributivo);
             } else {
-                if (PasFecha.equals("SI")) {
-                    datosSolicitud(distributivo);
-                } else {
-                    TablaGenerica tabVerifica = adminRemuneracion.getActivaCondicion("PR", distributivo);
-                    if (!tabVerifica.isEmpty()) {
-                        final long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al día 
-                        int año = utilitario.getAnio(fecha);
-                        int mes = utilitario.getMes(fecha);
-                        int dia = utilitario.getDia(fecha); //Fecha anterior 
-                        Calendar calendar = new GregorianCalendar(año, mes - 1, dia);
-                        Date fecha1 = new Date(calendar.getTimeInMillis());
-                        long diferencia = (Date.valueOf(utilitario.getFechaActual()).getTime() - fecha1.getTime()) / MILLSECS_PER_DAY;
-                        //System.out.println(diferencia);
+                TablaGenerica tabVerifica = adminRemuneracion.getActivaCondicion("PR", distributivo);
+                if (!tabVerifica.isEmpty()) {
+                    final long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al día 
+                    int año = utilitario.getAnio(fecha);
+                    int mes = utilitario.getMes(fecha);
+                    int dia = utilitario.getDia(fecha); //Fecha anterior 
+                    Calendar calendar = new GregorianCalendar(año, mes - 1, dia);
+                    Date fecha1 = new Date(calendar.getTimeInMillis());
+                    long diferencia = (Date.valueOf(utilitario.getFechaActual()).getTime() - fecha1.getTime()) / MILLSECS_PER_DAY;
+                    //System.out.println(diferencia);
 
-                        //int dias = 0;
-                        //dias = utilitario.getDiferenciasDeFechas(Date.valueOf(fecha), Date.valueOf(utilitario.getFechaActual()));
-                        if (diferencia >= Integer.parseInt(tabVerifica.getValor("parametro"))) {
-                            datosSolicitud(distributivo);
-                        } else {
-                            utilitario.agregarMensajeError("No cumple con periodo minimo, de trabajo", "");
-                        }
+                    //int dias = 0;
+                    //dias = utilitario.getDiferenciasDeFechas(Date.valueOf(fecha), Date.valueOf(utilitario.getFechaActual()));
+                    if (diferencia >= Integer.parseInt(tabVerifica.getValor("parametro"))) {
+                        datosSolicitud(distributivo);
+                    } else {
+                        utilitario.agregarMensajeError("No cumple con periodo minimo, de trabajo", "");
                     }
                 }
             }
@@ -598,25 +596,22 @@ public class AnticipoRemuneracion extends Pantalla {
                         tabGarante.setValor("rmu", tabDatos.getValor("suebas"));
                         utilitario.addUpdate("tabGarante");
                         liquidoGarante();
+                    } else if (PasGarante.equals("SI")) {
+                        tabGarante.setValor("ide_garante", tabDatos.getValor("codtra"));
+                        tabGarante.setValor("ced_garante", tabDatos.getValor("cedciu"));
+                        tabGarante.setValor("nom_garante", tabDatos.getValor("NOMTRA"));
+                        tabGarante.setValor("tipo_garante", tabDatos.getValor("tipafi"));
+                        tabGarante.setValor("cargo_garante", tabDatos.getValor("cargo"));
+                        tabGarante.setValor("id_distributivo", tabDatos.getValor("tipctt"));
+                        tabGarante.setValor("rmu", tabDatos.getValor("suebas"));
+                        utilitario.addUpdate("tabGarante");
+                        liquidoGarante();
                     } else {
-                        if (PasGarante.equals("SI")) {
-                            tabGarante.setValor("ide_garante", tabDatos.getValor("codtra"));
-                            tabGarante.setValor("ced_garante", tabDatos.getValor("cedciu"));
-                            tabGarante.setValor("nom_garante", tabDatos.getValor("NOMTRA"));
-                            tabGarante.setValor("tipo_garante", tabDatos.getValor("tipafi"));
-                            tabGarante.setValor("cargo_garante", tabDatos.getValor("cargo"));
-                            tabGarante.setValor("id_distributivo", tabDatos.getValor("tipctt"));
-                            tabGarante.setValor("rmu", tabDatos.getValor("suebas"));
-                            utilitario.addUpdate("tabGarante");
-                            liquidoGarante();
-                        } else {
-                            utilitario.agregarMensaje("No apto para ser Garante", "Tipo de Contrato: " + tabDatos.getValor("contrato") + " no cumple requisito");
-                        }
+                        utilitario.agregarMensaje("No apto para ser Garante", "Tipo de Contrato: " + tabDatos.getValor("contrato") + " no cumple requisito");
                     }
                 }
             }
         }
-
 
 //        TablaGenerica tabValidar = adminRemuneracion.getActivaCondicion("GR", "NL,CT");
 //        if (!tabValidar.isEmpty()) {
@@ -770,18 +765,16 @@ public class AnticipoRemuneracion extends Pantalla {
                         tabAnticipo.getColumna("cuotas").setLectura(false);
                         utilitario.addUpdate("tabAnticipo");
                         utilitario.agregarMensajeInfo("Ingrese Plazo, para descuento", "");
+                    } else if ((dato1 / dato2) <= 1) {
+                        utilitario.agregarMensajeInfo("Anticipo Ordinario,Cambio de Tipo", "");
+                        nuevo();
+                        tabAnticipo.getColumna("cuotas").setLectura(true);
+                        utilitario.addUpdate("tabAnticipo");
                     } else {
-                        if ((dato1 / dato2) <= 1) {
-                            utilitario.agregarMensajeInfo("Anticipo Ordinario,Cambio de Tipo", "");
-                            nuevo();
-                            tabAnticipo.getColumna("cuotas").setLectura(true);
-                            utilitario.addUpdate("tabAnticipo");
-                        } else {
-                            nuevo();
-                            tabAnticipo.getColumna("cuotas").setLectura(true);
-                            utilitario.addUpdate("tabAnticipo");
-                            utilitario.agregarMensajeInfo("Monto Excede Anticipo Permitido", parametro + " Remuneraciones Maximo");
-                        }
+                        nuevo();
+                        tabAnticipo.getColumna("cuotas").setLectura(true);
+                        utilitario.addUpdate("tabAnticipo");
+                        utilitario.agregarMensajeInfo("Monto Excede Anticipo Permitido", parametro + " Remuneraciones Maximo");
                     }
                 } else {
                     utilitario.agregarMensajeInfo("Se debe escoger tipo de anticipo", null);
@@ -884,6 +877,14 @@ public class AnticipoRemuneracion extends Pantalla {
                     salario = Double.valueOf(tabSolicitud.getValor("suel_empleado"));
                 }
                 Double porcentaje = (salario * Double.valueOf(tabVerifica.getValor("parametro2"))) / 100;/////////
+
+                TablaGenerica tabExcepcion = adminRemuneracion.getActivaCondicion("PMD", tabSolicitud.getValor("id_distributivo"));
+                if (!tabExcepcion.isEmpty()) {
+                    if(tabExcepcion.getValor("parametro2").equals("1")){
+                        calculoCuota();
+                    }
+                }else{
+
                 if (cuota > porcentaje) {
                     if (clase.verificaNull(PasRmu).equals("SI")) {
 //                        if (tabAnticipo.getValor("mes_sig").equals("SI")) {
@@ -907,7 +908,7 @@ public class AnticipoRemuneracion extends Pantalla {
                     //verificaPorsenta();
 //                    }
                 }
-
+                }
             } else {
                 utilitario.agregarMensajeInfo("No se puede validar monto", null);
             }
@@ -917,7 +918,7 @@ public class AnticipoRemuneracion extends Pantalla {
     /*
      * Calculo de cuota y verificación de meses
      */
-    public void verificaPorsenta() {
+    public void verificaPorcentaje() {
         TablaGenerica tabAutor = adminRemuneracion.getAutorizaAnticipo(tabSolicitud.getValor("ced_empleado"), utilitario.getAnio(utilitario.getFechaActual()));
         if (!tabAutor.isEmpty()) {
             String cadena;
@@ -1008,16 +1009,14 @@ public class AnticipoRemuneracion extends Pantalla {
                     utilitario.addUpdate("tabAnticipo");
                 }
 
+            } else if (PasAnFis.equals("SI")) {
+                tabAnticipo.setValor("porcentaje", "70");
+                utilitario.addUpdate("tabAnticipo");
+                calculoPorcentaje();
             } else {
-                if (PasAnFis.equals("SI")) {
-                    tabAnticipo.setValor("porcentaje", "70");
-                    utilitario.addUpdate("tabAnticipo");
-                    calculoPorcentaje();
-                } else {
-                    nuevo();
-                    utilitario.addUpdate("tabAnticipo");
-                    utilitario.agregarMensaje("Plazo de renumeración excede año fiscal", String.valueOf(utilitario.getAnio(utilitario.getFechaActual())));
-                }
+                nuevo();
+                utilitario.addUpdate("tabAnticipo");
+                utilitario.agregarMensaje("Plazo de renumeración excede año fiscal", String.valueOf(utilitario.getAnio(utilitario.getFechaActual())));
             }
         }
     }
@@ -1089,9 +1088,6 @@ public class AnticipoRemuneracion extends Pantalla {
 //            anio_fin = String.valueOf(utilitario.getAnio(utilitario.getFechaActual()));
 //            mesa = utilitario.getMes(utilitario.getFechaActual());
 //        }
-
-
-
         TablaGenerica tabDia = adminRemuneracion.getActivaCondicion("FCC", "NL,CT");
         if (!tabDia.isEmpty()) {
             if (clase.verificaNull(tabAnticipo.getValor("mes_sig")).equals("SI")) {
@@ -1169,6 +1165,7 @@ public class AnticipoRemuneracion extends Pantalla {
             utilitario.addUpdate("tabAnticipo");
         }
     }
+
     /*
      * Permite identificar garante
      */
