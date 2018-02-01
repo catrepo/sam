@@ -46,7 +46,7 @@ public class Material extends Pantalla {
       pat_material.setPanelTabla(tab_material);
       
        tab_partida_material.setId("tab_partida_material");   //identificador
-       tab_partida_material.setTabla("adq_partida_material", "ide_adpama", 1); 
+       tab_partida_material.setTabla("adq_partida_material", "ide_adpama", 2); 
        tab_partida_material.getColumna("IDE_ADARPA").setCombo(ser_adquisiciones.getAreaPartida());
        tab_partida_material.getColumna("IDE_ADPAMA").setNombreVisual("CODIGO");
        tab_partida_material.getColumna("IDE_ADARPA").setNombreVisual("AREA PARTIDA");
@@ -61,7 +61,7 @@ public class Material extends Pantalla {
       
       Division div_material = new Division();
       div_material.setId("div_material");
-      div_material.dividir2(pat_material, pat_partida_material, "50%", "H");
+      div_material.dividir2(pat_material, pat_partida_material, "60%", "H");
       agregarComponente(div_material);
      }
      
