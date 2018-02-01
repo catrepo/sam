@@ -275,7 +275,7 @@ public class AdquisicionesBodega extends Pantalla {
 
         Division div_adquisiciones = new Division();
         div_adquisiciones.setId("div_adquisiciones");
-        div_adquisiciones.dividir2(pat_adquisiciones, tab_tabulador, "70%", "H");
+        div_adquisiciones.dividir2(pat_adquisiciones, tab_tabulador, "60%", "H");
         agregarComponente(div_adquisiciones);
         
                     con_guardar_aprobado.setId("con_guardar_aprobado");
