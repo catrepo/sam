@@ -58,8 +58,8 @@ public class AdquisicionesSecretarias extends Pantalla {
         /*
          * Cadena de conexión base de datos
          */
-//        conOracle.setUnidad_persistencia(utilitario.getPropiedad("oraclejdbc"));
-//        conOracle.NOMBRE_MARCA_BASE = "oracle";
+        conOracle.setUnidad_persistencia(utilitario.getPropiedad("oraclejdbc"));
+        conOracle.NOMBRE_MARCA_BASE = "oracle";
 
         String fecha;
 
@@ -70,23 +70,23 @@ public class AdquisicionesSecretarias extends Pantalla {
         }
 
         sel_tabla_certificado.setId("sel_tabla_certificado");
-//        sel_tabla_certificado.getTab_seleccion().setConexion(conOracle);
-//        sel_tabla_certificado.setSeleccionTabla("select DISTINCT CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUAD01) as id, NDOCDC as Certificado,cedtmc as partida,AUAD02,MONTDT as Valor,AUAD01 as Proyecto\n"
-//                + "from USFIMRU.TIGSA_GLB01 \n"
-//                + "inner join USFIMRU.PRCO01 on  CUENDT = CUENDC and AUAD02 = AUA2DC\n"
-//                + "inner join USFIMRU.TIGSA_GLM03 on CUENMC = CUENDT\n"
-//                + "where STATDT='E' \n"
-//                + "AND CCIADT <> 'CM' and CCIADT <> 'MR' \n"
-//                + "AND SAPRDT>=1" + (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1) + "14 \n"
-//                + "AND SAPRDT<=1" + (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1) + "15 \n"
-//                + "AND AUAD02 is not null \n"
-//                + "AND ANIODC =" + utilitario.getAnio(utilitario.getFechaActual()) + "\n"
-//                + "AND TIPLMC= 'R'\n"
-//                + "AND substr(FDOCDT,1,5) <= 1" + String.valueOf((utilitario.getAnio(utilitario.getFechaActual()))).substring(2, 4) + "" + fecha + "", "id");
-//        sel_tabla_certificado.getTab_seleccion().getColumna("Certificado").setFiltro(true);
-//        sel_tabla_certificado.getTab_seleccion().getColumna("partida").setFiltro(true);
-//        sel_tabla_certificado.setRadio();
-//        sel_tabla_certificado.getBot_aceptar().setMetodo("filtraDatos");
+        sel_tabla_certificado.getTab_seleccion().setConexion(conOracle);
+        sel_tabla_certificado.setSeleccionTabla("select DISTINCT CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUAD01) as id, NDOCDC as Certificado,cedtmc as partida,AUAD02,MONTDT as Valor,AUAD01 as Proyecto\n"
+                + "from USFIMRU.TIGSA_GLB01 \n"
+                + "inner join USFIMRU.PRCO01 on  CUENDT = CUENDC and AUAD02 = AUA2DC\n"
+                + "inner join USFIMRU.TIGSA_GLM03 on CUENMC = CUENDT\n"
+                + "where STATDT='E' \n"
+                + "AND CCIADT <> 'CM' and CCIADT <> 'MR' \n"
+                + "AND SAPRDT>=1" + (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1) + "14 \n"
+                + "AND SAPRDT<=1" + (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1) + "15 \n"
+                + "AND AUAD02 is not null \n"
+                + "AND ANIODC =" + utilitario.getAnio(utilitario.getFechaActual()) + "\n"
+                + "AND TIPLMC= 'R'\n"
+                + "AND substr(FDOCDT,1,5) <= 1" + String.valueOf((utilitario.getAnio(utilitario.getFechaActual()))).substring(2, 4) + "" + fecha + "", "id");
+        sel_tabla_certificado.getTab_seleccion().getColumna("Certificado").setFiltro(true);
+        sel_tabla_certificado.getTab_seleccion().getColumna("partida").setFiltro(true);
+        sel_tabla_certificado.setRadio();
+        sel_tabla_certificado.getBot_aceptar().setMetodo("filtraDatos");
         sel_tabla_certificado.setHeader("CERTIFICACIONES Y PROYECTOS");
         agregarComponente(sel_tabla_certificado);
 
@@ -245,7 +245,7 @@ public class AdquisicionesSecretarias extends Pantalla {
             lista3.add(fila3);
             //lista3.add(fila4);
             tab_certificacion.getColumna("tipo_documento_adcert").setCombo(lista3);
-//            tab_certificacion.getColumna("tipo_documento_adcert").setMetodoChange("buscaCertificacion");
+            tab_certificacion.getColumna("tipo_documento_adcert").setMetodoChange("buscaCertificacion");
             tab_certificacion.getColumna("IDE_ADCERT").setNombreVisual("CODIGO");
             tab_certificacion.getColumna("TIPO_DOCUMENTO_ADCERT").setNombreVisual("TIPO DOCUMENTO");
             tab_certificacion.getColumna("NRO_CERTIFICACION_ADCERT").setNombreVisual("NUMERO CERTIFICACION");
@@ -592,12 +592,12 @@ public class AdquisicionesSecretarias extends Pantalla {
         this.sel_tabla_certificado = sel_tabla_certificado;
     }
 
-//    public Conexion getConOracle() {
-//        return conOracle;
-//    }
-//
-//    public void setConOracle(Conexion conOracle) {
-//        this.conOracle = conOracle;
-//    }
+    public Conexion getConOracle() {
+        return conOracle;
+    }
+
+    public void setConOracle(Conexion conOracle) {
+        this.conOracle = conOracle;
+    }
 
 }
