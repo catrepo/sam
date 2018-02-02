@@ -342,7 +342,7 @@ public class AprobacionAnticipo extends Pantalla {
 
         diaDialogodm.setId("diaDialogodm");
         diaDialogodm.setWidth("28%"); //siempre en porcentajes  ancho
-        diaDialogodm.setHeight("22%");//siempre porcentaje   alto
+        diaDialogodm.setHeight("32%");//siempre porcentaje   alto
         diaDialogodm.setResizable(false); //para que no se pueda cambiar el tamaño
         diaDialogodm.getBot_aceptar().setMetodo("igualaCuota");
         gridDM.setColumns(4);
@@ -660,11 +660,14 @@ public class AprobacionAnticipo extends Pantalla {
         if (String.valueOf(utilitario.getAnio(utilitario.getFechaActual())).equals(cmbAnio.getValue())) {
             TablaGenerica tabDatos = adminRemuneracion.getAnticipoAnt(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbAnio.getValue().toString()));
             if (!tabDatos.isEmpty()) {
+                System.err.println("<");
                 anterior(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbPeriodo.getValue().toString()), Integer.parseInt(cmbAnio.getValue().toString()));
             } else {
+                System.err.println("<<");
                 actual(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbPeriodo.getValue().toString()), Integer.parseInt(cmbAnio.getValue().toString()));
             }
         } else {
+            System.err.println("<<<");
             anterior(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbPeriodo.getValue().toString()), Integer.parseInt(cmbAnio.getValue().toString()));
         }
     }

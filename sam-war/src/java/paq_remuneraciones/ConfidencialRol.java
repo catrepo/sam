@@ -7,6 +7,7 @@ package paq_remuneraciones;
 import framework.aplicacion.TablaGenerica;
 import framework.componentes.Boton;
 import framework.componentes.Combo;
+import framework.componentes.Dialogo;
 import framework.componentes.Etiqueta;
 import framework.componentes.Grid;
 import framework.componentes.Imagen;
@@ -15,7 +16,9 @@ import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
 import framework.componentes.Tabla;
 import framework.componentes.Texto;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import paq_remuneraciones.ejb.BeanRemuneracion;
@@ -34,10 +37,16 @@ public class ConfidencialRol extends Pantalla {
     private Combo cmbAnio = new Combo();
     private Combo cmbPeriodo = new Combo();
     private Combo cmbSevidor = new Combo();
+    private Combo cmbParametro = new Combo();
     private Etiqueta txeAnio = new Etiqueta("AÑO :");
     private Etiqueta txePeriodo = new Etiqueta("PERIODO : ");
     private Etiqueta txeCedula = new Etiqueta("CEDULA : ");
+    private Etiqueta txeTipo = new Etiqueta("TIPO : ");
     private Texto txtCedula = new Texto();
+    private Dialogo diaDialogo = new Dialogo();
+    private Grid grid = new Grid();
+    private Grid gridD = new Grid();
+
     String selec_mes = new String();
     private Panel panOpcion = new Panel();
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
@@ -46,6 +55,7 @@ public class ConfidencialRol extends Pantalla {
     @EJB
     private ClaseGenerica generico = (ClaseGenerica) utilitario.instanciarEJB(ClaseGenerica.class);
     private BeanRemuneracion adminRemuneracion = (BeanRemuneracion) utilitario.instanciarEJB(BeanRemuneracion.class);
+
     public ConfidencialRol() {
 
         tabConsulta.setId("tabConsulta");
@@ -61,7 +71,6 @@ public class ConfidencialRol extends Pantalla {
         Imagen pie = new Imagen();
         pie.setStyle("font-size:19px;color:black;text-align:center;");
         pie.setValue("imagenes/advertencia.png");
-
 
         //cadena de conexión para otra base de datos
         conNomina.setUnidad_persistencia(utilitario.getPropiedad("oraclejdb"));
@@ -88,6 +97,21 @@ public class ConfidencialRol extends Pantalla {
         cmbSevidor.setConexion(conNomina);
         cmbSevidor.setCombo("select cedciu,nomtra from nodattra where tipctt <> 'JUB' order by nomtra");
         //cmbSevidor.setCombo("select cedciu,nomtra from nodttrpr where tipctt <> 'JUB' order by nomtra");
+
+        List list = new ArrayList();
+        Object fila1[] = {
+            "D13", "Decimo Tercero"
+        };
+        Object fila2[] = {
+            "D14", "Decimo Cuarto"
+        };
+
+        list.add(fila1);;
+        list.add(fila2);;
+
+        cmbParametro.setCombo(list);
+        cmbParametro.eliminarVacio();
+
         Boton botBuscar = new Boton();
         botBuscar.setValue("Imprimir");
         botBuscar.setExcluirLectura(true);
@@ -100,8 +124,17 @@ public class ConfidencialRol extends Pantalla {
         tabp2.getChildren().add(botBuscar);
         tabp2.getChildren().add(tabp3);
 
-
         agregarComponente(tabp2);
+
+        diaDialogo.setId("diaDialogo");
+        diaDialogo.setTitle("Seleccione Parametro"); //titulo
+        diaDialogo.setWidth("30%"); //siempre en porcentajes  ancho
+        diaDialogo.setHeight("20%");//siempre porcentaje   alto
+        diaDialogo.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaDialogo.getBot_aceptar().setMetodo("dibujarReporte");
+        grid.setColumns(2);
+        agregarComponente(diaDialogo);
+
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
         agregarComponente(rep_reporte); //2 agregar el listado de reportes
         sef_formato.setId("sef_formato");
@@ -117,7 +150,7 @@ public class ConfidencialRol extends Pantalla {
                 + "select a.*, (case when a.ban = 1 then cast(CONCAT (MONTH(GETDATE()), DAY(GETDATE())+(case when  DAY(GETDATE()) > (select parametro from nom_parametros where ide_parametro ='VCR') then +1 else 0 end)) as integer) else 0 end) as ban1\n"
                 + ",cast(CONCAT(periodo, DAY(GETDATE()))as integer) as ban2\n"
                 + "from (\n"
-                + "SELECT periodo,periodo as mes,(case when (select parametro2 from nom_parametros where ide_parametro ='VCR') = "+cmbAnio.getValue()+" then 1 \n"
+                + "SELECT periodo,periodo as mes,(case when (select parametro2 from nom_parametros where ide_parametro ='VCR') = " + cmbAnio.getValue() + " then 1 \n"
                 + "else 0 end ) as ban\n"
                 + "FROM conc_periodo) a) b\n"
                 + "where ban1>ban2 or ban1<ban2");
@@ -167,6 +200,13 @@ public class ConfidencialRol extends Pantalla {
             case "CONFIDENCIAL SERVIDORES":
                 dibujarReporte();
                 break;
+            case "DECIMO SUELDO":
+                diaDialogo.Limpiar();
+                grid.getChildren().add(txeTipo);
+                grid.getChildren().add(cmbParametro);
+                diaDialogo.setDialogo(grid);
+                diaDialogo.dibujar();
+                break;
         }
     }
 
@@ -190,7 +230,6 @@ public class ConfidencialRol extends Pantalla {
                 mesa = Integer.parseInt(cmbPeriodo.getValue().toString());
                 anioa = Integer.parseInt(cmbAnio.getValue().toString());
 
-
                 if (isNumeric(utilitario.getVariable("NICK"))) {
                     cedula = utilitario.getVariable("NICK");
                 } else {
@@ -213,12 +252,12 @@ public class ConfidencialRol extends Pantalla {
                         }
                     }
                 } else {
-                     TablaGenerica tabValida = adminRemuneracion.getActualServidores(cedula, generico.meses(Integer.parseInt(cmbPeriodo.getValue() + "")), cmbAnio.getValue() + "", "1");
-                        if (!tabValida.isEmpty()) {
-                            tabla = "1";
-                        } else {
-                            tabla = "0";
-                        }
+                    TablaGenerica tabValida = adminRemuneracion.getActualServidores(cedula, generico.meses(Integer.parseInt(cmbPeriodo.getValue() + "")), cmbAnio.getValue() + "", "1");
+                    if (!tabValida.isEmpty()) {
+                        tabla = "1";
+                    } else {
+                        tabla = "0";
+                    }
                 }
 
                 TablaGenerica tabValidar = adminRemuneracion.getActualServidores(cedula, generico.meses(Integer.parseInt(cmbPeriodo.getValue() + "")), cmbAnio.getValue() + "", tabla);
@@ -239,10 +278,33 @@ public class ConfidencialRol extends Pantalla {
                 p_parametros.put("cedula", cedula);
                 p_parametros.put("mes1", meses(Integer.parseInt(cmbPeriodo.getValue() + "")));
                 p_parametros.put("bandera", tabla);
-                System.out.println("->>1 ");
-                p_parametros.put("ingreso", ingreso);
-                p_parametros.put("egreso", egreso);
-                p_parametros.put("liquido", liquido);
+                p_parametros.put("ingresos", String.valueOf(ingreso) +"");
+                p_parametros.put("egresos", String.valueOf(egreso)+"");
+                p_parametros.put("neto", String.valueOf(liquido)+"");
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                System.out.println("->> " + p_parametros);
+                sef_formato.dibujar();
+                break;
+            case "DECIMO SUELDO":
+                String identificacion = "",
+                 des = "";
+
+                p_parametros.put("parametro", cmbParametro.getValue() + "");
+
+                if (isNumeric(utilitario.getVariable("NICK"))) {
+                    identificacion = utilitario.getVariable("NICK");
+                } else {
+                    identificacion = cmbSevidor.getValue() + "";
+                }
+                p_parametros.put("cedula", identificacion);
+
+                if (cmbParametro.getValue().equals("D13")) {
+                    des = "TERCER SUELDO ";
+                } else {
+                    des = "CUARTO SUELDO";
+                }
+                p_parametros.put("descripcion", des + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 System.out.println("->> " + p_parametros);
