@@ -1,5 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package paq_financiero.contabilidad;
@@ -7,25 +8,18 @@ package paq_financiero.contabilidad;
 import framework.componentes.PanelTabla;
 import framework.componentes.Tabla;
 import sistema.aplicacion.Pantalla;
-import persistencia.Conexion;
 
 /**
  *
  * @author p-chumana
  */
-public class TipoDocumento extends Pantalla {
-    /*
-     * Declaración de Tablas, para el formulario a utilizar
-     */
+public class TipoEstados extends Pantalla{
+
     private Tabla tabTabla = new Tabla();
-
-    public TipoDocumento() {
-
-        /*
-         * formulario con ordenes de pago
-         */
+    
+    public TipoEstados() {
         tabTabla.setId("tabTabla");
-        tabTabla.setTabla("tes_tipo_documento", "id_tipo", 1);
+        tabTabla.setTabla("tes_estado_listado", "ide_estado_listado", 1);
         tabTabla.setRows(14);
         tabTabla.dibujar();
         PanelTabla pto = new PanelTabla();
@@ -56,4 +50,5 @@ public class TipoDocumento extends Pantalla {
     public void setTabTabla(Tabla tabTabla) {
         this.tabTabla = tabTabla;
     }
+    
 }

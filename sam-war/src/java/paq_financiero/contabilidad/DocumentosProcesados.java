@@ -9,18 +9,13 @@ import framework.componentes.Tabla;
 import javax.ejb.EJB;
 import paq_financiero.contabilidad.ejb.DocumentosContabilidad;
 import sistema.aplicacion.Pantalla;
-import persistencia.Conexion;
 
 /**
  *
  * @author p-chumana
  */
 public class DocumentosProcesados extends Pantalla {
-    /*
-     * Variable que permite conectar a base de datos diferente
-     */
 
-    private Conexion conPostgres = new Conexion();
     /*
      * Declaración de Tablas, para el formulario a utilizar
      */
@@ -40,16 +35,10 @@ public class DocumentosProcesados extends Pantalla {
         tabConsulta.setLectura(true);
         tabConsulta.dibujar();
 
-        /*
-         * Cadena de conexión para otra base de datos
-         */
-        conPostgres.setUnidad_persistencia(utilitario.getPropiedad("poolPostgres"));
-        conPostgres.NOMBRE_MARCA_BASE = "postgres";
-
         tabMostra.setId("tabMostra");
-        tabMostra.setConexion(conPostgres);
         tabMostra.setTabla("tes_documentos", "id_documento", 1);
         tabMostra.getColumna("doc_revisioncon").setCheck();
+        tabMostra.getColumna("doc_revisiondev").setCheck();
         tabMostra.getColumna("id_documento").setVisible(false);
         tabMostra.getColumna("doc_loginrev").setVisible(false);
         tabMostra.getColumna("doc_revision").setVisible(false);
@@ -62,13 +51,14 @@ public class DocumentosProcesados extends Pantalla {
         tabMostra.getColumna("doc_dependencia").setVisible(false);
         tabMostra.getColumna("doc_comprobante").setVisible(false);
         tabMostra.getColumna("doc_ejecutado").setVisible(false);
+         tabMostra.getColumna("tes_ide_orden_pago").setVisible(false);
         tabMostra.getColumna("doc_fecha").setLectura(true);
         tabMostra.getColumna("doc_numero").setLectura(true);
-        tabMostra.getColumna("doc_responsabe").setLectura(true);
+        tabMostra.getColumna("doc_responsable").setLectura(true);
         tabMostra.getColumna("doc_concepto").setLectura(true);
         tabMostra.getColumna("doc_valor").setLectura(true);
-        tabMostra.getColumna("doc_responsabe").setLongitud(40);
-        tabMostra.getColumna("doc_concepto").setLongitud(95);
+        tabMostra.getColumna("doc_responsable").setLongitud(40);
+        tabMostra.getColumna("doc_concepto").setLongitud(75);
         tabMostra.setRows(10);
         tabMostra.dibujar();
         PanelTabla ptm = new PanelTabla();
@@ -135,15 +125,6 @@ public class DocumentosProcesados extends Pantalla {
     @Override
     public void eliminar() {
     }
-
-    public Conexion getConPostgres() {
-        return conPostgres;
-    }
-
-    public void setConPostgres(Conexion conPostgres) {
-        this.conPostgres = conPostgres;
-    }
-
     public Tabla getTabMostra() {
         return tabMostra;
     }

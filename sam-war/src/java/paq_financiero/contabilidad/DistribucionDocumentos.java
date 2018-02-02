@@ -93,30 +93,32 @@ public class DistribucionDocumentos extends Pantalla {
         tabTabla.setId("tabTabla");
 //        tabTabla.setConexion(conPostgres);
         tabTabla.setTabla("tes_documentos", "id_documento", 1);
-        tabTabla.getColumna("doc_responsabe").setLongitud(45);
+        tabTabla.getColumna("DOC_ASIGNACION").setCheck();
+        tabTabla.getColumna("DOC_REVISIONCON").setCheck();
+        tabTabla.getColumna("DOC_REVISIONDEV").setCheck();
+        tabTabla.getColumna("doc_responsable").setLongitud(45);
         tabTabla.getColumna("doc_valor").setLongitud(4);
         tabTabla.getColumna("doc_concepto").setLongitud(70);
+        tabTabla.getColumna("tes_ide_orden_pago").setVisible(false);
         tabTabla.getColumna("id_documento").setVisible(false);
         tabTabla.getColumna("doc_loginrev").setVisible(false);
         tabTabla.getColumna("doc_loginasi").setVisible(false);
+        tabTabla.getColumna("doc_dependencia").setLectura(true);
         tabTabla.getColumna("doc_usuasignacion").setVisible(false);
         tabTabla.getColumna("doc_comprobante").setVisible(false);
         tabTabla.getColumna("doc_dependencia").setVisible(false);
-//        tabTabla.getColumna("doc_revisioncon").setVisible(false);
         tabTabla.getColumna("doc_fechacon").setVisible(false);
-//        tabTabla.getColumna("doc_revisiondev").setVisible(false);
         tabTabla.getColumna("doc_ejecutado").setVisible(false);
         tabTabla.getColumna("id_tipo").setVisible(false);
         tabTabla.getColumna("doc_fecha").setLectura(true);
         tabTabla.getColumna("doc_numero").setLectura(true);
-        tabTabla.getColumna("doc_responsabe").setLectura(true);
+        tabTabla.getColumna("doc_responsable").setLectura(true);
         tabTabla.getColumna("doc_concepto").setLectura(true);
         tabTabla.getColumna("doc_revision").setLectura(true);
         tabTabla.getColumna("doc_fecharev").setLectura(true);
         tabTabla.getColumna("doc_valor").setLectura(true);
         tabTabla.getColumna("doc_valor").setLectura(true);
-        tabTabla.getColumna("doc_dependencia").setLectura(true);
-//        tabTabla.getColumna("doc_observacion").setVisible(false);
+        
         tabTabla.setRows(10);
         tabTabla.dibujar();
         PanelTabla pto = new PanelTabla();
@@ -208,14 +210,14 @@ public class DistribucionDocumentos extends Pantalla {
         tabMostra.getColumna("doc_revision").setVisible(false);
         tabMostra.getColumna("doc_fecharev").setVisible(false);
         tabMostra.getColumna("doc_asignacion").setVisible(false);
-//        tabMostra.getColumna("doc_dependencia").setVisible(false);
+        tabMostra.getColumna("tes_ide_orden_pago").setVisible(false);
 //        tabMostra.getColumna("doc_comprobante").setVisible(false);
         tabMostra.getColumna("doc_loginasi").setVisible(false);
         tabMostra.getColumna("doc_fechacon").setVisible(false);
         tabMostra.getColumna("id_tipo").setVisible(false);
         tabMostra.getColumna("doc_fecha").setLectura(true);
         tabMostra.getColumna("doc_numero").setLectura(true);
-        tabMostra.getColumna("doc_responsabe").setLectura(true);
+//        tabMostra.getColumna("l").setLectura(true);
         tabMostra.getColumna("doc_concepto").setLectura(true);
         tabMostra.getColumna("doc_valor").setLectura(true);
         tabMostra.getColumna("doc_usuasignacion").setLectura(true);
@@ -223,7 +225,7 @@ public class DistribucionDocumentos extends Pantalla {
         tabMostra.getColumna("doc_revisioncon").setLectura(true);
         tabMostra.getColumna("id_tipo").setLectura(true);
         tabMostra.getColumna("doc_observacion").setLectura(true);
-        tabMostra.getColumna("doc_responsabe").setLongitud(45);
+        tabMostra.getColumna("doc_responsable").setLongitud(45);
         tabMostra.getColumna("doc_concepto").setLongitud(70);
         tabMostra.getColumna("doc_numero").setFiltro(true);
         tabMostra.getColumna("doc_concepto").setFiltro(true);
@@ -418,7 +420,7 @@ public class DistribucionDocumentos extends Pantalla {
     private String getFiltrosAcceso() {
         // Forma y valida las condiciones de fecha y hora
         String str_filtros = "";
-        str_filtros = "doc_revision = 't' and doc_usuasignacion is null";
+        str_filtros = "doc_revision = 1 and doc_usuasignacion is null";
         return str_filtros;
     }
 
@@ -508,7 +510,7 @@ public class DistribucionDocumentos extends Pantalla {
     private String getFiltroAcceb() {
         // Forma y valida las condiciones de fecha y hora
         String str_filtros = "";
-        str_filtros = "doc_responsabe like %'" + texConcepto.getValue() + "'%";
+        str_filtros = "doc_responsable like %'" + texConcepto.getValue() + "'%";
         return str_filtros;
     }
 

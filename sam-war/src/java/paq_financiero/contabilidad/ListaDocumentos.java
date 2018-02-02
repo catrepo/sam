@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.ejb.EJB;
 import paq_financiero.contabilidad.ejb.DocumentosContabilidad;
 import sistema.aplicacion.Pantalla;
-import persistencia.Conexion;
 
 /**
  *
@@ -82,13 +81,6 @@ public class ListaDocumentos extends Pantalla {
         tabConsulta.setCampoPrimaria("IDE_USUA");
         tabConsulta.setLectura(true);
         tabConsulta.dibujar();
-
-        /*
-         * Cadena de conexión para otra base de datos
-         */
-//        conPostgres.setUnidad_persistencia(utilitario.getPropiedad("poolPostgres"));
-//        conPostgres.NOMBRE_MARCA_BASE = "postgres";
-
         /*
          * Componentes para barra de heramientas
          */
@@ -104,12 +96,13 @@ public class ListaDocumentos extends Pantalla {
         botBusca.setMetodo("cargarRegistro");
         bar_botones.agregarBoton(botBusca);
 
-//        Boton botLimpiar = new Boton();
-//        botLimpiar.setValue("Limpiar");
-//        botLimpiar.setExcluirLectura(true);
-//        botLimpiar.setIcon("ui-icon-document");
-//        botLimpiar.setMetodo("cargarRegistro");
-//        bar_botones.agregarBoton(botLimpiar);
+        Boton botLimpiar = new Boton();
+        botLimpiar.setValue("Limpiar");
+        botLimpiar.setExcluirLectura(true);
+        botLimpiar.setIcon("ui-icon-document");
+        botLimpiar.setMetodo("cargarRegistro");
+        bar_botones.agregarBoton(botLimpiar);
+
         Boton botRevisar = new Boton();
         botRevisar.setValue("Revisar");
         botRevisar.setExcluirLectura(true);
@@ -125,19 +118,17 @@ public class ListaDocumentos extends Pantalla {
         bar_botones.agregarBoton(botReingreso);
 
         setTabla.setId("setTabla");
-//        setTabla.setConexion(conPostgres);
         setTabla.setHeader("Seleccione Tramite");
-        setTabla.setSql("SELECT \n"
-                + "d.id_documento, \n"
-                + "t.tipo_nombre, \n"
-                + "d.doc_fecha, \n"
-                + "d.doc_numero, \n"
-                + "d.DOC_RESPONSABLE, \n"
-                + "d.doc_concepto, \n"
-                + "d.doc_valor, \n"
-                + "d.doc_revisioncon, \n"
-                + "d.doc_revisiondev \n"
-                + "FROM tes_documentos d \n"
+        setTabla.setSql("select d.id_documento,\n"
+                + "t.tipo_nombre,\n"
+                + "d.doc_fecha,\n"
+                + "d.doc_numero,\n"
+                + "d.doc_responsable,\n"
+                + "d.doc_concepto,\n"
+                + "d.doc_valor,\n"
+                + "d.doc_revisioncon,\n"
+                + "d.doc_revisiondev\n"
+                + "FROM tes_documentos d\n"
                 + "INNER JOIN tes_tipo_documento t ON d.id_tipo = t.id_tipo\n"
                 + "WHERE d.doc_usuasignacion = '" + tabConsulta.getValor("NICK_USUA") + "' and d.doc_revisioncon is null and d.doc_revisiondev is null");
         setTabla.getColumna("doc_concepto").setLongitud(55);
@@ -152,7 +143,6 @@ public class ListaDocumentos extends Pantalla {
         setTabla.dibujar();
 
         setReingreso.setId("setReingreso");
-//        setReingreso.setConexion(conPostgres);
         setReingreso.setHeader("Seleccione Tramite");
         setReingreso.setSql("SELECT id_documento, \n"
                 + "doc_fecha, \n"
@@ -160,7 +150,7 @@ public class ListaDocumentos extends Pantalla {
                 + "doc_responsable, \n"
                 + "doc_concepto, \n"
                 + "doc_valor ,\n"
-                + "(SELECT top 1 \n"
+                + "(SELECT DISTINCT top 1\n"
                 + "doc_fecharev\n"
                 + "FROM tes_documentos \n"
                 + "where doc_revisiondev is not null\n"
@@ -174,8 +164,7 @@ public class ListaDocumentos extends Pantalla {
         setReingreso.dibujar();
 
         cmbCombo.setId("cmbCombo");
-//        cmbCombo.setConexion(conPostgres);
-        cmbCombo.setCombo("SELECT DISTINCT doc_fecharev as fecha, doc_fecharev FROM tes_documentos \n"
+        cmbCombo.setCombo("SELECT DISTINCT doc_fecharev as fecha, doc_fecharev FROM tes_documentos\n"
                 + "where doc_fecharev is not null  and doc_revisioncon is not null order by doc_fecharev desc");
 
         cmbCombou.setId("cmbCombou");
@@ -198,7 +187,6 @@ public class ListaDocumentos extends Pantalla {
          * formulario con ordenes de pago
          */
         tabTabla.setId("tabTabla");
-//        tabTabla.setConexion(conPostgres);
         tabTabla.setTabla("tes_documentos", "id_documento", 1);
         tabTabla.getColumna("doc_loginrev").setValorDefecto(tabConsulta.getValor("NICK_USUA"));
         tabTabla.getColumna("id_tipo").setCombo("SELECT id_tipo,tipo_nombre FROM tes_tipo_documento where tipo_estado='1'");
@@ -222,11 +210,12 @@ public class ListaDocumentos extends Pantalla {
         tabTabla.getColumna("doc_revisiondev").setVisible(false);
         tabTabla.getColumna("doc_ejecutado").setVisible(false);
         tabTabla.getColumna("doc_observacion").setVisible(false);
+        tabTabla.getColumna("tes_ide_orden_pago").setVisible(false);
         tabTabla.setRows(15);
         tabTabla.dibujar();
         PanelTabla pto = new PanelTabla();
         pto.setPanelTabla(tabTabla);
-        agregarComponente(tabTabla);
+        agregarComponente(pto);
 
         diaDialogo.setId("diaDialogo");
         diaDialogo.setTitle("Seleccione fecha a vizualizar"); //titulo
@@ -278,7 +267,6 @@ public class ListaDocumentos extends Pantalla {
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
         agregarComponente(rep_reporte); //2 agregar el listado de reportes
         sef_formato.setId("sef_formato");
-//        sef_formato.setConexion(conPostgres);
         agregarComponente(sef_formato);
 
         actualizaLista();
@@ -366,8 +354,7 @@ public class ListaDocumentos extends Pantalla {
 
     /*
      * consulta por fecha
-     */
-    public void actualizaLista() {
+     */ public void actualizaLista() {
         if (!getFiltrosAcceso().isEmpty()) {
             tabTabla.setCondicion(getFiltrosAcceso());
             tabTabla.ejecutarSql();
@@ -401,12 +388,13 @@ public class ListaDocumentos extends Pantalla {
                 TablaGenerica tabInformacion = documento.getDocumentos(tabTabla.getValor(i, "doc_fecha"), tabTabla.getValor(i, "doc_numero"));
                 if (!tabInformacion.isEmpty()) {
                 } else {
-                    documento.setOtroDocumento(Integer.parseInt(tabTabla.getValor(i, "id_tipo")), fechaRegistro.getFecha(), tabTabla.getValor(i, "doc_numero"), tabTabla.getValor(i, "doc_responsable"),
+                    documento.setOrdenDocumentos(Integer.parseInt(tabTabla.getValor(i, "id_tipo")), fechaRegistro.getFecha(), tabTabla.getValor(i, "doc_numero"), tabTabla.getValor(i, "doc_responsable"),
                             Double.valueOf(tabTabla.getValor(i, "doc_valor")), tabTabla.getValor(i, "doc_concepto"), tabTabla.getValor(i, "doc_revision"), tabTabla.getValor(i, "doc_fecharev"), tabConsulta.getValor("NICK_USUA"));
                 }
             }
         }
         utilitario.agregarMensaje("Registro Guardado", null);
+//        actualizaLista();
     }
 
     @Override
