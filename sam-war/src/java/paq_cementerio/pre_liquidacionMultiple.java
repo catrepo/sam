@@ -179,7 +179,7 @@ public class pre_liquidacionMultiple extends Pantalla {
         tabCatastro.getColumna("habilita").setMetodoChange("armaComentario");
         tabCatastro.setCondicion("IDE_CATASTRO=-1");
         tabCatastro.agregarRelacion(tabFallecido);
-        tabCatastro.setRows(2);
+        tabCatastro.setRows(3);
         tabCatastro.dibujar();
         PanelTabla pntCatastro = new PanelTabla();
         pntCatastro.setMensajeWarn("DATOS DE CATASTRO");
@@ -403,10 +403,10 @@ public class pre_liquidacionMultiple extends Pantalla {
         for (int i = 0; i < tabCatastro.getTotalFilas(); i++) {
             if (tabCatastro.getValor(i, "habilita").equals("true")) {
                 rows += tabCatastro.getValor(i, "IDE_CATASTRO") + ",";
-                numero = i + 1;
+                numero++;
             }
         }
-        if (numero > 0) {
+        if (numero > 1) {
             System.err.println("" + rows);
             String cadenaNueva = rows.substring(0, rows.length() - 1);
             System.err.println("" + cadenaNueva + ", numero " + numero);
@@ -418,23 +418,31 @@ public class pre_liquidacionMultiple extends Pantalla {
 
     public void crearConcepto(String cadena, Integer numero) {
         double cantidad, valor, total;
-        TablaGenerica tabInfo = admin.periodoCatastro(tabCatastro.getValor("IDE_CATASTRO"));
+//        try {
+        TablaGenerica tabInfo = admin.periodoCatastro(cadena);
         if (!tabInfo.isEmpty()) {
-            TablaGenerica tabDato = admin.getConceptoLiquidacion(cadena, tabInfo.getValor("PERIODO"));
-            if (!tabDato.isEmpty()) {
-                txtArrendamiento.setValue(tabInfo.getValor("PERIODO"));
-                txtAntecedentes.setValue(tabDato.getValor("concepto"));
-                cantidad = Integer.parseInt(tabInfo.getValor("PERIODO")) * numero;
-                valor = Double.valueOf(tabInfo.getValor("valor"));
-                total = cantidad * valor;
-                txtValor.setValue(total);
-                utilitario.addUpdate("txtArrendamiento,txtValor,txtAntecedentes");
+            if (tabInfo.getTotalFilas() > 1) {
+                utilitario.agregarMensaje("Se debe escoger solo de un mismo LUGAR", null);
             } else {
-                utilitario.agregarMensaje("Antecedentes no se pueden formar", null);
+                TablaGenerica tabDato = admin.getConceptoLiquidacion(cadena, tabInfo.getValor("PERIODO"));
+                if (!tabDato.isEmpty()) {
+                    txtArrendamiento.setValue(tabInfo.getValor("PERIODO"));
+                    txtAntecedentes.setValue(tabDato.getValor("concepto"));
+                    cantidad = Integer.parseInt(tabInfo.getValor("PERIODO"));
+                    valor = Double.valueOf(tabInfo.getValor("valor"));
+                    total = cantidad * valor;
+                    txtValor.setValue(total);
+                    utilitario.addUpdate("txtArrendamiento,txtValor,txtAntecedentes");
+                } else {
+                    utilitario.agregarMensaje("Antecedentes no se pueden formar", null);
+                }
             }
         } else {
             utilitario.agregarMensajeInfo("Error al buscar datos", "");
         }
+//        } catch (Exception e) {
+//            utilitario.agregarMensajeError("", e.getMessage());
+//        }
     }
 
     public void crearDetalle() {
