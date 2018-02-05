@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_Decimo_Sueldo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c4d82d17-94ef-4038-b17b-d6fc47c18bf4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="parametro" class="java.lang.String"/>
+	<parameter name="cedula" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\p-chumana\\Documents\\NetBeansProjects\\simur\\web\\reportes\\rep_nomina\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="descripcion" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+CEDCIU AS CEDULA,
+NOMTRA AS NOMBRES,
+FECING AS FECHA_INGRESO,
+NOLDEP AS AREA,
+TOTBAS AS TOTAL_DECIMO,
+TOTANT AS TOTAL_ANTICIPO,
+TOTRES AS TOTAL_RETENCION,
+VALPAG AS DECIMO_PAGAR,
+DIAPAG AS DIAS_TRABAJADOS,
+FINIPAGO AS FECHA_INICIAL_PAGO,
+FFINPAGO AS  FECHA_FIN_PAGO
+FROM VILIQBEN
+WHERE CODTRS=$P{parametro}
+and  CEDCIU =$P{cedula}]]>
+	</queryString>
+	<field name="CEDULA" class="java.lang.String"/>
+	<field name="NOMBRES" class="java.lang.String"/>
+	<field name="FECHA_INGRESO" class="java.sql.Timestamp"/>
+	<field name="AREA" class="java.lang.String"/>
+	<field name="TOTAL_DECIMO" class="java.math.BigDecimal"/>
+	<field name="TOTAL_ANTICIPO" class="java.math.BigDecimal"/>
+	<field name="TOTAL_RETENCION" class="java.math.BigDecimal"/>
+	<field name="DECIMO_PAGAR" class="java.math.BigDecimal"/>
+	<field name="DIAS_TRABAJADOS" class="java.math.BigDecimal"/>
+	<field name="FECHA_INICIAL_PAGO" class="java.sql.Timestamp"/>
+	<field name="FECHA_FIN_PAGO" class="java.sql.Timestamp"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="314" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="1c8b27c6-529a-440f-9fa2-72a2727eb9ff" key="staticText" x="0" y="0" width="352" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Gobierno Autónomo Descentralizado del Cantón Rumiñahui]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d607cd93-60ed-4474-b66a-120ac49a65f4" x="27" y="109" width="120" height="20"/>
+				<textElement/>
+				<text><![CDATA[CÉDULA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2a620061-5bd9-44ac-9ceb-d819314abe36" x="27" y="129" width="120" height="20"/>
+				<textElement/>
+				<text><![CDATA[NOMBRES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3acc8879-1d6e-4575-bfbd-bf65084922c1" x="27" y="149" width="120" height="20"/>
+				<textElement/>
+				<text><![CDATA[FECHA DE INGRESO : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="79fdcc92-8a85-4181-8ee9-24e267e9cd24" x="0" y="42" width="254" height="20"/>
+				<textElement/>
+				<text><![CDATA[LIQUIDACIÓN  INDIVIDUAL CORRESPONDIENTE A:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="369fc304-04ab-41df-a99f-c74fda4ef491" x="147" y="109" width="142" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{CEDULA}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="4062cf7c-1886-45ac-b01b-bb4f352fd0e4" x="147" y="129" width="408" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{NOMBRES}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMMM yyyy" isBlankWhenNull="true">
+				<reportElement uuid="5eeb3173-5f4a-436a-912c-de904502cd78" x="147" y="149" width="142" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{FECHA_INGRESO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e680c3d3-22f6-48df-a87c-4602d9aca4d3" x="0" y="62" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[DECIMO : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f9535e4a-6df2-451b-a63d-75cadc01108d" x="27" y="195" width="127" height="20"/>
+				<textElement/>
+				<text><![CDATA[TOTAL DECIMO :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="25d423b4-b74b-46d6-bbb3-39a9e9fdd330" x="27" y="215" width="127" height="20"/>
+				<textElement/>
+				<text><![CDATA[TOTAL RETENCIONES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7d0fb870-812e-413a-99b9-b5f061298c33" x="27" y="256" width="127" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DECIMO A COBRAR : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a89827d1-d45f-4099-a306-e5b152e5a868" x="27" y="276" width="127" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIAS TRABAJADOS : ]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="98c86f2d-f1fb-47a2-a179-15d42c0ea227" x="154" y="195" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_DECIMO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="a96336e6-1262-40db-a25a-03e09aa8fdbe" x="154" y="215" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_RETENCION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="e6c51f55-3b91-4fee-b8b6-814b9b1e1929" x="154" y="256" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{DECIMO_PAGAR}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d59d0854-1c32-4a96-8287-f5ad0547554f" x="154" y="276" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{DIAS_TRABAJADOS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement uuid="c5b25b15-0513-4a28-8284-b2d57beafe4a" x="250" y="42" width="86" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{FECHA_INICIAL_PAGO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement uuid="64a25256-fc86-4c18-9c64-b9354b2a6356" x="348" y="42" width="101" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{FECHA_FIN_PAGO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="39170928-32ea-4191-b80b-1f8adde741e2" x="336" y="42" width="12" height="20"/>
+				<textElement/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4272cc12-6462-41a4-b1c9-e9a3860d79c5" x="27" y="195" width="314" height="1"/>
+			</line>
+			<image>
+				<reportElement uuid="e1490e0f-5974-4549-bf63-39cb78992850" x="442" y="10" width="113" height="112"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_reporte.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="d2ba0600-914d-4a8d-8ac9-a02b16f7bdb5" x="52" y="62" width="222" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descripcion}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="1913473e-aef8-4008-b002-96b28ef70848" x="27" y="255" width="314" height="1"/>
+			</line>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement uuid="5e7f5339-0a59-4ea6-b8c5-35b779e24afd" x="0" y="3" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="6c7d4873-d9aa-443e-894d-63e54f57ebd2" x="0" y="2" width="555" height="1"/>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

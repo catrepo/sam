@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_conficencial_roles" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="070e1adf-511a-44bb-a583-b7b583d9cbe1">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="cedula" class="java.lang.String"/>
+	<parameter name="anio" class="java.lang.String"/>
+	<parameter name="tt_egreso" class="java.lang.String"/>
+	<parameter name="mes" class="java.lang.String"/>
+	<parameter name="tt_ingreso" class="java.lang.String"/>
+	<parameter name="tt_recibir" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\p-chumana\\Documents\\NetBeansProjects\\simur\\web\\reportes\\rep_nomina\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select codtra,nomtra,cedciu,codcia,
+(select noldat from nodatdat where tipdat='TC' AND CODDAT=TIPCTT) AS RELACION_LABORAL,
+(SELECT NOLCGO FROM NODATCGO WHERE NODATCGO.CODCGO=NODATTRA.CODCGO AND NODATCGO.CODCIA=NODATTRA.CODCIA) AS CARGO,
+(SELECT NOLARE FROM NODATARE WHERE NODATARE.CODCIA=NODATTRA.CODCIA AND NODATARE.CODARE=NODATTRA.CODARE) AS AREA,
+(SELECT NOLDEP FROM NODATDEP WHERE NODATDEP.CODCIA=NODATTRA.CODCIA AND NODATDEP.CODDEP=NODATTRA.CODDEP) AS PROG,codcon
+from nodattra
+where cedciu = $P{cedula}]]>
+	</queryString>
+	<field name="CODTRA" class="java.lang.String"/>
+	<field name="NOMTRA" class="java.lang.String"/>
+	<field name="CEDCIU" class="java.lang.String"/>
+	<field name="CODCIA" class="java.lang.String"/>
+	<field name="RELACION_LABORAL" class="java.lang.String"/>
+	<field name="CARGO" class="java.lang.String"/>
+	<field name="AREA" class="java.lang.String"/>
+	<field name="PROG" class="java.lang.String"/>
+	<field name="CODCON" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="168" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="5e722243-24fe-4b5d-b09f-f24bef8248ae" x="13" y="0" width="528" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[GOBIERNO AUTÓNOMO DESCENTRALIZADO MUNICIPAL DE RUMIÑAHUI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="21f64595-4871-43d3-a02e-f65bc27933a6" x="0" y="127" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UNIDAD:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="105acd76-0a60-47e2-8593-b48e2de7f3cc" x="0" y="71" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NÚMERO DE CÉDULA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4bb01506-c72a-4eea-a32c-583a1a481565" x="0" y="113" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARTIDA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e7a06612-7ce9-4d85-a5a9-978d5951e640" x="0" y="57" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOMBRES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b5595143-e1c3-4fb9-9789-9fd06abc138d" x="0" y="85" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CARGO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="70c8acef-43c5-40bd-889e-bf269aba58cd" x="0" y="32" width="203" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIQUIDACIÓN  INDIVIDUAL CORRESPONDIENTE A ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="931167d3-a347-47cb-991d-3bce1f625cdc" x="0" y="99" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROGRAMA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="34fd00d3-e3aa-43b0-8ed6-21f0f642275c" x="0" y="141" width="116" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RÉGIMEN LABORAL:]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="00006f73-0947-4a63-8018-dfdebcdcdbd7" x="203" y="32" width="122" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{mes}+"-"+$P{anio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="e098fd24-b404-445d-91bd-cc3c13f0bdc4" x="116" y="57" width="342" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOMTRA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="8c08b428-0f83-41f6-80a6-8d473350fe98" x="116" y="71" width="162" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CEDCIU}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="4a9e0c0f-7eba-4eda-bc76-497dc202c1c3" x="116" y="85" width="342" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CARGO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="8d0d0dc4-dafd-4822-aa00-e925ae92ddfc" x="116" y="99" width="342" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROG}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="dcaa01bd-757c-40d3-a46d-c66427b9609f" x="116" y="113" width="162" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODCON}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="f29ca11e-6593-42ae-af9a-e1a1e76c37a9" x="116" y="127" width="342" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{AREA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="a6ad73e3-c1cb-427e-95d5-64139e69ab31" x="116" y="141" width="342" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RELACION_LABORAL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="eebbb401-fdf4-4d06-9ea9-0de0656b6659" x="78" y="0" width="100" height="20"/>
+				<box>
+					<pen lineStyle="Double"/>
+					<topPen lineStyle="Double"/>
+					<leftPen lineStyle="Double"/>
+					<bottomPen lineWidth="0.75" lineStyle="Double"/>
+					<rightPen lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="11" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[INGRESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="01064e5b-fac6-4421-928d-0bbc10b757a5" x="358" y="0" width="100" height="20"/>
+				<box>
+					<pen lineStyle="Double"/>
+					<topPen lineStyle="Double"/>
+					<leftPen lineStyle="Double"/>
+					<bottomPen lineWidth="0.75" lineStyle="Double"/>
+					<rightPen lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="11" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[EGRESOS]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="12" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="62116ea3-20c0-494a-8ec9-16d27165be3a" key="textField-5" x="0" y="0" width="92" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="218" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="696064a9-29c3-4433-bc13-481b999fea0b" x="12" y="135" width="130" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL INGRESO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3e37185b-fdac-426c-b5f0-c41fc40c30d6" x="306" y="197" width="130" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NETO A RECIBIR ==>]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="57440285-6754-4e76-b66d-2aa41ac46fe7" x="328" y="135" width="130" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL EGRESO]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="7149c425-2a69-4aac-b552-6ec2bca8ee26" x="418" y="135" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{tt_egreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="a77ca406-4319-4bc5-8c00-1b6ab3d6acae" x="92" y="135" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{tt_ingreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="e9e0311a-3d9e-4c19-8c68-5ab3d7afee46" x="436" y="198" width="100" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tt_recibir}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
