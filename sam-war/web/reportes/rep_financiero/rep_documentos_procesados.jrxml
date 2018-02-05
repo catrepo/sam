@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_documentos_procesados" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5a54544e-f0b2-4c13-a115-cbb8066e752f">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_documentos_procesados" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5a54544e-f0b2-4c13-a115-cbb8066e752f">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -18,8 +18,8 @@ doc_valor,
 doc_usuasignacion,
 doc_dependencia,
 doc_comprobante,
-(case when doc_revisioncon = 't' then 'Enviado'
-when doc_revisiondev = 't' then 'Devuelto'
+(case when doc_revisioncon = 1 then 'Enviado'
+when doc_revisiondev = 1 then 'Devuelto'
 when doc_revisioncon is null and doc_revisiondev is null then 'Pendiente'
 end) as estado
 ,
@@ -27,11 +27,11 @@ doc_fechacon,
 doc_observacion
 from tes_documentos
 inner join tes_tipo_documento on tes_documentos.id_tipo=tes_tipo_documento.id_tipo
-where (case when doc_revisioncon = 't' then 'Enviado'
-when doc_revisiondev = 't' then 'Devuelto'
+where (case when doc_revisioncon = 1 then 'Enviado'
+when doc_revisiondev = 1 then 'Devuelto'
 when doc_revisioncon is null and doc_revisiondev is null then 'Pendiente'
-end) = $P{parametro} or (case when doc_revisioncon = 't' then 'Enviado'
-when doc_revisiondev = 't' then 'Devuelto'
+end) = $P{parametro} or (case when doc_revisioncon = 1 then 'Enviado'
+when doc_revisiondev = 1 then 'Devuelto'
 when doc_revisioncon is null and doc_revisiondev is null then 'Pendiente'
 end)= $P{parametro1}
 order by tipo_nombre,estado]]>
