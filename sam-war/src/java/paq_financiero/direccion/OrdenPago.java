@@ -99,7 +99,7 @@ public class OrdenPago extends Pantalla {
         bar_botones.agregarBoton(botBuscar);
 
         cmbAnio.setId("cmbAnio");
-        cmbAnio.setCombo("SELECT ano_curso,ano_curso as anio FROM conc_ano order by ano_curso desc");
+        cmbAnio.setCombo("SELECT ano_curso,ano_curso as anio FROM conc_ano where ano_curso is not null order by ano_curso desc");
 
         List listas = new ArrayList();
         Object filas1[] = {

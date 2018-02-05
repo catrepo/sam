@@ -44,8 +44,11 @@ public class ListaDocumentos extends Pantalla {
     private Calendario fechaInicial = new Calendario();
     private Calendario fechaFinal = new Calendario();
     private Combo cmbCombo = new Combo();
+    private Combo cmbAnio = new Combo();
     private Combo cmbCombou = new Combo();
     private Combo cmbCombop = new Combo();
+    private Etiqueta etiAnio = new Etiqueta("Año : ");
+    private Etiqueta etiEstado = new Etiqueta("Estado : ");
     private Dialogo diaDialogo = new Dialogo();
     private Dialogo diaDialogou = new Dialogo();
     private Dialogo diaDialogod = new Dialogo();
@@ -163,6 +166,12 @@ public class ListaDocumentos extends Pantalla {
         setReingreso.setRows(10);
         setReingreso.dibujar();
 
+        cmbAnio.setId("cmbAnio");
+        cmbAnio.setCombo("SELECT DISTINCT year (doc_fechacon) as id,year (doc_fechacon) as anio\n"
+                + "from tes_documentos\n"
+                + "inner join tes_tipo_documento on tes_documentos.id_tipo=tes_tipo_documento.id_tipo\n"
+                + "where year (doc_fechacon) is not null");
+
         cmbCombo.setId("cmbCombo");
         cmbCombo.setCombo("SELECT DISTINCT doc_fecharev as fecha, doc_fecharev FROM tes_documentos\n"
                 + "where doc_fecharev is not null  and doc_revisioncon is not null order by doc_fecharev desc");
@@ -247,7 +256,7 @@ public class ListaDocumentos extends Pantalla {
         diaDialogop.setId("diaDialogop");
         diaDialogop.setTitle("Seleccione tipo"); //titulo
         diaDialogop.setWidth("20%"); //siempre en porcentajes  ancho
-        diaDialogop.setHeight("20%");//siempre porcentaje   alto
+        diaDialogop.setHeight("25%");//siempre porcentaje   alto
         diaDialogop.setResizable(false); //para que no se pueda cambiar el tamaño
         diaDialogop.getBot_aceptar().setMetodo("aceptoDocumento");
         gridp.setColumns(2);
@@ -339,7 +348,7 @@ public class ListaDocumentos extends Pantalla {
     }
 
     public void aceptoReingreso() {
-        documento.setReingreso(setReingreso.getValorSeleccionado()+"",tabConsulta.getValor("NICK_USUA"));
+        documento.setReingreso(setReingreso.getValorSeleccionado() + "", tabConsulta.getValor("NICK_USUA"));
 //        documento.setReingreso(Integer.parseInt(setReingreso.getValorSeleccionado()));
         utilitario.agregarMensaje("Reingreso Listo", "");
         diaDialogor.cerrar();
@@ -426,8 +435,10 @@ public class ListaDocumentos extends Pantalla {
                 break;
             case "Documentos Historial":
                 diaDialogop.Limpiar();
-                gridp.getChildren().add(new Etiqueta("Seleccione Opción :"));
+                gridp.getChildren().add(etiEstado);
                 gridp.getChildren().add(cmbCombop);
+                gridp.getChildren().add(etiAnio);
+                gridp.getChildren().add(cmbAnio);
                 diaDialogop.setDialogo(gridp);
                 diaDialogop.dibujar();
                 break;
@@ -471,9 +482,11 @@ public class ListaDocumentos extends Pantalla {
                 }
                 p_parametros.put("parametro", cadena);
                 p_parametros.put("parametro1", cadena1);
+                p_parametros.put("anio", Integer.parseInt(cmbAnio.getValue()+""));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                System.err.println(".>>"+p_parametros);
                 sef_formato.dibujar();
                 break;
             case "Documentos Usuario":
