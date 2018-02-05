@@ -38,12 +38,14 @@ public class OrdenPago extends Pantalla {
     //Tabla Normal
     private Tabla tabOrden = new Tabla();
     private SeleccionTabla setRegistro = new SeleccionTabla();
+    private SeleccionTabla setProveedor = new SeleccionTabla();
     private Tabla tabConsulta = new Tabla();
     private AutoCompletar autBusca = new AutoCompletar();
     private Panel panOpcion = new Panel();
     private Etiqueta etiAnio = new Etiqueta("Año :");
     private Etiqueta etiTipo = new Etiqueta("Tipo :");
     private Etiqueta txtAno = new Etiqueta("AÑO : ");
+    private Texto txtBuscar = new Texto();
     private Combo cmbAnio = new Combo();
     private Combo cmbAnio1 = new Combo();
     private Combo cmbTipo = new Combo();
@@ -60,10 +62,11 @@ public class OrdenPago extends Pantalla {
     private Grid gridD = new Grid();
     private Grid gridT = new Grid();
     private Grid gridR = new Grid();
-    
-        private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
+
+    private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
     private Map p_parametros = new HashMap();
+
     @EJB
     private DocumentosContabilidad admin = (DocumentosContabilidad) utilitario.instanciarEJB(DocumentosContabilidad.class);
 
@@ -127,6 +130,13 @@ public class OrdenPago extends Pantalla {
         botAnular.setIcon("ui-icon-cancel");
         botAnular.setMetodo("quitar");
         bar_botones.agregarBoton(botAnular);
+
+        Boton botSearch = new Boton();
+        botSearch.setValue("Buscar Proveedor");
+        botSearch.setExcluirLectura(true);
+        botSearch.setIcon("ui-icon-search");
+        botSearch.setMetodo("buscarProveedor");
+        bar_botones.agregarBoton(botSearch);
 
         diaDialogo.setId("diaDialogo");
         diaDialogo.setTitle("¿ MOTIVO DE ANULACIÓN ?"); //titulo
@@ -195,12 +205,43 @@ public class OrdenPago extends Pantalla {
         setRegistro.setHeader("SELECCIONAR PARTIDA");
         agregarComponente(setRegistro);
 
-                // CONFIGURACIÓN DE OBJETO REPORTE 
+        // CONFIGURACIÓN DE OBJETO REPORTE 
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
         agregarComponente(rep_reporte); //2 agregar el listado de reportes
         sef_formato.setId("sef_formato");
         agregarComponente(sef_formato);
-        
+
+        /*
+         * opciones para reportes
+         */
+        Grid grdIngreso = new Grid();
+        grdIngreso.setColumns(3);
+        grdIngreso.getChildren().add(new Etiqueta("Nombre Proveedor :"));
+        grdIngreso.getChildren().add(txtBuscar);
+
+        Boton botBusProvedor = new Boton();
+        botBusProvedor.setId("botBusProvedor");
+        botBusProvedor.setValue("Buscar");
+        botBusProvedor.setIcon("ui-icon-search");
+        botBusProvedor.setMetodo("BusProveedor");
+        grdIngreso.getChildren().add(botBusProvedor);
+
+        setProveedor.setId("setProveedor");
+        setProveedor.getTab_seleccion().setConexion(conOracle);
+        setProveedor.setSeleccionTabla("SELECT DISTINCT RUC_CI,NNITMA,NOMBRE,CODTRA  \n"
+                + "from USFIMRU.VI_LISTA_PROVEEDORES  \n"
+                + "left join USRRHH.nodattra on USRRHH.nodattra.cedciu = USFIMRU.VI_LISTA_PROVEEDORES.RUC_CI where RUC_CI ='-1'", "RUC_CI");
+        setProveedor.getTab_seleccion().getColumna("NNITMA").setFiltro(true);
+        setProveedor.getTab_seleccion().getColumna("NOMBRE").setFiltro(true);
+        setProveedor.getTab_seleccion().getColumna("NNITMA").setLongitud(25);
+        setProveedor.getTab_seleccion().getColumna("NOMBRE").setLongitud(50);
+        setProveedor.setRadio();
+        setProveedor.getTab_seleccion().setRows(10);
+        setProveedor.getGri_cuerpo().setHeader(grdIngreso);
+        setProveedor.getBot_aceptar().setMetodo("buscaProveedor1");
+        setProveedor.setHeader("BUSCAR PROVEEDORES");
+        agregarComponente(setProveedor);
+
         dibujarOrden();
     }
 
@@ -259,7 +300,7 @@ public class OrdenPago extends Pantalla {
             TablaGenerica tab_dato = admin.getBuscar_Datos_Proveedores(tabOrden.getValor("tes_id_proveedor"));
             if (!tab_dato.isEmpty()) {
                 tabOrden.setValor("tes_proveedor", tab_dato.getValor("nombre"));
-                 tabOrden.setValor("TES_COD_EMPLEADO", tab_dato.getValor("CODTRA"));
+                tabOrden.setValor("TES_COD_EMPLEADO", tab_dato.getValor("CODTRA"));
                 tabOrden.setValor("tes_estado", "Pendiente");
                 utilitario.addUpdate("tabOrden");//actualiza solo componente
             }
@@ -336,6 +377,41 @@ public class OrdenPago extends Pantalla {
         diaDialogo.cerrar();
     }
 
+    public void buscarProveedor() {
+        setProveedor.dibujar();
+    }
+
+    public void BusProveedor() {
+        if (txtBuscar.getValue() != null) {
+            String cadena = "";
+            cadena = txtBuscar.getValue() + "";
+            setProveedor.getTab_seleccion().setSql("SELECT DISTINCT RUC_CI,NNITMA,NOMBRE,CODTRA  \n"
+                    + "from USFIMRU.VI_LISTA_PROVEEDORES  \n"
+                    + "left join USRRHH.nodattra on USRRHH.nodattra.cedciu = USFIMRU.VI_LISTA_PROVEEDORES.RUC_CI \n"
+                    + "where NOMBRE like '%" + cadena.toUpperCase() + "%'\n"
+                    + "order by NOMBRE");
+            setProveedor.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe seleccionar parametros", "");
+        }
+    }
+
+        public void buscaProveedor1() {
+        if (setProveedor.getValorSeleccionado() != null) {
+            TablaGenerica tab_dato = admin.getBuscar_Datos_Proveedores(setProveedor.getValorSeleccionado()+"");
+            if (!tab_dato.isEmpty()) {
+                tabOrden.setValor("tes_id_proveedor", tab_dato.getValor("RUC_CI"));
+                tabOrden.setValor("tes_proveedor", tab_dato.getValor("nombre"));
+                tabOrden.setValor("TES_COD_EMPLEADO", tab_dato.getValor("CODTRA"));
+                tabOrden.setValor("tes_estado", "Pendiente");
+                utilitario.addUpdate("tabOrden");//actualiza solo componente
+                setProveedor.cerrar();
+            }
+        } else {
+            utilitario.agregarMensajeInfo("ingresar Cedula o RUC", "");
+        }
+    }
+    
     @Override
     public void insertar() {
         utilitario.getTablaisFocus().insertar();
@@ -393,14 +469,14 @@ public class OrdenPago extends Pantalla {
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 p_parametros.put("anio", cmbAnio.getValue() + "");
                 p_parametros.put("tipo", cmbTipo.getValue() + "");
-                p_parametros.put("fecha", utilitario.getFechaActual()+ "");
+                p_parametros.put("fecha", utilitario.getFechaActual() + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
         }
     }
-    
+
     public void numero() {
         String numero = admin.maximOrden();
         String num;
@@ -487,6 +563,14 @@ public class OrdenPago extends Pantalla {
 
     public void setP_parametros(Map p_parametros) {
         this.p_parametros = p_parametros;
+    }
+
+    public SeleccionTabla getSetProveedor() {
+        return setProveedor;
+    }
+
+    public void setSetProveedor(SeleccionTabla setProveedor) {
+        this.setProveedor = setProveedor;
     }
 
 }

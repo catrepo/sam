@@ -339,7 +339,8 @@ public class ListaDocumentos extends Pantalla {
     }
 
     public void aceptoReingreso() {
-        documento.setReingreso(Integer.parseInt(setReingreso.getValorSeleccionado()));
+        documento.setReingreso(setReingreso.getValorSeleccionado()+"",tabConsulta.getValor("NICK_USUA"));
+//        documento.setReingreso(Integer.parseInt(setReingreso.getValorSeleccionado()));
         utilitario.agregarMensaje("Reingreso Listo", "");
         diaDialogor.cerrar();
     }

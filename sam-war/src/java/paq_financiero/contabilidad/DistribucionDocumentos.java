@@ -211,13 +211,14 @@ public class DistribucionDocumentos extends Pantalla {
         tabMostra.getColumna("doc_fecharev").setVisible(false);
         tabMostra.getColumna("doc_asignacion").setVisible(false);
         tabMostra.getColumna("tes_ide_orden_pago").setVisible(false);
-//        tabMostra.getColumna("doc_comprobante").setVisible(false);
         tabMostra.getColumna("doc_loginasi").setVisible(false);
         tabMostra.getColumna("doc_fechacon").setVisible(false);
+        tabMostra.getColumna("doc_revisiondev").setCheck();
+        tabMostra.getColumna("doc_revisioncon").setCheck();
+        tabMostra.getColumna("doc_ejecutado").setCheck();
         tabMostra.getColumna("id_tipo").setVisible(false);
         tabMostra.getColumna("doc_fecha").setLectura(true);
         tabMostra.getColumna("doc_numero").setLectura(true);
-//        tabMostra.getColumna("l").setLectura(true);
         tabMostra.getColumna("doc_concepto").setLectura(true);
         tabMostra.getColumna("doc_valor").setLectura(true);
         tabMostra.getColumna("doc_usuasignacion").setLectura(true);
