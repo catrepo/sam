@@ -79,7 +79,7 @@ public class AdquisicionesBodega extends Pantalla {
         agregarComponente(sel_rep);
          
             com_direccion.setId("com_direccion");
-            com_direccion.setCombo(ser_adquisiciones.getAreaAdministrativa("1",ide_ademple));
+            com_direccion.setCombo(ser_adquisiciones.getAreaAdministrativa("0",ide_ademple));
             agregarComponente(com_direccion);
             bar_botones.agregarComponente(com_direccion);
             com_direccion.setMetodo("filtroDireccion");
@@ -282,7 +282,8 @@ public class AdquisicionesBodega extends Pantalla {
             agregarComponente(con_guardar_aprobado);
             
                     con_guardar_anulado.setId("con_guardar_anulado");
-            agregarComponente(con_guardar_anulado);            
+            agregarComponente(con_guardar_anulado);  
+            filtroDireccion();
  } else {
             utilitario.agregarNotificacionInfo("Mensaje", "EL usuario ingresado no registra permisos para el registro de Solicitudes de Compra. Consulte con el Administrador");
         }    
@@ -374,7 +375,7 @@ public void guardarAprobacion(){
         
     public void filtroDireccion() {
 
-        tab_adquisiones.setCondicion("IDE_ADARAD=" + com_direccion.getValue().toString()+" and ATIENDE_BODEGA_ADCOMP=0 ");
+        tab_adquisiones.setCondicion("PRUEBA_DIRECTOR_ADCOMP= 1 and ATIENDE_BODEGA_ADCOMP=0 ");
         tab_adquisiones.ejecutarSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
@@ -440,7 +441,6 @@ public void guardarAprobacion(){
          sel_rep.dibujar();
          }
       }
-
     public Tabla getTab_adquisiones() {
         return tab_adquisiones;
     }

@@ -283,7 +283,9 @@ public class AdquisicionesOrdenadorGasto extends Pantalla {
             agregarComponente(con_guardar_aprobado);
             
                     con_guardar_anulado.setId("con_guardar_anulado");
-            agregarComponente(con_guardar_anulado);            
+            agregarComponente(con_guardar_anulado); 
+            
+            filtroDireccion();
  } else {
             utilitario.agregarNotificacionInfo("Mensaje", "EL usuario ingresado no registra permisos para el registro de la orden de gasto de Compras. Consulte con el Administrador");
         }    
@@ -366,7 +368,7 @@ public void guardarAprobacion(){
         
     public void filtroDireccion() {
 
-        tab_adquisiones.setCondicion("IDE_ADARAD=" + com_direccion.getValue().toString()+" and APLICA_ADCOMP=1 AND ATIENDE_BODEGA_ADCOMP=1 AND APRUEBA_GASTO_ADCOMP=0 ");
+        tab_adquisiones.setCondicion("APLICA_ADCOMP=1 AND ATIENDE_BODEGA_ADCOMP=1 AND APRUEBA_GASTO_ADCOMP=0 ");
         tab_adquisiones.ejecutarSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());

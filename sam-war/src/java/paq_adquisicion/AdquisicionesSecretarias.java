@@ -478,16 +478,22 @@ public class AdquisicionesSecretarias extends Pantalla {
     @Override
     public void guardar() {
         if (tab_adquisiones.isFocus()) {
+            
             tab_adquisiones.guardar();
+            
+            
         } else if (tab_certificacion.isFocus()) {
             tab_certificacion.guardar();
         } else if (tab_compra_bienes.isFocus()) {
             tab_compra_bienes.guardar();
         }
         guardarPantalla();
-        //System.out.println("imprimo "+tab_adquisiones.getValorSeleccionado());
-        //System.out.println("imprimoss "+tab_adquisiones.getFilaActual());
+        System.out.println("imprimo "+tab_adquisiones.getValorSeleccionado());
+        System.out.println("imprimoss "+tab_adquisiones.getValor("NUMERO_ORDEN_ADCOMP"));
         //System.out.println("imprimodd "+tab_adquisiones.getValor("IDE_ADCOMP"));
+        if(tab_adquisiones.getValor("NUMERO_ORDEN_ADCOMP") == null){
+                    System.out.println(" xx  ");
+
         utilitario.getConexion().ejecutarSql("update ADQ_COMPRA\n"
                 + "set NUMERO_ORDEN_ADCOMP=numero\n"
                 + "from (\n"
@@ -501,7 +507,9 @@ public class AdquisicionesSecretarias extends Pantalla {
                 + "end) as numero\n"
                 + "from ADQ_COMPRA\n"
                 + ") a where ADQ_COMPRA.IDE_ADCOMP =" + tab_adquisiones.getValorSeleccionado());
+        System.out.println(" vv  ");
         tab_adquisiones.ejecutarSql();
+        }
     }
 
     @Override
