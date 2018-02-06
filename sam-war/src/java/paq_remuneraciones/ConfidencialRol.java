@@ -276,11 +276,11 @@ public class ConfidencialRol extends Pantalla {
                 p_parametros.put("anio", cmbAnio.getValue() + "");
                 p_parametros.put("mes", generico.meses(Integer.parseInt(cmbPeriodo.getValue() + "")));
                 p_parametros.put("cedula", cedula);
-                p_parametros.put("mes1", meses(Integer.parseInt(cmbPeriodo.getValue() + "")));
+                p_parametros.put("nom_mes", meses(Integer.parseInt(cmbPeriodo.getValue() + "")));
                 p_parametros.put("bandera", tabla);
-                p_parametros.put("ingresos", String.valueOf(ingreso) +"");
-                p_parametros.put("egresos", String.valueOf(egreso)+"");
-                p_parametros.put("neto", String.valueOf(liquido)+"");
+                p_parametros.put("tt_ingreso", String.valueOf(ingreso) +"");
+                p_parametros.put("tt_egreso", String.valueOf(egreso)+"");
+                p_parametros.put("tt_recibir", String.valueOf(liquido)+"");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 System.out.println("->> " + p_parametros);
