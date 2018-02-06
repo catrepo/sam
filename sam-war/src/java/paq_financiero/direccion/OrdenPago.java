@@ -396,9 +396,9 @@ public class OrdenPago extends Pantalla {
         }
     }
 
-        public void buscaProveedor1() {
+    public void buscaProveedor1() {
         if (setProveedor.getValorSeleccionado() != null) {
-            TablaGenerica tab_dato = admin.getBuscar_Datos_Proveedores(setProveedor.getValorSeleccionado()+"");
+            TablaGenerica tab_dato = admin.getBuscar_Datos_Proveedores(setProveedor.getValorSeleccionado() + "");
             if (!tab_dato.isEmpty()) {
                 tabOrden.setValor("tes_id_proveedor", tab_dato.getValor("RUC_CI"));
                 tabOrden.setValor("tes_proveedor", tab_dato.getValor("nombre"));
@@ -411,7 +411,7 @@ public class OrdenPago extends Pantalla {
             utilitario.agregarMensajeInfo("ingresar Cedula o RUC", "");
         }
     }
-    
+
     @Override
     public void insertar() {
         utilitario.getTablaisFocus().insertar();
@@ -420,7 +420,29 @@ public class OrdenPago extends Pantalla {
 
     @Override
     public void guardar() {
-        if (tabOrden.guardar()) {
+        if (tabOrden.getValor("tes_ide_orden_pago") != null) {
+            TablaGenerica tabInfo = admin.getCatalogoDato("*", tabOrden.getTabla(), "tes_ide_orden_pago = " + tabOrden.getValor("tes_ide_orden_pago") + "");
+            if (!tabInfo.isEmpty()) {
+                TablaGenerica tabDato = admin.getNumeroCampos(tabOrden.getTabla());
+                if (!tabDato.isEmpty()) {
+                    for (int i = 1; i < Integer.parseInt(tabDato.getValor("NumeroCampos")); i++) {
+                        if (i != 1) {
+                            TablaGenerica tabInfoColum1 = admin.getEstrucTabla(tabOrden.getTabla(), i);
+                            if (!tabInfoColum1.isEmpty()) {
+                                try {
+                                    if (tabOrden.getValor(tabInfoColum1.getValor("Column_Name")).equals(tabInfo.getValor(tabInfoColum1.getValor("Column_Name")))) {
+                                    } else {
+                                        admin.setActuaRegis(Integer.parseInt(tabOrden.getValor("tes_ide_orden_pago")), tabOrden.getTabla(), tabInfoColum1.getValor("Column_Name"), tabOrden.getValor(tabInfoColum1.getValor("Column_Name")), "tes_ide_orden_pago");
+                                    }
+                                } catch (NullPointerException e) {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            utilitario.agregarMensaje("Registro Actalizado", null);
+        } else if (tabOrden.guardar()) {
             guardarPantalla();
         }
     }
