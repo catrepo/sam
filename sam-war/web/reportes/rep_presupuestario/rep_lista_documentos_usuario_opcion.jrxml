@@ -14,29 +14,29 @@ id_documento,
 doc_fecharev,
 (SELECT tipo_nombre FROM tes_tipo_documento where id_tipo =tes_documentos.id_tipo) AS tipo,
 doc_numero,
-doc_responsabe,
+doc_responsable,
 doc_concepto,
 doc_fecharev,
 doc_valor,
 doc_fechacon,
-(case when doc_revisioncon = 't' then 'Atendido' when doc_revisiondev = 't' then 'De Vuelto' end ),
+(case when doc_revisioncon = 1 then 'Atendido' when doc_revisiondev = 1 then 'De Vuelto' end ) as est,
 doc_comprobante,
 doc_dependencia,
 doc_usuasignacion
 FROM
 tes_documentos
-where (doc_revisioncon = 't' or doc_revisiondev ='t') and doc_usuasignacion =$P{usuario}
-order by tipo,(case when doc_revisioncon = 't' then 'Atendido' when doc_revisiondev = 't' then 'De Vuelto' end )]]>
+where (doc_revisioncon = 1 or doc_revisiondev = 1) and doc_usuasignacion =$P{usuario}
+order by tipo,(case when doc_revisioncon = 1 then 'Atendido' when doc_revisiondev = 1 then 'De Vuelto' end )]]>
 	</queryString>
 	<field name="id_documento" class="java.lang.Integer"/>
 	<field name="doc_fecharev" class="java.sql.Timestamp"/>
 	<field name="tipo" class="java.lang.String"/>
 	<field name="doc_numero" class="java.lang.String"/>
-	<field name="doc_responsabe" class="java.lang.String"/>
+	<field name="doc_responsable" class="java.lang.String"/>
 	<field name="doc_concepto" class="java.lang.String"/>
 	<field name="doc_valor" class="java.math.BigDecimal"/>
 	<field name="doc_fechacon" class="java.sql.Timestamp"/>
-	<field name="case" class="java.lang.String"/>
+	<field name="est" class="java.lang.String"/>
 	<field name="doc_comprobante" class="java.lang.Integer"/>
 	<field name="doc_dependencia" class="java.lang.String"/>
 	<field name="doc_usuasignacion" class="java.lang.String"/>
@@ -179,7 +179,7 @@ order by tipo,(case when doc_revisioncon = 't' then 'Atendido' when doc_revision
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{case}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{est}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="68c5ad26-8ac6-4388-9988-0bb8a2852269" x="499" y="0" width="56" height="20"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_lista_documentos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d13386e4-5190-436e-9f91-ed85769a38fb">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_lista_documentos" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d13386e4-5190-436e-9f91-ed85769a38fb">
 	<property name="ireport.zoom" value="1.4641000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -15,29 +15,29 @@ id_documento,
 doc_fecharev,
 (SELECT tipo_nombre FROM tes_tipo_documento where id_tipo =tes_documentos.id_tipo) AS tipo,
 doc_numero,
-doc_responsabe,
+doc_responsable,
 doc_concepto,
 doc_fecharev,
 doc_valor,
 doc_fechacon,
-(case when doc_revisioncon = 't' then 'Atendido' when doc_revisiondev = 't' then 'De Vuelto' end ),
+(case when doc_revisioncon = 1 then 'Atendido' when doc_revisiondev = 1 then 'De Vuelto' end ) as esta,
 doc_comprobante,
 doc_dependencia,
 doc_usuasignacion
 FROM
 tes_documentos
-where cast((doc_fecharev::timestamp::date)as varchar) between '$P!{fechai}' and '$P!{fechaf}' and (doc_revisioncon = 't' or doc_revisiondev ='t')
+where doc_fecharev between $P{fechai} and $P{fechaf} and (doc_revisioncon = 1 or doc_revisiondev =1)
 order by doc_usuasignacion,tipo]]>
 	</queryString>
 	<field name="id_documento" class="java.lang.Integer"/>
 	<field name="doc_fecharev" class="java.sql.Timestamp"/>
 	<field name="tipo" class="java.lang.String"/>
 	<field name="doc_numero" class="java.lang.String"/>
-	<field name="doc_responsabe" class="java.lang.String"/>
+	<field name="doc_responsable" class="java.lang.String"/>
 	<field name="doc_concepto" class="java.lang.String"/>
 	<field name="doc_valor" class="java.math.BigDecimal"/>
 	<field name="doc_fechacon" class="java.sql.Timestamp"/>
-	<field name="case" class="java.lang.String"/>
+	<field name="esta" class="java.lang.String"/>
 	<field name="doc_comprobante" class="java.lang.Integer"/>
 	<field name="doc_dependencia" class="java.lang.String"/>
 	<field name="doc_usuasignacion" class="java.lang.String"/>
@@ -163,7 +163,7 @@ order by doc_usuasignacion,tipo]]>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{case}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{esta}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="7dc073fa-bb13-45ce-8e2b-74c690bac0bf" x="499" y="0" width="56" height="20"/>
