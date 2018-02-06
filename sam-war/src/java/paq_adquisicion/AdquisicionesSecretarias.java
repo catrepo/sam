@@ -184,7 +184,7 @@ public class AdquisicionesSecretarias extends Pantalla {
             tab_adquisiones.getColumna("USO_ADCOMP").setNombreVisual("USO");
             tab_adquisiones.getColumna("OBSERVACIONES_ADCOMP").setNombreVisual("OBSERVACIONES");
             tab_adquisiones.getColumna("DESTINO_DEL_BIEN_ADCOMP").setNombreVisual("DESTINO");
-
+            
             tab_adquisiones.getColumna("ide_adcomp").setVisible(false);
             tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
             tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setVisible(true);

@@ -5,11 +5,14 @@ package paq_adquisicion;
  * @author Andres Redroban
  */
 import framework.aplicacion.TablaGenerica;
+import framework.componentes.AutoCompletar;
 import framework.componentes.Boton;
 import framework.componentes.Division;
+import framework.componentes.Panel;
 import framework.componentes.PanelTabla;
 import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
+import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
 import framework.componentes.Tabulador;
 import framework.componentes.VisualizarPDF;
@@ -27,48 +30,97 @@ public class AdquisicionesConsulta extends Pantalla {
     private Tabla tab_adquisiones = new Tabla();
     private Tabla tab_certificacion = new Tabla();
     private Tabla tab_compra_bienes = new Tabla();
-    
+    private SeleccionTabla setRegistro = new SeleccionTabla();
+    private AutoCompletar autBusca = new AutoCompletar();
+    private Panel panOpcion = new Panel();
     private Reporte rep_reporte = new Reporte(); //Listado de Reportes, siempre se llama rep_reporte
     private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
     private Map map_parametros = new HashMap();//Parametros del reporte
     public static String par_ti_anulado;
-    private VisualizarPDF vipdf_comprobante = new VisualizarPDF();    
+    private VisualizarPDF vipdf_comprobante = new VisualizarPDF();
 
     @EJB
     private final ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
 
     public AdquisicionesConsulta() {
-        
+
         bar_botones.getBot_eliminar().setRendered(false);
         bar_botones.getBot_insertar().setRendered(false);
         bar_botones.getBot_guardar().setRendered(false);
-        
-         
+
         rep_reporte.setId("rep_reporte");
         agregarComponente(rep_reporte);
         bar_botones.agregarReporte();
-        
-        Boton bot_agregar_solicitante= new Boton();
-        
+
+        autBusca.setId("autBusca");
+        autBusca.setAutoCompletar("SELECT c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,r.PARTIDA_ADCERT,c.FECHA_INGRE\n"
+                + "FROM dbo.ADQ_COMPRA as c\n"
+                + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                + "order by c.FECHA_INGRE desc");
+        autBusca.setSize(70);
+
+        Boton bot_agregar_solicitante = new Boton();
+
         Boton bot_anular = new Boton();
         bot_anular.setIcon("ui-icon-search");
         bot_anular.setValue("ANULAR LA SOLICITUD");
         bot_anular.setMetodo("anular");
-        
+
         //bar_botones.agregarBoton(bot_anular);
-        
-         Boton bot_imprimir = new Boton();
+        Boton bot_imprimir = new Boton();
         bot_imprimir.setIcon("ui-icon-print");
         bot_imprimir.setValue("IMPRIMIR SOLICITUD");
         bot_imprimir.setMetodo("generarPDF");
-        
+
         bar_botones.agregarBoton(bot_imprimir);
-        
+
+        Boton bot_search = new Boton();
+        bot_search.setIcon("ui-icon-search");
+        bot_search.setValue("BUSCAR SOLICITUD");
+        bot_search.setMetodo("buscaSolicitud");
+
+        bar_botones.agregarBoton(bot_search);
+
+        panOpcion.setId("panOpcion");
+        panOpcion.setTransient(true);
+        panOpcion.setHeader("SOLICITUD DE ORDENES DE PAGO");
+        agregarComponente(panOpcion);
+
+        setRegistro.setId("setRegistro");
+        setRegistro.setSeleccionTabla("SELECT DISTINCT top 100 c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,r.PARTIDA_ADCERT,c.FECHA_INGRE\n"
+                + "FROM dbo.ADQ_COMPRA as c\n"
+                + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                + "order by c.FECHA_INGRE desc", "IDE_ADCOMP");
+        setRegistro.getTab_seleccion().getColumna("NUMERO_ORDEN_ADCOMP").setFiltroContenido();
+        setRegistro.getTab_seleccion().getColumna("PARTIDA_ADCERT").setFiltroContenido();
+        setRegistro.setRadio();
+        setRegistro.getTab_seleccion().setRows(10);
+        setRegistro.getBot_aceptar().setMetodo("cargarRegistro");
+        setRegistro.setHeader("SELECCIONAR PARTIDA");
+        agregarComponente(setRegistro);
+
+        sel_rep.setId("sel_rep");
+        agregarComponente(sel_rep);
+
+        vipdf_comprobante.setId("vipdf_comprobante");
+        vipdf_comprobante.setTitle("SOLICITUD DE COMPRA");
+        agregarComponente(vipdf_comprobante);
+
+        dibujarPantalla();
+    }
+
+    public void dibujarPantalla() {
+        limpiarPanel();
         Tabulador tab_tabulador = new Tabulador();
         tab_tabulador.setId("tab_tabulador");
 
         tab_adquisiones.setId("tab_adquisiones");   //identificador
         tab_adquisiones.setTabla("adq_compra", "ide_adcomp", 1);
+        if (autBusca.getValue() == null) {
+            tab_adquisiones.setCondicion("ide_adcomp=-1");
+        } else {
+            tab_adquisiones.setCondicion("ide_adcomp=" + autBusca.getValor());
+        }
         List lista = new ArrayList();
         List lista1 = new ArrayList();
         List lista2 = new ArrayList();
@@ -90,18 +142,17 @@ public class AdquisicionesConsulta extends Pantalla {
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setCombo(lista1);
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
         tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
-        tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("3","","",""));
-        tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
+        tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("3", "", "", ""));
+        tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3", "1", "1", "1"));
         tab_adquisiones.getColumna("IDE_ADEMPLE").setCombo(ser_adquisiciones.getEmpleado());
-        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
-        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3","1","1","1"));
+        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3", "1", "1", "1"));
+        tab_adquisiones.getColumna("ADQ_IDE_ADEMDE2").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3", "1", "1", "1"));
         tab_adquisiones.agregarRelacion(tab_certificacion);
         tab_adquisiones.agregarRelacion(tab_compra_bienes);
         tab_adquisiones.setTipoFormulario(true);
         tab_adquisiones.getGrid().setColumns(6);
-                tab_adquisiones.getColumna("IDE_ADEMAP").setNombreVisual("SOLICITANTE");
+        tab_adquisiones.getColumna("IDE_ADEMAP").setNombreVisual("SOLICITANTE");
         tab_adquisiones.getColumna("IDE_ADEMDE").setNombreVisual("RESPONSABLE SOLICITUD");
-        tab_adquisiones.getColumna("IDE_ADCOMP").setNombreVisual("CODIGO");
         tab_adquisiones.getColumna("IDE_ADAPRO").setNombreVisual("APROBACION");
         tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setNombreVisual("TIPO DE COMPRA");
         tab_adquisiones.getColumna("DESCRIPCION_ADCOMP").setNombreVisual("DESCRIPCION");
@@ -134,8 +185,8 @@ public class AdquisicionesConsulta extends Pantalla {
         tab_adquisiones.getColumna("USO_ADCOMP").setNombreVisual("USO");
         tab_adquisiones.getColumna("OBSERVACIONES_ADCOMP").setNombreVisual("OBSERVACIONES");
         tab_adquisiones.getColumna("DESTINO_DEL_BIEN_ADCOMP").setNombreVisual("DESTINO");
-        
-      /*  tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
+
+        /*  tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
         tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("DESCRIPCION_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);
@@ -144,7 +195,8 @@ public class AdquisicionesConsulta extends Pantalla {
         tab_adquisiones.getColumna("NUMERO_ORDEN_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("FECHA_SOLICITUD_ADCOMP").setVisible(true);
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);*/
-        tab_adquisiones.getColumna("VALOR_PRESUPUESTADO_ADCOMP").setVisible(false);/*
+        tab_adquisiones.getColumna("VALOR_PRESUPUESTADO_ADCOMP").setVisible(false);
+        tab_adquisiones.getColumna("IDE_ADCOMP").setVisible(false);/*
         tab_adquisiones.getColumna("VALOR_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("FECHA_ADJUDICADO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("ADJUDICADOR_ADCOMP").setVisible(false);
@@ -205,7 +257,7 @@ public class AdquisicionesConsulta extends Pantalla {
         tab_compra_bienes.setId("tab_compra_bienes");
         tab_compra_bienes.setIdCompleto("tab_tabulador:tab_compra_bienes");
         tab_compra_bienes.setTabla("ADQ_COMPRA_BIENES", "IDE_ADCOBI", 3);
-        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial("0","0"));
+        tab_compra_bienes.getColumna("IDE_ADMATE").setCombo(ser_adquisiciones.getMaterial("0", "0"));
         tab_compra_bienes.getColumna("IDE_ADCOBI").setNombreVisual("CODIGO");
         tab_compra_bienes.getColumna("IDE_ADMATE").setNombreVisual("MATERIAL");
         tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setNombreVisual("CANTIDAD");
@@ -219,8 +271,8 @@ public class AdquisicionesConsulta extends Pantalla {
 
         tab_compra_bienes.getColumna("IDE_ADCOBI").setOrden(1);
         tab_compra_bienes.getColumna("IDE_ADMATE").setOrden(2);
-        tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setOrden(3);        
-        
+        tab_compra_bienes.getColumna("CANTIDAD_ADCOBI").setOrden(3);
+
         tab_compra_bienes.getColumna("VALOR_UNITARIO_ADCOBI").setVisible(false);
         tab_compra_bienes.getColumna("DECUENTO_ADCOBI").setVisible(false);
         tab_compra_bienes.getColumna("PORCENTAJE_DESCUENTO_ADCOBI").setVisible(false);
@@ -228,8 +280,8 @@ public class AdquisicionesConsulta extends Pantalla {
         tab_compra_bienes.getColumna("IVA_ADCOBI").setVisible(false);
         tab_compra_bienes.getColumna("TOTAL_ADCOBI").setVisible(false);
         tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setVisible(false);
-         tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setValorDefecto("0");
-       
+        tab_compra_bienes.getColumna("NO_EXISTE_ADCOBI").setValorDefecto("0");
+
         tab_compra_bienes.getColumna("VALOR_UNITARIO_ADCOBI").setValorDefecto("0");
         tab_compra_bienes.getColumna("DECUENTO_ADCOBI").setValorDefecto("0");
         tab_compra_bienes.getColumna("PORCENTAJE_DESCUENTO_ADCOBI").setValorDefecto("0");
@@ -249,57 +301,78 @@ public class AdquisicionesConsulta extends Pantalla {
         div_adquisiciones.setId("div_adquisiciones");
         div_adquisiciones.dividir2(pat_adquisiciones, tab_tabulador, "70%", "H");
         agregarComponente(div_adquisiciones);
-        
-        sel_rep.setId("sel_rep");
-        agregarComponente(sel_rep);
-        
-        vipdf_comprobante.setId("vipdf_comprobante");
-        vipdf_comprobante.setTitle("SOLICITUD DE COMPRA");
-        agregarComponente(vipdf_comprobante);
-        
-
     }
-    public void prueba (AjaxBehaviorEvent evt){
+
+    public void prueba(AjaxBehaviorEvent evt) {
         tab_adquisiones.modificar(evt);
-        String valor=tab_adquisiones.getValor("IDE_ADEMAP");
-        TablaGenerica empleado = utilitario.consultar("select ide_ademap,FECHA_INGRE from ADQ_EMPLEADO_APRUEBA where IDE_ADEMAP="+valor);
+        String valor = tab_adquisiones.getValor("IDE_ADEMAP");
+        TablaGenerica empleado = utilitario.consultar("select ide_ademap,FECHA_INGRE from ADQ_EMPLEADO_APRUEBA where IDE_ADEMAP=" + valor);
         tab_adquisiones.setValor("uso_adcomp", empleado.getValor("FECHA_INGRE"));
         utilitario.addUpdate("tab_adquisiones");
-        
-    }
-        public void generarPDF() {
-        if (tab_adquisiones.getValorSeleccionado() != null) {
-                        ///////////AQUI ABRE EL REPORTE
-                        Map parametros = new HashMap();
-                        parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("IDE_ADCOMP")));
-                                 map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
 
-                        //System.out.println(" " + str_titulos);
-                        vipdf_comprobante.setVisualizarPDF("rep_compras/rep_solicitudcompra.jasper", parametros);
-                        vipdf_comprobante.dibujar();
-                        utilitario.addUpdate("vipdf_comprobante");
+    }
+
+    public void generarPDF() {
+        if (tab_adquisiones.getValorSeleccionado() != null) {
+            ///////////AQUI ABRE EL REPORTE
+            Map parametros = new HashMap();
+            parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("IDE_ADCOMP")));
+            map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
+
+            //System.out.println(" " + str_titulos);
+            vipdf_comprobante.setVisualizarPDF("rep_compras/rep_solicitudcompra.jasper", parametros);
+            vipdf_comprobante.dibujar();
+            utilitario.addUpdate("vipdf_comprobante");
         } else {
             utilitario.agregarMensajeInfo("Seleccione una Solititud de compra", "");
         }
     }
+
+    private void limpiarPanel() {
+        //borra el contenido de la división central central
+        panOpcion.getChildren().clear();
+    }
+
+    public void limpiar() {
+        autBusca.limpiar();
+        utilitario.addUpdate("autBusca");
+        limpiarPanel();
+        utilitario.addUpdate("panOpcion");
+    }
+    public void buscaSolicitud() {
+        setRegistro.dibujar(); 
+    }
+
+    public void cargarRegistro(){
+    if (setRegistro.getValorSeleccionado() != null) {
+        limpiar();
+            autBusca.setValor(setRegistro.getValorSeleccionado());
+            dibujarPantalla();
+            setRegistro.cerrar();
+            utilitario.addUpdate("autBusca,panOpcion");
+        } else {
+            utilitario.agregarMensajeInfo("Debe seleccionar una Solicitud", "");
+        }
+    }
+    
     @Override
-      public void abrirListaReportes() {
+    public void abrirListaReportes() {
         // TODO Auto-generated method stub
         rep_reporte.dibujar();
-      }
-    @Override
-      public void aceptarReporte() {
-         if (rep_reporte.getReporteSelecionado().equals("Solicitu de Compra")){
-                      rep_reporte.cerrar();
-         map_parametros.clear();
-         map_parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("ide_adcomp")));
-         
-         map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
-         sel_rep.setSeleccionFormatoReporte(map_parametros, rep_reporte.getPath());
-         sel_rep.dibujar();
-         }
-      }
+    }
 
+    @Override
+    public void aceptarReporte() {
+        if (rep_reporte.getReporteSelecionado().equals("Solicitu de Compra")) {
+            rep_reporte.cerrar();
+            map_parametros.clear();
+            map_parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("ide_adcomp")));
+
+            map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
+            sel_rep.setSeleccionFormatoReporte(map_parametros, rep_reporte.getPath());
+            sel_rep.dibujar();
+        }
+    }
 
     public Reporte getRep_reporte() {
         return rep_reporte;
@@ -324,7 +397,6 @@ public class AdquisicionesConsulta extends Pantalla {
     public void setMap_parametros(Map map_parametros) {
         this.map_parametros = map_parametros;
     }
-      
 
     @Override
     public void insertar() {
@@ -390,6 +462,22 @@ public class AdquisicionesConsulta extends Pantalla {
 
     public void setVipdf_comprobante(VisualizarPDF vipdf_comprobante) {
         this.vipdf_comprobante = vipdf_comprobante;
+    }
+
+    public AutoCompletar getAutBusca() {
+        return autBusca;
+    }
+
+    public void setAutBusca(AutoCompletar autBusca) {
+        this.autBusca = autBusca;
+    }
+
+    public SeleccionTabla getSetRegistro() {
+        return setRegistro;
+    }
+
+    public void setSetRegistro(SeleccionTabla setRegistro) {
+        this.setRegistro = setRegistro;
     }
 
 }
