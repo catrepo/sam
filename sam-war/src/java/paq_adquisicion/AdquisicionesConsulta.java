@@ -8,6 +8,7 @@ import framework.aplicacion.TablaGenerica;
 import framework.componentes.AutoCompletar;
 import framework.componentes.Boton;
 import framework.componentes.Division;
+import framework.componentes.Grupo;
 import framework.componentes.Panel;
 import framework.componentes.PanelTabla;
 import framework.componentes.Reporte;
@@ -32,7 +33,7 @@ public class AdquisicionesConsulta extends Pantalla {
     private Tabla tab_compra_bienes = new Tabla();
     private SeleccionTabla setRegistro = new SeleccionTabla();
     private AutoCompletar autBusca = new AutoCompletar();
-    private Panel panOpcion = new Panel();
+    private Panel panOpcion1 = new Panel();
     private Reporte rep_reporte = new Reporte(); //Listado de Reportes, siempre se llama rep_reporte
     private SeleccionFormatoReporte sel_rep = new SeleccionFormatoReporte(); //formato de salida del reporte
     private Map map_parametros = new HashMap();//Parametros del reporte
@@ -81,10 +82,10 @@ public class AdquisicionesConsulta extends Pantalla {
 
         bar_botones.agregarBoton(bot_search);
 
-        panOpcion.setId("panOpcion");
-        panOpcion.setTransient(true);
-        panOpcion.setHeader("SOLICITUD DE ORDENES DE PAGO");
-        agregarComponente(panOpcion);
+        panOpcion1.setId("panOpcion1");
+        panOpcion1.setTransient(true);
+        panOpcion1.setHeader("SOLICITUD DE ORDENES DE PAGO");
+        agregarComponente(panOpcion1);
 
         setRegistro.setId("setRegistro");
         setRegistro.setSeleccionTabla("SELECT DISTINCT top 100 c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,r.PARTIDA_ADCERT,c.FECHA_INGRE\n"
@@ -96,7 +97,6 @@ public class AdquisicionesConsulta extends Pantalla {
         setRegistro.setRadio();
         setRegistro.getTab_seleccion().setRows(10);
         setRegistro.getBot_aceptar().setMetodo("cargarRegistro");
-        setRegistro.setHeader("SELECCIONAR PARTIDA");
         agregarComponente(setRegistro);
 
         sel_rep.setId("sel_rep");
@@ -300,7 +300,10 @@ public class AdquisicionesConsulta extends Pantalla {
         Division div_adquisiciones = new Division();
         div_adquisiciones.setId("div_adquisiciones");
         div_adquisiciones.dividir2(pat_adquisiciones, tab_tabulador, "70%", "H");
-        agregarComponente(div_adquisiciones);
+        Grupo gru = new Grupo();
+        gru.getChildren().add(div_adquisiciones);
+        panOpcion1.getChildren().add(gru);
+//        agregarComponente(div_adquisiciones);
     }
 
     public void prueba(AjaxBehaviorEvent evt) {
@@ -330,26 +333,26 @@ public class AdquisicionesConsulta extends Pantalla {
 
     private void limpiarPanel() {
         //borra el contenido de la división central central
-        panOpcion.getChildren().clear();
+        panOpcion1.getChildren().clear();
     }
 
-    public void limpiar() {
-        autBusca.limpiar();
-        utilitario.addUpdate("autBusca");
-        limpiarPanel();
-        utilitario.addUpdate("panOpcion");
-    }
+//    public void limpiar() {
+//        autBusca.limpiar();
+//        utilitario.addUpdate("autBusca");
+//        limpiarPanel();
+//        utilitario.addUpdate("panOpcion");
+//    }
     public void buscaSolicitud() {
         setRegistro.dibujar(); 
     }
 
     public void cargarRegistro(){
     if (setRegistro.getValorSeleccionado() != null) {
-        limpiar();
+//        limpiar();
             autBusca.setValor(setRegistro.getValorSeleccionado());
             dibujarPantalla();
             setRegistro.cerrar();
-            utilitario.addUpdate("autBusca,panOpcion");
+            utilitario.addUpdate("autBusca,panOpcion1");
         } else {
             utilitario.agregarMensajeInfo("Debe seleccionar una Solicitud", "");
         }
