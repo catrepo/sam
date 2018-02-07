@@ -29,6 +29,7 @@ import sistema.aplicacion.Utilitario;
 
 public class AdquisicionesDirector extends Pantalla {
         private Tabla tab_adquisiones = new Tabla();
+        private Tabla tabConsulta = new Tabla();
     private Tabla tab_certificacion = new Tabla();
     private Tabla tab_compra_bienes = new Tabla();
     public static String par_tipo_secretaria="";
@@ -53,6 +54,15 @@ public class AdquisicionesDirector extends Pantalla {
          
          bar_botones.getBot_insertar().setRendered(false);
          
+         /*
+         * Permite tener acceso a información, de los datos de registro
+         */
+        tabConsulta.setId("tabConsulta");
+        tabConsulta.setSql("SELECT u.IDE_USUA,u.NOM_USUA,u.NICK_USUA,u.IDE_PERF,p.NOM_PERF,p.PERM_UTIL_PERF\n"
+                + "FROM SIS_USUARIO u,SIS_PERFIL p where u.IDE_PERF = p.IDE_PERF and IDE_USUA=" + utilitario.getVariable("IDE_USUA"));
+        tabConsulta.setCampoPrimaria("IDE_USUA");
+        tabConsulta.setLectura(true);
+        tabConsulta.dibujar();
  if (tienePerfilSecretaria()) {          
          
              Boton bot_aprobar = new Boton();

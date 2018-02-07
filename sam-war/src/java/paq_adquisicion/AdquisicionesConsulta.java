@@ -29,6 +29,7 @@ import sistema.aplicacion.Pantalla;
 public class AdquisicionesConsulta extends Pantalla {
 
     private Tabla tab_adquisiones = new Tabla();
+    private Tabla tabConsulta = new Tabla();
     private Tabla tab_certificacion = new Tabla();
     private Tabla tab_compra_bienes = new Tabla();
     private SeleccionTabla setRegistro = new SeleccionTabla();
@@ -53,6 +54,16 @@ public class AdquisicionesConsulta extends Pantalla {
         agregarComponente(rep_reporte);
         bar_botones.agregarReporte();
 
+        /*
+         * Permite tener acceso a información, de los datos de registro
+         */
+        tabConsulta.setId("tabConsulta");
+        tabConsulta.setSql("SELECT u.IDE_USUA,u.NOM_USUA,u.NICK_USUA,u.IDE_PERF,p.NOM_PERF,p.PERM_UTIL_PERF\n"
+                + "FROM SIS_USUARIO u,SIS_PERFIL p where u.IDE_PERF = p.IDE_PERF and IDE_USUA=" + utilitario.getVariable("IDE_USUA"));
+        tabConsulta.setCampoPrimaria("IDE_USUA");
+        tabConsulta.setLectura(true);
+        tabConsulta.dibujar();
+        
         autBusca.setId("autBusca");
         autBusca.setAutoCompletar("SELECT c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,r.PARTIDA_ADCERT,c.FECHA_INGRE\n"
                 + "FROM dbo.ADQ_COMPRA as c\n"
@@ -320,7 +331,7 @@ public class AdquisicionesConsulta extends Pantalla {
             ///////////AQUI ABRE EL REPORTE
             Map parametros = new HashMap();
             parametros.put("pide_requisicion", Integer.parseInt(tab_adquisiones.getValor("IDE_ADCOMP")));
-            map_parametros.put("p_usuario", utilitario.getVariable("NICK"));
+            map_parametros.put("p_usuario", tabConsulta.getValor("NICK_USUA") + "");
 
             //System.out.println(" " + str_titulos);
             vipdf_comprobante.setVisualizarPDF("rep_compras/rep_solicitudcompra.jasper", parametros);
