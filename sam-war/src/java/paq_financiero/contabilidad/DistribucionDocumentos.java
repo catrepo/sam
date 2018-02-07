@@ -48,6 +48,7 @@ public class DistribucionDocumentos extends Pantalla {
     private Combo cmbDependencia = new Combo();
     private Combo cmbCombop = new Combo();
     private Combo cmbCombou = new Combo();
+    private Combo cmbAnio = new Combo();
     private Calendario fechaInicial = new Calendario();
     private Calendario fechaFinal = new Calendario();
     private Texto texOrden = new Texto();
@@ -56,6 +57,8 @@ public class DistribucionDocumentos extends Pantalla {
     private Dialogo diaDialogou = new Dialogo();
     private Dialogo diaDialogou1 = new Dialogo();
     private Dialogo diaDialogop = new Dialogo();
+    private Etiqueta etiAnio = new Etiqueta("Año : ");
+    private Etiqueta etiEstado = new Etiqueta("Estado : ");
     private Grid grid = new Grid();
     private Grid gridu = new Grid();
     private Grid gridu1 = new Grid();
@@ -81,6 +84,12 @@ public class DistribucionDocumentos extends Pantalla {
         tabConsulta.setLectura(true);
         tabConsulta.dibujar();
 
+        cmbAnio.setId("cmbAnio");
+        cmbAnio.setCombo("SELECT DISTINCT year (doc_fechacon) as id,year (doc_fechacon) as anio\n"
+                + "from tes_documentos\n"
+                + "inner join tes_tipo_documento on tes_documentos.id_tipo=tes_tipo_documento.id_tipo\n"
+                + "where year (doc_fechacon) is not null");
+        
         /*
          * Cadena de conexión para otra base de datos
          */
@@ -439,7 +448,7 @@ public class DistribucionDocumentos extends Pantalla {
     private String getFiltroAcc() {
         // Forma y valida las condiciones de fecha y hora
         String str_filtros = "";
-        str_filtros = "(doc_revisioncon is not null or doc_revisiondev is not null) and doc_fechacon is null and doc_ejecutado is null";
+        str_filtros = "(doc_revisioncon is not null or doc_revisiondev is not null) and doc_ejecutado is null";
         return str_filtros;
     }
 
@@ -576,8 +585,10 @@ public class DistribucionDocumentos extends Pantalla {
                 break;
             case "Documentos Historial":
                 diaDialogop.Limpiar();
-                gridp.getChildren().add(new Etiqueta("Seleccione Opción :"));
+                 gridp.getChildren().add(etiEstado);
                 gridp.getChildren().add(cmbCombop);
+                gridp.getChildren().add(etiAnio);
+                gridp.getChildren().add(cmbAnio);
                 diaDialogop.setDialogo(gridp);
                 diaDialogop.dibujar();
                 break;
@@ -623,6 +634,7 @@ public class DistribucionDocumentos extends Pantalla {
                 }
                 p_parametros.put("parametro", cadena);
                 p_parametros.put("parametro1", cadena1);
+                p_parametros.put("anio", Integer.parseInt(cmbAnio.getValue()+""));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
