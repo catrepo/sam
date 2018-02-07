@@ -4,7 +4,7 @@
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="28"/>
+	<property name="ireport.y" value="41"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
@@ -26,6 +26,7 @@
 DETALLE_ADMATE,CANTIDAD_ADCOBI,especificaciones_adcobi,solicita,generador_gasto,
 (case when  PRUEBA_DIRECTOR_ADCOMP=0 then null else firma_solicita end) as firma_solicita,firma_gasto
 ,USO_ADCOMP,DESTINO_DEL_BIEN_ADCOMP, (select LOGO_EMPR from SIS_EMPRESA) as logo,f.DETALLE_ADCARG ,cargo_solicitante
+,r.NRO_CERTIFICACION_ADCERT,r.PARTIDA_ADCERT
 from ADQ_COMPRA a
 left join ADQ_AREA_ADMINISTRATIVA b on a.IDE_ADARAD = b.IDE_ADARAD
 left join ( select a.IDE_ADCOBI,a.IDE_ADCOMP,DETALLE_ADMATE,CANTIDAD_ADCOBI,especificaciones_adcobi
@@ -38,6 +39,7 @@ FIRMA_ADEMPLE as firma_gasto,DETALLE_ADCARG
  where a.IDE_ADEMPLE = b.IDE_ADEMPLE and a.IDE_ADCARG=c.IDE_ADCARG) e on a.ADQ_IDE_ADEMDE = e.IDE_ADEMDE
 left join (select detalle_adcarg,ide_adarad from ADQ_EMPLEADO_DEPARTAMENTO a, ADQ_CARGO b
 where ide_adtiap=3 and a.ide_adcarg = b.ide_adcarg ) f on a.IDE_ADARAD = f.ide_adarad
+inner join ADQ_CERTIFICACION r on a.IDE_ADCOMP = r.IDE_ADCOMP
 where a.ide_adcomp= $P{pide_requisicion}]]>
 	</queryString>
 	<field name="ide_adcomp" class="java.lang.Integer"/>
@@ -56,9 +58,11 @@ where a.ide_adcomp= $P{pide_requisicion}]]>
 	<field name="firma_gasto" class="java.io.InputStream"/>
 	<field name="USO_ADCOMP" class="java.lang.String"/>
 	<field name="DESTINO_DEL_BIEN_ADCOMP" class="java.lang.String"/>
-	<field name="logo" class="java.io.InputStream"/>
+	<field name="logo" class="java.lang.Object"/>
 	<field name="DETALLE_ADCARG" class="java.lang.String"/>
 	<field name="cargo_solicitante" class="java.lang.String"/>
+	<field name="NRO_CERTIFICACION_ADCERT" class="java.lang.Integer"/>
+	<field name="PARTIDA_ADCERT" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -66,7 +70,7 @@ where a.ide_adcomp= $P{pide_requisicion}]]>
 		<band splitType="Prevent"/>
 	</title>
 	<pageHeader>
-		<band height="179" splitType="Stretch">
+		<band height="191" splitType="Stretch">
 			<staticText>
 				<reportElement uuid="a962d7ca-bec2-4e81-93f5-a3408c457b8c" key="staticText-11" x="338" y="13" width="187" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box>
@@ -282,6 +286,48 @@ where a.ide_adcomp= $P{pide_requisicion}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{DETALLE_ADCARG}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement uuid="a2583f0e-3684-4167-a213-e220bcd5963c" x="55" y="171" width="100" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NRO_CERTIFICACION_ADCERT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="96a7fe7c-3210-49cd-8676-438eaf4370e0" x="190" y="171" width="100" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PARTIDA_ADCERT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="64f812c8-c16a-49b1-ad62-10ff2441ba34" key="staticText-29" mode="Transparent" x="6" y="171" width="135" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Certificado : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="58d82a44-1f40-4d9d-ac07-196440db39ed" key="staticText-29" mode="Transparent" x="142" y="171" width="135" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Partida : ]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -431,7 +477,7 @@ where a.ide_adcomp= $P{pide_requisicion}]]>
 					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<text><![CDATA[Elaborado por:]]></text>
+				<text><![CDATA[Impreso por:]]></text>
 			</staticText>
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement uuid="d9abb061-4147-433b-87c6-9cea6d2f5dbb" key="textField-5" x="221" y="3" width="144" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
