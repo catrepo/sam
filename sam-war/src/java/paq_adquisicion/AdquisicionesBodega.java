@@ -107,22 +107,28 @@ public class AdquisicionesBodega extends Pantalla {
         List lista = new ArrayList();
         List lista1 = new ArrayList();
         List lista2 = new ArrayList();
+        List listax = new ArrayList();
         Object fila1[] = {"1", "SI"};
         Object fila2[] = {"2", "NO"};
         Object fila5[] = {"1", "COMPRA EN STOCK"};
         Object fila6[] = {"2", "COMPRA DE CONSUMO DIRECTO"};
         Object fila7[] = {"1", "BODEGA MUNICIPAL"};
-        Object fila8[] = {"2", "ACTIVOS FIJOS"};        
+        Object fila8[] = {"2", "ACTIVOS FIJOS"}; 
+        Object fila9[] = {"1", "NO EXISTE"};
+        Object fila10[] = {"0", "EXISTE"};  
         lista.add(fila1);
         lista.add(fila2);
         lista2.add(fila5);
         lista2.add(fila6);
         lista1.add(fila7);
-        lista1.add(fila8);        
+        lista1.add(fila8);  
+        listax.add(fila9);
+        listax.add(fila10);
         tab_adquisiones.getColumna("existe_adcomp").setRadio(lista, "1");
         tab_adquisiones.getColumna("tipo_compra_adcomp").setCombo(lista2);
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setCombo(lista1);
-        
+        tab_adquisiones.getColumna("APLICA_ADCOMP").setCombo(listax);
+        tab_adquisiones.getColumna("APLICA_ADCOMP").setNombreVisual("EXISTE/NO EXISTE EN BODEGA");
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
         tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
         tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("3","","1",ide_ademple));
@@ -205,7 +211,7 @@ public class AdquisicionesBodega extends Pantalla {
         tab_adquisiones.getColumna("OBSERVACIONES_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("DESTINO_DEL_BIEN_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setVisible(false);
-        tab_adquisiones.getColumna("APLICA_ADCOMP").setVisible(false);
+        //tab_adquisiones.getColumna("APLICA_ADCOMP").setVisible(false);
         //tab_adquisiones.getColumna("IDE_ADEMAP").setVisible(false);
         tab_adquisiones.getColumna("IDE_ADARAD").setVisible(false);
         tab_adquisiones.getColumna("IDE_ADEMPLE").setVisible(false);
@@ -215,7 +221,7 @@ public class AdquisicionesBodega extends Pantalla {
         //tab_adquisiones.getColumna("ATIENDE_BODEGA_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("APRUEBA_GASTO_ADCOMP").setVisible(false);
         tab_adquisiones.getColumna("REGISTRA_COMPRAS_ADCOMP").setVisible(false);   
-        tab_adquisiones.setLectura(true);
+        //tab_adquisiones.setLectura(true);
         tab_adquisiones.dibujar();
 
         PanelTabla pat_adquisiciones = new PanelTabla();
