@@ -67,8 +67,8 @@ public class DocumentosContabilidad {
         return tabPersona;
     }
 
-        public void setOrdenPago(String numero) {
-            String auSql = "EXEC SIGAG.dbo.TES_INSERT_DATOS_ORDEN "
+    public void setOrdenPago(String numero) {
+        String auSql = "EXEC SIGAG.dbo.TES_INSERT_DATOS_ORDEN "
                 + "@codigo ='" + numero + "',\n"
                 + "@tabla ='TES_DOCUMENTOS'";
         conPostgresql();
@@ -76,6 +76,36 @@ public class DocumentosContabilidad {
         desPostgresql();
     }
     
+    public void setReingreso(String numero,String login) {
+        String auSql = "EXEC SIGAG.dbo.TES_INSERT_REINGRESO_ORDEN "
+                + "@codigo ='" + numero + "',\n"
+                + "@login ='" + login + "',\n"
+                + "@tabla ='TES_DOCUMENTOS'";
+        conPostgresql();
+        conSql.ejecutarSql(auSql);
+        desPostgresql();
+    }
+    
+    public void setTramitesIngreso(String codigo,String fecha,String login,int tipo,String doc_numero,String responsable,String concepto,String Observacion,int estado,int proceso,int id,Double valor) {
+        String auSql = "EXEC SIGAG.dbo.TES_INSERT_ACCIONES_TRAMITES "
+                + "@codigo =" + codigo + ",\n"
+                + "@fecha_rev =" + fecha + ",\n"
+                + "@login ='" + login + "',\n"
+                + "@tipo =" + tipo + ",\n"
+                + "@doc_numero ='" + doc_numero + "',\n"
+                + "@responsable ='" + responsable + "',\n"
+                + "@concepto ='" + concepto + "',\n"
+                + "@observacion ='" + Observacion + "',\n"
+                + "@estado =" + estado + ",\n"
+                + "@valor =" + valor + ",\n"
+                + "@proceso =" + valor + ",\n"
+                + "@id =" + id + ",\n"
+                + "@tabla ='TES_DOCUMENTOS'";
+        conPostgresql();
+        conSql.ejecutarSql(auSql);
+        desPostgresql();
+    }
+
     public void setOrdenPago1(String numero) {
         String parametro = "insert into tes_documentos (id_tipo,doc_fecha,doc_numero,doc_responsable,doc_valor,doc_concepto)\n"
                 + "select 1,tes_fecha_ingreso,tes_numero_orden, tes_proveedor ,tes_valor,tes_concepto from tes_orden_pago where tes_numero_orden = '" + numero + "'";
@@ -100,6 +130,23 @@ public class DocumentosContabilidad {
         desPostgresql();
     }
 
+        public void setOrdenDocumentos(Integer tipo, String fecha, String numero, String respon, Double valor, String concepto, String revision, String fechar, String login) {
+        String auSql = "EXEC SIGAG.dbo.TES_INSERT_DATOS_ORDEN_DOC "
+                + "@tipo =" + tipo + ",\n"
+                + "@fecha ='" + fecha + "',\n"
+                + "@numero ='" + numero + "',\n"
+                + "@respon ='" + respon + "',\n"
+                + "@valor =" + valor + ",\n"
+                + "@concepto ='" + concepto + "',\n"
+                + "@revision =" + revision + ",\n"
+                + "@fechar ='" + fechar + "',\n"
+                + "@login ='" + login + "',\n"
+                + "@tabla ='TES_DOCUMENTOS'";
+        conPostgresql();
+        conSql.ejecutarSql(auSql);
+        desPostgresql();
+    }
+    
     public void setActulizaDocumento(Integer codigo, String descripcion, String descripcion1, String valor, String valor1, String login, String valor2) {
         // Forma el sql para actualizacion
         String strSqlr = "update tes_documentos\n"
@@ -152,7 +199,7 @@ public class DocumentosContabilidad {
     public void setActulizaAdministrador(Integer codigo, String logina, String loginu, String revi, String devo, String observa) {
         // Forma el sql para actualizacion
         String strSqlr = "update tes_documentos\n"
-                + "set doc_asignacion='t',\n"
+                + "set doc_asignacion=1,\n"
                 + "doc_loginasi='" + logina + "',\n"
                 + "doc_usuasignacion='" + loginu + "',\n"
                 + "doc_revisioncon=" + revi + ",\n"
@@ -215,6 +262,53 @@ public class DocumentosContabilidad {
         return tabPersona;
     }
 
+        public TablaGenerica getCatalogoDato(String datos, String tabla, String condicion) {
+        conPostgresql();
+        TablaGenerica tab_funcionario = new TablaGenerica();
+        conPostgresql();
+        tab_funcionario.setConexion(conSql);
+        tab_funcionario.setSql("select " + datos + " from " + tabla + " where " + condicion + "");
+        tab_funcionario.ejecutarSql();
+        desPostgresql();
+        return tab_funcionario;
+    }
+        
+        public TablaGenerica getNumeroCampos(String nombre) {
+        conPostgresql();
+        TablaGenerica tabTabla = new TablaGenerica();
+        conPostgresql();
+        tabTabla.setConexion(conSql);
+        tabTabla.setSql("SELECT table_name,count(*) As NumeroCampos\n"
+                + "FROM information_schema.columns \n"
+                + "WHERE table_name = '" + nombre + "'\n"
+                + "GROUP BY table_name");
+        tabTabla.ejecutarSql();
+        desPostgresql();
+        return tabTabla;
+    }
+    
+        public TablaGenerica getEstrucTabla(String nombre, Integer posicion) {
+        conPostgresql();
+        TablaGenerica tabTabla = new TablaGenerica();
+        conPostgresql();
+        tabTabla.setConexion(conSql);
+        tabTabla.setSql("SELECT ordinal_position,column_name, data_type\n"
+                + "FROM information_schema.columns \n"
+                + "WHERE table_name = '" + nombre + "' and ordinal_position = " + posicion);
+        tabTabla.ejecutarSql();
+        desPostgresql();
+        return tabTabla;
+    }
+
+    public void setActuaRegis(Integer codigo, String desc, String dato, String valor, String cadena) {
+        String au_sql = "update " + desc + " set\n"
+                + "" + dato + " ='" + valor + "'\n" +//mve_horometro
+                "where " + cadena + "=" + codigo;
+        conPostgresql();
+        conSql.ejecutarSql(au_sql);
+        desPostgresql();
+    }
+        
     /*
      * sentencia de conexion a base de datos
      */
