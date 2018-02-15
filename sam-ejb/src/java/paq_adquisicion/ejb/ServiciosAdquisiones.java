@@ -24,6 +24,7 @@ public class ServiciosAdquisiones {
      *
      * @return sql de aprobado
      */
+    private Conexion conSql;
     private Conexion conOracle;
     private Utilitario utilitario = new Utilitario();
 
@@ -161,10 +162,19 @@ public class ServiciosAdquisiones {
         return sql;
     }
 
+    public void setUpdateEstadoGastos(int codigo, String dato) {
+        String auSql = "UPDATE adq_compra\n"
+                + "set APRUEBA_GASTO_ADCOMP= true,\n"
+                + "ADQ_IDE_ADEMDE = "+dato+"\n"
+                + "where ide_adcomp = " + codigo;
+        conSql();
+        conSql.ejecutarSql(auSql);
+        desConSql();
+    }
+
     /*
     Cargar certificaciones, partida y valor
      */
-        
     public TablaGenerica getBuscarDatos(int anio, int cadena, String fecha) {
         conOraclesql();
         TablaGenerica tabFuncionario = new TablaGenerica();
@@ -202,13 +212,27 @@ public class ServiciosAdquisiones {
                 + "AND SAPRDT<=1" + cadena + "15 \n"
                 + "AND AUAD02 is not null \n"
                 + "AND ANIODC =" + anio + "\n"
-                + "AND TIPLMC= 'R'\n" 
+                + "AND TIPLMC= 'R'\n"
                 + "AND substr(FDOCDT,1,5) <= 1" + fecha + " \n"
-                + "and CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUAD01) = '"+id+"'");
+                + "and CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUAD01) = '" + id + "'");
         tabFuncionario.ejecutarSql();
         tabFuncionario.imprimirSql();
         desOraclesql();
         return tabFuncionario;
+    }
+
+    private void conSql() {
+        if (conSql == null) {
+            conSql = new Conexion();
+            conSql.setUnidad_persistencia(utilitario.getPropiedad("recursojdbc"));
+        }
+    }
+
+    private void desConSql() {
+        if (conSql != null) {
+            conSql.desconectar(true);
+            conSql = null;
+        }
     }
 
     private void conOraclesql() {
