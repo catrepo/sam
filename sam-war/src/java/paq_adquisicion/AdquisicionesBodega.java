@@ -391,7 +391,7 @@ public void guardarAprobacion(){
         
     public void filtroDireccion() {
 
-        tab_adquisiones.setCondicion("PRUEBA_DIRECTOR_ADCOMP= 1 and ATIENDE_BODEGA_ADCOMP=0 ");
+        tab_adquisiones.setCondicion("PRUEBA_DIRECTOR_ADCOMP= 1 and ATIENDE_BODEGA_ADCOMP=0 AND INGRESO_ADCOM=1 ");
         tab_adquisiones.ejecutarSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
