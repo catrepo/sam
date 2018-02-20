@@ -144,7 +144,7 @@ public class AdquisicionesSecretarias extends Pantalla {
 
             tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
             tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
-            tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("2", ide_ademple, "1", ide_ademple));
+                tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("2", ide_ademple, "1", ide_ademple));
             tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3", "1", "1", "1"));
             tab_adquisiones.getColumna("IDE_ADEMDE").setAutoCompletar();
             tab_adquisiones.getColumna("IDE_ADEMDE").setLectura(true);
@@ -198,6 +198,9 @@ public class AdquisicionesSecretarias extends Pantalla {
             
             tab_adquisiones.getColumna("ide_adcomp").setVisible(false);
             tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
+            tab_adquisiones.getColumna("IDE_ADAPRO").setRequerida(true);
+            tab_adquisiones.getColumna("IDE_ADAPRO").setValorDefecto("1");
+            
             tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setVisible(true);
             tab_adquisiones.getColumna("DESCRIPCION_ADCOMP").setVisible(true);
             //tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);

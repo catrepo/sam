@@ -28,7 +28,7 @@ import paq_adquisicion.ejb.ServiciosAdquisiones;
 import sistema.aplicacion.Pantalla;
 import sistema.aplicacion.Utilitario;
 
-public class AdquisicionesBodega extends Pantalla {
+public class AdquisicionesActivos extends Pantalla {
         private Tabla tab_adquisiones = new Tabla();
         private Tabla tabConsulta = new Tabla();
     private Tabla tab_certificacion = new Tabla();
@@ -50,7 +50,7 @@ public class AdquisicionesBodega extends Pantalla {
     @EJB
     private final ServiciosAdquisiones ser_adquisiciones = (ServiciosAdquisiones) utilitario.instanciarEJB(ServiciosAdquisiones.class);
     
-     public AdquisicionesBodega (){
+     public AdquisicionesActivos (){
          par_tipo_secretaria=utilitario.getVariable("p_tipo_secretaria");
          par_tipo_bodeguero=utilitario.getVariable("p_tipo_bodeguero");
          par_aprueba_gasto=utilitario.getVariable("p_tipo_generador_gasto");
@@ -127,7 +127,7 @@ public class AdquisicionesBodega extends Pantalla {
         tab_adquisiones.getColumna("existe_adcomp").setRadio(lista, "1");
         tab_adquisiones.getColumna("tipo_compra_adcomp").setCombo(lista2);
         tab_adquisiones.getColumna("INGRESO_ADCOMP").setCombo(lista1);
-        //tab_adquisiones.getColumna("APLICA_ADCOMP").setCombo(listax);
+        tab_adquisiones.getColumna("APLICA_ADCOMP").setCombo(listax);
         tab_adquisiones.getColumna("APLICA_ADCOMP").setNombreVisual("EXISTE/NO EXISTE EN BODEGA");
         tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
         tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
@@ -391,7 +391,7 @@ public void guardarAprobacion(){
         
     public void filtroDireccion() {
 
-        tab_adquisiones.setCondicion("PRUEBA_DIRECTOR_ADCOMP= 1 and ATIENDE_BODEGA_ADCOMP=0 AND INGRESO_ADCOMP=1 AND IDE_ADAPRO !="+par_anulado);
+        tab_adquisiones.setCondicion("PRUEBA_DIRECTOR_ADCOMP= 1 and ATIENDE_BODEGA_ADCOMP=0 AND INGRESO_ADCOMP=2 AND IDE_ADAPRO !="+par_anulado);
         tab_adquisiones.ejecutarSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
