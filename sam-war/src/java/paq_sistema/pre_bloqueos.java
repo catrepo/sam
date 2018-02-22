@@ -44,8 +44,9 @@ public class pre_bloqueos extends Pantalla {
     }
 
     public void borrar() {
-        utilitario.getConexion().ejecutarSql("DELETE FROM SIS_BLOQUEO");
-        utilitario.agregarMensaje("Se borro la tabla de bloqueos", "");
+//        utilitario.getConexion().ejecutarSql("DELETE FROM SIS_BLOQUEO"); No activar esta opción
+//        utilitario.agregarMensaje("Se borro la tabla de bloqueos", "");
+        utilitario.agregarMensaje("No realiza ninguna opción", "");
         tab_tabla.ejecutarSql();
     }
 
