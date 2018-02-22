@@ -389,9 +389,9 @@ public class ListaDocumentos extends Pantalla {
     public void guardar() {
         for (int i = 0; i < tabTabla.getTotalFilas(); i++) {
             if (Integer.parseInt(tabTabla.getValor(i, "id_tipo")) == 1) {
-                if (tabTabla.getValor(i, "doc_fecharev") != null) {
+                if (!tabTabla.getValor(i, "doc_fecharev").isEmpty()) {
                     documento.setActulizaDocumento(Integer.parseInt(tabTabla.getValor(i, "id_documento")), "doc_revision", "doc_fecharev",
-                            "'" + tabTabla.getValor(i, "doc_revision") + "'", "'" + tabTabla.getValor(i, "doc_fecharev") + "'", "doc_loginrev",
+                            "'" + tabTabla.getValor(i, "doc_revision") + "'", "'" + tabTabla.getValor(i, "doc_fecharev")+ "'", "doc_loginrev",
                             "'" + tabConsulta.getValor("NICK_USUA") + "'");
                 }
             } else {
@@ -404,7 +404,7 @@ public class ListaDocumentos extends Pantalla {
             }
         }
         utilitario.agregarMensaje("Registro Guardado", null);
-//        actualizaLista();
+        actualizaLista();
     }
 
     @Override
