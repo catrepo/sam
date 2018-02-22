@@ -406,8 +406,9 @@ public class AdquisicionesSecretarias extends Pantalla {
             tab_certificacion.setValor("NRO_CERTIFICACION_ADCERT", tabDato.getValor("NDOCDC")+"");
             tab_certificacion.setValor("PARTIDA_ADCERT", tabDato.getValor("AUAD02")+"."+tabDato.getValor("cedtmc")+"");
             tab_certificacion.setValor("VALOR_ADCERT", tabDato.getValor("MONTDT")+"");
+             tab_certificacion.setValor("PARTIDA_NOM_ADCERT", tabDato.getValor("NOLAAD")+"");
             System.err.println("Valor->> "+tab_certificacion.getValor("VALOR_ADCERT"));
-            utilitario.addUpdateTabla(tab_certificacion, "NRO_CERTIFICACION_ADCERT,PARTIDA_ADCERT,VALOR_ADCERT", "");//actualiza solo componentes
+            utilitario.addUpdateTabla(tab_certificacion, "NRO_CERTIFICACION_ADCERT,PARTIDA_ADCERT,VALOR_ADCERT,PARTIDA_NOM_ADCERT", "");//actualiza solo componentes
 //            
 //            utilitario.addUpdate("tab_certificacion");
 //            utilitario.addUpdateTabla(tab_certificacion, cedula, empleado);
@@ -621,5 +622,4 @@ public class AdquisicionesSecretarias extends Pantalla {
     public void setConOracle(Conexion conOracle) {
         this.conOracle = conOracle;
     }
-
 }
