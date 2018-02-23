@@ -167,10 +167,10 @@ public class ListaDocumentos extends Pantalla {
         setReingreso.dibujar();
 
         cmbAnio.setId("cmbAnio");
-        cmbAnio.setCombo("SELECT DISTINCT year (doc_fechacon) as id,year (doc_fechacon) as anio\n"
+        cmbAnio.setCombo("SELECT DISTINCT SUBSTRING(doc_fechacon,0,5) as id,SUBSTRING(doc_fechacon,0,5) as anio\n"
                 + "from tes_documentos\n"
                 + "inner join tes_tipo_documento on tes_documentos.id_tipo=tes_tipo_documento.id_tipo\n"
-                + "where year (doc_fechacon) is not null");
+                + "where doc_fechacon is not null");
 
         cmbCombo.setId("cmbCombo");
         cmbCombo.setCombo("SELECT DISTINCT doc_fecharev as fecha, doc_fecharev FROM tes_documentos\n"
@@ -391,7 +391,7 @@ public class ListaDocumentos extends Pantalla {
             if (Integer.parseInt(tabTabla.getValor(i, "id_tipo")) == 1) {
                 if (!tabTabla.getValor(i, "doc_fecharev").isEmpty()) {
                     documento.setActulizaDocumento(Integer.parseInt(tabTabla.getValor(i, "id_documento")), "doc_revision", "doc_fecharev",
-                            "'" + tabTabla.getValor(i, "doc_revision") + "'", "'" + tabTabla.getValor(i, "doc_fecharev")+ "'", "doc_loginrev",
+                            "'" + tabTabla.getValor(i, "doc_revision") + "'", "'" + tabTabla.getValor(i, "doc_fecharev") + "'", "doc_loginrev",
                             "'" + tabConsulta.getValor("NICK_USUA") + "'");
                 }
             } else {
@@ -482,11 +482,11 @@ public class ListaDocumentos extends Pantalla {
                 }
                 p_parametros.put("parametro", cadena);
                 p_parametros.put("parametro1", cadena1);
-                p_parametros.put("anio", Integer.parseInt(cmbAnio.getValue()+""));
+                p_parametros.put("anio", Integer.parseInt(cmbAnio.getValue() + ""));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
-                System.err.println(".>>"+p_parametros);
+                System.err.println(".>>" + p_parametros);
                 sef_formato.dibujar();
                 break;
             case "Documentos Usuario":
