@@ -9,11 +9,11 @@
 	<parameter name="anio" class="java.lang.String"/>
 	<parameter name="mes" class="java.lang.String"/>
 	<parameter name="cedula" class="java.lang.String"/>
-	<parameter name="mes1" class="java.lang.String"/>
 	<parameter name="bandera" class="java.lang.String"/>
 	<parameter name="ingresos" class="java.lang.String"/>
 	<parameter name="egresos" class="java.lang.String"/>
 	<parameter name="neto" class="java.lang.String"/>
+	<parameter name="mes1" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select * from (
 select DISTINCT codtra,nomtra,cedciu,CODCIA

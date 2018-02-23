@@ -21,7 +21,10 @@ TOTRES AS TOTAL_RETENCION,
 VALPAG AS DECIMO_PAGAR,
 DIAPAG AS DIAS_TRABAJADOS,
 FINIPAGO AS FECHA_INICIAL_PAGO,
-FFINPAGO AS  FECHA_FIN_PAGO
+FFINPAGO AS  FECHA_FIN_PAGO,
+CODTRS,
+(case when CODTRS='D13' then (case when PACD13 = 'S' then 'ACUMULA' when PACD13 = 'N' then 'MENSUALIZA' end)
+when CODTRS='D14' then (case when PACD14 = 'S' then 'ACUMULA' when PACD14 = 'N' then 'MENSUALIZA' end) end) as ESTADO
 FROM VILIQBEN
 WHERE CODTRS=$P{parametro}
 and  CEDCIU =$P{cedula}]]>
@@ -37,6 +40,8 @@ and  CEDCIU =$P{cedula}]]>
 	<field name="DIAS_TRABAJADOS" class="java.math.BigDecimal"/>
 	<field name="FECHA_INICIAL_PAGO" class="java.sql.Timestamp"/>
 	<field name="FECHA_FIN_PAGO" class="java.sql.Timestamp"/>
+	<field name="CODTRS" class="java.lang.String"/>
+	<field name="ESTADO" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -171,6 +176,16 @@ and  CEDCIU =$P{cedula}]]>
 			<line>
 				<reportElement uuid="1913473e-aef8-4008-b002-96b28ef70848" x="27" y="255" width="314" height="1"/>
 			</line>
+			<staticText>
+				<reportElement uuid="e8850fe3-48f4-4770-abb1-ef3aa7debf5c" x="27" y="169" width="120" height="20"/>
+				<textElement/>
+				<text><![CDATA[ESTADO : ]]></text>
+			</staticText>
+			<textField pattern="dd MMMMM yyyy" isBlankWhenNull="true">
+				<reportElement uuid="630935fb-87dd-457f-8293-0ffae8379dd9" x="147" y="169" width="194" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{ESTADO}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<pageFooter>

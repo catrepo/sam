@@ -21,6 +21,7 @@
 	<field name="USUARIO_ACTUA" class="java.lang.String"/>
 	<field name="FECHA_ACTUA" class="java.lang.String"/>
 	<field name="HORA_ACTUA" class="java.lang.String"/>
+	<field name="PARTIDA_NOM_ADCERT" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -33,44 +34,56 @@
 	<columnHeader>
 		<band height="22" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="ff2c616b-64b1-485e-a6ae-e95d1fad1c87" x="20" y="0" width="100" height="20"/>
+				<reportElement uuid="ff2c616b-64b1-485e-a6ae-e95d1fad1c87" x="6" y="0" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Certificado]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="6c6ca485-fc39-40c0-9273-85757ee46a1e" x="250" y="0" width="100" height="20"/>
+				<reportElement uuid="6c6ca485-fc39-40c0-9273-85757ee46a1e" x="123" y="0" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Partida]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="addf6b89-0b66-4690-91cf-1706fe070abf" x="422" y="0" width="100" height="20"/>
+				<reportElement uuid="addf6b89-0b66-4690-91cf-1706fe070abf" x="449" y="0" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7c24d19f-b834-4e72-a9cf-5b7ee63afe6c" x="241" y="2" width="195" height="20"/>
+				<textElement/>
+				<text><![CDATA[Nombre Partida]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField pattern="###0">
-				<reportElement uuid="e305cb18-9e47-4304-a396-2b0057f1c4ce" x="20" y="3" width="100" height="17"/>
+				<reportElement uuid="e305cb18-9e47-4304-a396-2b0057f1c4ce" x="6" y="3" width="100" height="17"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{NRO_CERTIFICACION_ADCERT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="38e7ed3f-43bb-476e-8890-ab24dc2de2f9" x="250" y="3" width="100" height="17"/>
+				<reportElement uuid="38e7ed3f-43bb-476e-8890-ab24dc2de2f9" x="123" y="3" width="100" height="17"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PARTIDA_ADCERT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement uuid="d18282b5-0b29-4326-9af5-1622c403bdc1" x="422" y="3" width="100" height="17"/>
+				<reportElement uuid="d18282b5-0b29-4326-9af5-1622c403bdc1" x="449" y="3" width="100" height="17"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{VALOR_ADCERT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7b94eca3-6602-4eb9-8070-5316b5caea07" x="241" y="3" width="195" height="17"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PARTIDA_NOM_ADCERT}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

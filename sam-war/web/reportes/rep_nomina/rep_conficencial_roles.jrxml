@@ -10,8 +10,10 @@
 	<parameter name="tt_ingreso" class="java.lang.String"/>
 	<parameter name="tt_recibir" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\p-chumana\\Documents\\NetBeansProjects\\simur\\web\\reportes\\rep_nomina\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["D:\\workspace_gadmur\\NetBeansProjects\\trunk\\sam-war\\web\\reportes\\rep_nomina\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="bandera" class="java.lang.String"/>
+	<parameter name="nom_mes" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select codtra,nomtra,cedciu,codcia,
 (select noldat from nodatdat where tipdat='TC' AND CODDAT=TIPCTT) AS RELACION_LABORAL,
@@ -103,7 +105,7 @@ where cedciu = $P{cedula}]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{mes}+"-"+$P{anio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{nom_mes}+"-"+$P{anio}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement uuid="e098fd24-b404-445d-91bd-cc3c13f0bdc4" x="116" y="57" width="342" height="20"/>
@@ -154,6 +156,10 @@ where cedciu = $P{cedula}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{RELACION_LABORAL}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement uuid="4b5ee045-9136-497a-98d6-39af79df3aa5" x="428" y="30" width="117" height="74"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"/upload/logos/logo_reporte.png"]]></imageExpression>
+			</image>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -228,23 +234,40 @@ where cedciu = $P{cedula}]]>
 				</textElement>
 				<text><![CDATA[TOTAL EGRESO]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement uuid="7149c425-2a69-4aac-b552-6ec2bca8ee26" x="418" y="135" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$P{tt_egreso}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement uuid="a77ca406-4319-4bc5-8c00-1b6ab3d6acae" x="92" y="135" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$P{tt_ingreso}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement uuid="e9e0311a-3d9e-4c19-8c68-5ab3d7afee46" x="436" y="198" width="100" height="20"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{tt_recibir}]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement uuid="ba0a440b-d9cd-4d76-b31f-c338ffefc5b2" x="13" y="12" width="36" height="20"/>
+				<subreportParameter name="codigo">
+					<subreportParameterExpression><![CDATA[$F{CODTRA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="mes">
+					<subreportParameterExpression><![CDATA[$P{mes}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anio">
+					<subreportParameterExpression><![CDATA[$P{anio}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bandera">
+					<subreportParameterExpression><![CDATA[$P{bandera}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "rep_confidencial_ingresos.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</summary>
 </jasperReport>
