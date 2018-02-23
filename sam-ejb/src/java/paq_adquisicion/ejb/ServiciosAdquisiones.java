@@ -202,7 +202,7 @@ public class ServiciosAdquisiones {
         TablaGenerica tabFuncionario = new TablaGenerica();
         conOraclesql();
         tabFuncionario.setConexion(conOracle);
-        tabFuncionario.setSql("select DISTINCT NDOCDC,cedtmc,AUAD02,MONTDT,AUAD01\n"
+        tabFuncionario.setSql("select DISTINCT NDOCDC,cedtmc,AUAD02,MONTDT,AUAD01,NOLAAD \n"
                 + "from USFIMRU.TIGSA_GLB01 \n"
                 + "inner join USFIMRU.PRCO01 on  CUENDT = CUENDC and AUAD02 = AUA2DC\n"
                 + "inner join USFIMRU.TIGSA_GLM03 on CUENMC = CUENDT\n"

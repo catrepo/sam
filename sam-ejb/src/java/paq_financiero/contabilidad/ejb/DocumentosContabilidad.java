@@ -158,7 +158,19 @@ public class DocumentosContabilidad {
         conSql.ejecutarSql(strSqlr);
         desPostgresql();
     }
-
+    
+        public void setActulizaDocumento1(Integer codigo, String valor, String valor1, String valor2) {
+        // Forma el sql para actualizacion
+        String strSqlr = "update tes_documentos\n"
+                + "set doc_revision  = " + valor + ","
+                + "doc_fecharev='" + valor1 + "',\n"
+                + "doc_loginrev='" + valor2 + "'\n"
+                + "where id_documento = " + codigo;
+        conPostgresql();
+        conSql.ejecutarSql(strSqlr);
+        desPostgresql();
+    }
+        
     public void setActulizaDocumentos(Integer codigo, String descripcion, String descripcion1, String valor, String valor2) {
         // Forma el sql para actualizacion
         String strSqlr = "update tes_documentos\n"
