@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
+import org.primefaces.component.radiobutton.RadioButton;
 import paq_remuneraciones.ejb.BeanRemuneracion;
 import sistema.aplicacion.Pantalla;
 import paq_utilitario.ejb.ClaseGenerica;
@@ -48,6 +49,7 @@ public class AprobacionAnticipo extends Pantalla {
     private SeleccionTabla setLista = new SeleccionTabla();
     private SeleccionTabla setAnticipo = new SeleccionTabla();
     private Calendario fecRegistro = new Calendario();
+    private Etiqueta etiSi_No = new Etiqueta("Bloquear : ");
     private Texto txtId = new Texto();
     private Texto txtCedula = new Texto();
     private Texto txtNombre = new Texto();
@@ -55,6 +57,7 @@ public class AprobacionAnticipo extends Pantalla {
     private Combo cmbAnio = new Combo();
     private Combo cmbPeriodo = new Combo();
     private Combo cmbDistributivo = new Combo();
+    private Combo cmbBloqueo = new Combo();
     private AreaTexto txaObservacion = new AreaTexto();
     private Etiqueta txeTitulo = new Etiqueta("# Listado");
     private Etiqueta txeCedula = new Etiqueta("CEDULA :");
@@ -74,16 +77,19 @@ public class AprobacionAnticipo extends Pantalla {
     private Dialogo diaDialogor = new Dialogo();
     private Dialogo diaDialogof = new Dialogo();
     private Dialogo diaDialogodm = new Dialogo();
+    private Dialogo diaDialogoab = new Dialogo();
     private Grid gridD = new Grid();
     private Grid gridC = new Grid();
     private Grid gridDM = new Grid();
     private Grid gridR = new Grid();
     private Grid gridF = new Grid();
+    private Grid gridAB = new Grid();
     private Grid grid = new Grid();
     private Grid gric = new Grid();
     private Grid gridm = new Grid();
     private Grid grir = new Grid();
     private Grid grif = new Grid();
+    private Grid griab = new Grid();
     //REPORTES
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
@@ -115,6 +121,13 @@ public class AprobacionAnticipo extends Pantalla {
         botAnticipo.setIcon("ui-icon-check");
         botAnticipo.setMetodo("descargoMes");
         bar_botones.agregarBoton(botAnticipo);
+
+        Boton botActiva = new Boton();
+        botActiva.setValue("Rol Bloq./Act.");
+        botActiva.setExcluirLectura(true);
+        botActiva.setIcon("ui-icon-check");
+        botActiva.setMetodo("rolActBloq");
+        bar_botones.agregarBoton(botActiva);
 
         Boton botPago = new Boton();
         botPago.setValue("Registro de Pago");
@@ -364,6 +377,25 @@ public class AprobacionAnticipo extends Pantalla {
         gridF.setColumns(4);
         agregarComponente(diaDialogof);
 
+        List bloqueo = new ArrayList();
+        Object bloqueo1[] = {
+            "0", "SI"
+        };
+        Object bloqueo2[] = {
+            "1", "NO"
+        };
+        bloqueo.add(bloqueo1);;
+        bloqueo.add(bloqueo2);;
+        cmbBloqueo.setId("cmbBloqueo");
+        cmbBloqueo.setCombo(bloqueo);
+
+        diaDialogoab.setId("diaDialogoab");
+        diaDialogoab.setWidth("20%"); //siempre en porcentajes  ancho
+        diaDialogoab.setHeight("25%");//siempre porcentaje   alto
+        diaDialogoab.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaDialogoab.getBot_aceptar().setMetodo("aceptoSi_No");
+        gridAB.setColumns(4);
+        agregarComponente(diaDialogoab);
 
         /*         * CONFIGURACIÓN DE OBJETO REPORTE         */
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
@@ -390,7 +422,6 @@ public class AprobacionAnticipo extends Pantalla {
     /*
      * Proceso para generar detalle de anticipo
      */
-
     public void requisito() {
         Integer dia = 0, mesa = 0, parametro = 0;
 
@@ -658,8 +689,14 @@ public class AprobacionAnticipo extends Pantalla {
 
     public void igualaCuota() {
         if (String.valueOf(utilitario.getAnio(utilitario.getFechaActual())).equals(cmbAnio.getValue())) {
-            TablaGenerica tabDatos = adminRemuneracion.getAnticipoAnt(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbAnio.getValue().toString()));
-            if (!tabDatos.isEmpty()) {
+            TablaGenerica tabConteo = adminRemuneracion.getConteoNom(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbAnio.getValue().toString()));
+            int valor = Integer.parseInt(tabConteo.getValor("descuento"));
+            TablaGenerica tabparametro = utilitario.consultar("select id_parametro,parametro from nom_parametros where ide_parametro = 'PRC'");
+            int valor3 = Integer.parseInt(tabparametro.getValor("parametro"));
+            TablaGenerica tabData = utilitario.consultar("select 0 as id,count(*) as pendientes from nom_solicitud where estado_solicitud in (4,7)");
+            int valor1 = valor * 100;
+            int valor2 = valor1 / Integer.parseInt(tabData.getValor("pendientes"));
+            if (valor2 >= valor3) {
                 System.err.println("<");
                 anterior(clase.meses(Integer.parseInt(cmbPeriodo.getValue().toString())), Integer.parseInt(cmbPeriodo.getValue().toString()), Integer.parseInt(cmbAnio.getValue().toString()));
             } else {
@@ -802,7 +839,6 @@ public class AprobacionAnticipo extends Pantalla {
     /*
      * registro de pago anticipado
      */
-
     public void aceptoLiquidacion() {
         TablaGenerica tabDatos = adminRemuneracion.getIdDetalle(Integer.parseInt(txtId.getValue() + ""));
         if (!tabDatos.isEmpty()) {
@@ -816,6 +852,27 @@ public class AprobacionAnticipo extends Pantalla {
                 utilitario.agregarMensaje("Registro Actualizado", null);
             } catch (Exception e) {
             }
+        }
+    }
+
+    public void rolActBloq() {
+        diaDialogoab.setDialogo(griab);
+        Grid griBusca = new Grid();
+        griBusca.setColumns(2);
+        griBusca.getChildren().add(etiSi_No);
+        griBusca.getChildren().add(cmbBloqueo);
+        gridAB.getChildren().add(griBusca);
+        diaDialogoab.setDialogo(gridAB);
+        diaDialogoab.dibujar();
+    }
+
+    public void aceptoSi_No() {
+        if (cmbBloqueo.getValue().equals("0")) {
+            adminRemuneracion.setRol_Si_NO(utilitario.getDia(utilitario.getFechaActual()) + 1);
+            utilitario.agregarMensaje("Bloqueado Rol", null);
+        } else {
+            adminRemuneracion.setRol_Si_NO(25);
+            utilitario.agregarMensaje("Activo Rol", null);
         }
     }
 
