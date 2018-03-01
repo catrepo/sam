@@ -134,7 +134,8 @@ public class ListaDocumentos extends Pantalla {
                 + "FROM tes_documentos d\n"
                 + "INNER JOIN tes_tipo_documento t ON d.id_tipo = t.id_tipo\n"
                 + "WHERE d.doc_usuasignacion = '" + tabConsulta.getValor("NICK_USUA") + "' and d.doc_revisioncon is null and d.doc_revisiondev is null");
-        setTabla.getColumna("doc_concepto").setLongitud(55);
+        setTabla.getColumna("doc_concepto").setLongitud(50);
+        setTabla.getColumna("doc_responsable").setLongitud(50);
         setTabla.getColumna("tipo_nombre").setLongitud(5);
         setTabla.getColumna("doc_fecha").setVisible(false);
         setTabla.getColumna("tipo_nombre").setLectura(true);
@@ -142,6 +143,8 @@ public class ListaDocumentos extends Pantalla {
         setTabla.getColumna("doc_responsable").setLectura(true);
         setTabla.getColumna("doc_concepto").setLectura(true);
         setTabla.getColumna("doc_valor").setLectura(true);
+        setTabla.getColumna("doc_revisioncon").setCheck();
+        setTabla.getColumna("doc_revisiondev").setCheck();
         setTabla.setRows(10);
         setTabla.dibujar();
 
@@ -245,7 +248,7 @@ public class ListaDocumentos extends Pantalla {
         agregarComponente(diaDialogou);
 
         diaDialogod.setId("diaDialogod");
-        diaDialogod.setTitle("Seleccione acción de docmuentos recibidos"); //titulo
+        diaDialogod.setTitle("Seleccione acción de documentos recibidos"); //titulo
         diaDialogod.setWidth("80%"); //siempre en porcentajes  ancho
         diaDialogod.setHeight("60%");//siempre porcentaje   alto
         diaDialogod.setResizable(false); //para que no se pueda cambiar el tamaño
