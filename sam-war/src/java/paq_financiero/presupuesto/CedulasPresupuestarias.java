@@ -61,6 +61,7 @@ public class CedulasPresupuestarias extends Pantalla {
     private Combo cmbAnioi = new Combo();
     private Combo cmbAnioi1 = new Combo();
     private Combo cmbProgramas = new Combo();
+    private Combo cmbAgrupar = new Combo();
     //Creacion Calendarios
     private Calendario fechaInicio = new Calendario();
     private Calendario fechaFin = new Calendario();
@@ -77,9 +78,13 @@ public class CedulasPresupuestarias extends Pantalla {
     private Etiqueta txtNivelFin = new Etiqueta("NIVEL FINAL : ");
     private Etiqueta txtFechaInicio = new Etiqueta("FECHA INICIAL : ");
     private Etiqueta txtFechaFin = new Etiqueta("FECHA FINAL : ");
+    private Etiqueta etiEstado = new Etiqueta("Agrupar por : ");
     private Dialogo diaArchivo = new Dialogo();
+    private Dialogo diaEstado = new Dialogo();
     private Grid gridA = new Grid();
+    private Grid gridE = new Grid();
     private Grid grida = new Grid();
+    private Grid gride = new Grid();
     //REPORTES
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
@@ -275,7 +280,6 @@ public class CedulasPresupuestarias extends Pantalla {
         /*
          * Dibujar Pantalla a vizualizar
          */
-
         Panel tabContorno = new Panel();
         tabContorno.setStyle("font-size:19px;color:black;text-align:center;");
         tabContorno.setHeader("REPORTE CEDULAS PRESUPUESTARIAS INGRESOS,GASTOS Y ARCHIVO PLANO");
@@ -366,7 +370,6 @@ public class CedulasPresupuestarias extends Pantalla {
         setPrograma.getBot_aceptar().setMetodo("dibujarReporte");
         setPrograma.setHeader("PROGRAMAS DE GASTOS");
         agregarComponente(setPrograma);
-
 
         Grid griPartida = new Grid();
         griPartida.setColumns(5);
@@ -470,6 +473,28 @@ public class CedulasPresupuestarias extends Pantalla {
         setProyecto.getBot_aceptar().setMetodo("dibujarReporte");
         setProyecto.setHeader("AUXILIAR POR PROYECTO");
         agregarComponente(setProyecto);
+        
+        
+        cmbAgrupar.setId("cmbAgrupar");
+        List listAgrupar = new ArrayList();
+        Object filaa1[] = {
+            "1", "PARTIDA"
+        };
+        Object filaa2[] = {
+            "2", "DIRECCIÓN"
+        };
+        listAgrupar.add(filaa1);;
+        listAgrupar.add(filaa2);;
+        cmbAgrupar.setCombo(listAgrupar);
+        
+        diaEstado.setId("diaEstado");
+        diaEstado.setTitle("SELECCIONAR AGRUPACIÒN"); //titulo
+        diaEstado.setWidth("20%"); //siempre en porcentajes  ancho
+        diaEstado.setHeight("20%");//siempre porcentaje   alto
+        diaEstado.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaEstado.getBot_aceptar().setMetodo("dibujarReporte");
+        gridE.setColumns(4);
+        agregarComponente(diaEstado);
 
     }
 
@@ -529,7 +554,7 @@ public class CedulasPresupuestarias extends Pantalla {
                     + "AND SAPRDT<=1" + (Integer.parseInt(String.valueOf(cmbAnioi.getValue()).substring(2, 4)) - 1) + "15 \n"
                     + "and AUAD02 is not null)\n"
                     + "on CUENMC = CUENDT\n"
-                    + "where AUAD02 ='" + cmbProgramas.getValue()+"'");
+                    + "where AUAD02 ='" + cmbProgramas.getValue() + "'");
             setPartidas.getTab_seleccion().ejecutarSql();
 //            setPartidas.dibujar();
         } else {
@@ -557,11 +582,11 @@ public class CedulasPresupuestarias extends Pantalla {
         } else {
             utilitario.agregarMensaje("Solo un parametro de busqueda", null);
         }
-            if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
-                fechas = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
-            } else {
-                fechas = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
-            }
+        if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
+            fechas = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+        } else {
+            fechas = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+        }
 
         setProyecto.getTab_seleccion().setSql("select AUAD01,AUAD01 as num_proyec,AUAD02,NDOCDC,proyecto,CUENDT\n"
                 + "from (select CUENDT,AUAD01,AUAD02,proyecto\n"
@@ -576,13 +601,13 @@ public class CedulasPresupuestarias extends Pantalla {
                 + "AND SAPRDT<=1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15\n"
                 + "AND TAAD01 = 'PY'\n"
                 + "and AUAD02 is not null\n"
-                + "and substr(FDOCDT,1,5) <= 1" + String.valueOf((utilitario.getAnio(fechaFin.getFecha()))).substring(2, 4) + ""+fechas+")\n"
+                + "and substr(FDOCDT,1,5) <= 1" + String.valueOf((utilitario.getAnio(fechaFin.getFecha()))).substring(2, 4) + "" + fechas + ")\n"
                 + "inner join \n"
                 + "(select NDOCDC,CUENDC,MONTDC,AUA2DC from USFIMRU.PRCO01) \n"
                 + "on CUENDT = CUENDC and AUAD02 = AUA2DC \n"
                 + "order by auad01)\n"
                 + "group by CUENDT,AUAD01,AUAD02,proyecto)\n"
-                + "where (AUAD01 = "+ valorp +" or NDOCDC like '%" + valort + "%' or proyecto like '%" + texto + "%')");
+                + "where (AUAD01 = " + valorp + " or NDOCDC like '%" + valort + "%' or proyecto like '%" + texto + "%')");
         setProyecto.getTab_seleccion().ejecutarSql();
     }
 
@@ -639,6 +664,17 @@ public class CedulasPresupuestarias extends Pantalla {
                 break;
             case "TOTAL PARTIDAS POR PROYECTOS FINANCIADOS":
                 dibujarReporte();
+                break;
+            case "PROYECTOS GENERAL":
+                dibujarReporte();
+                break;
+            case "PROYECTOS AGRUPADOS":
+                diaEstado.Limpiar();
+                diaEstado.setDialogo(gride);
+                gridE.getChildren().add(etiEstado);
+                gridE.getChildren().add(cmbAgrupar);
+                diaEstado.setDialogo(gridE);
+                diaEstado.dibujar();
                 break;
         }
     }
@@ -704,11 +740,11 @@ public class CedulasPresupuestarias extends Pantalla {
                 break;
             case "AUXILIAR GASTOS POR PROYECTO":
                 String fecha1;
-                    if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
-                        fecha1 = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
-                    } else {
-                        fecha1 = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
-                    }
+                if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
+                    fecha1 = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                } else {
+                    fecha1 = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                }
                 p_parametros.put("inicial", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "14"));
                 p_parametros.put("reforma", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15"));
                 p_parametros.put("ani1", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaInicio.getFecha()))).substring(2, 4) + "01"));
@@ -952,6 +988,59 @@ public class CedulasPresupuestarias extends Pantalla {
                 p_parametros.put("fechaf", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaFin.getFecha()))).substring(2, 4) + "12"));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 System.err.println("Proyecto financiamiento -> " + p_parametros);
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+            case "PROYECTOS GENERAL":
+                 String mes16,
+                 mes17;
+                if (String.valueOf((utilitario.getMes(fechaInicio.getFecha()))).length() > 1) {
+                    mes16 = String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
+                } else {
+                    mes16 = "0" + String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
+                }
+                if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
+                    mes17 = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                } else {
+                    mes17 = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                }
+                p_parametros.put("fechai", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaInicio.getFecha()))).substring(2, 4) + "" + mes16));
+                p_parametros.put("fechaf", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaFin.getFecha()))).substring(2, 4) + "" + mes17));
+                p_parametros.put("fechain", fechaInicio.getFecha() + "");
+                p_parametros.put("fechafi", fechaFin.getFecha() + "");
+                p_parametros.put("inicial", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "14"));
+                p_parametros.put("reforma", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15"));
+                p_parametros.put("fecha", utilitario.getFechaActual());
+                p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
+                System.err.println("->>> "+p_parametros);
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+            case "PROYECTOS AGRUPADOS":
+                 String mes18,
+                 mes19;
+                if (String.valueOf((utilitario.getMes(fechaInicio.getFecha()))).length() > 1) {
+                    mes18 = String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
+                } else {
+                    mes18 = "0" + String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
+                }
+                if (String.valueOf((utilitario.getMes(fechaFin.getFecha()))).length() > 1) {
+                    mes19 = String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                } else {
+                    mes19 = "0" + String.valueOf((utilitario.getMes(fechaFin.getFecha())));
+                }
+                p_parametros.put("fechai", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaInicio.getFecha()))).substring(2, 4) + "" + mes18));
+                p_parametros.put("fechaf", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechaFin.getFecha()))).substring(2, 4) + "" + mes19));
+                p_parametros.put("fechain", fechaInicio.getFecha() + "");
+                p_parametros.put("fechafi", fechaFin.getFecha() + "");
+                p_parametros.put("inicial", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "14"));
+                p_parametros.put("reforma", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15"));
+                p_parametros.put("fecha", utilitario.getFechaActual());
+                p_parametros.put("codigo", Integer.parseInt(cmbAgrupar.getValue()+""));
+                p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
+                System.err.println("->>> "+p_parametros);
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
