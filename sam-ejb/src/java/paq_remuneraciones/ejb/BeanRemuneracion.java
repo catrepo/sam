@@ -44,6 +44,15 @@ public class BeanRemuneracion {
         desSql();
     }
 
+    public void setRol_Si_NO(Integer numero) {
+        String auSql = " update nom_parametros "
+                + "set parametro ="+numero+" \n"
+                + "where ide_parametro = 'VCR'";
+        conSql();
+        conSql.ejecutarSql(auSql);
+        desSql();
+    }
+
     public TablaGenerica getVerificaSolicitud(String cedula) {
         conSql();
         TablaGenerica tabFuncionario = new TablaGenerica();
@@ -678,7 +687,7 @@ public class BeanRemuneracion {
                 + "from nom_detalle  \n"
                 + "where id_solicitud in (SELECT id_solicitud \n"
                 + "FROM nom_solicitud \n"
-                + "where  estado_solicitud in (SELECT id_tipo FROM dbo.nom_tipo where desc_tipo in('Cobrando','Aprobado')) and ced_empleado='"+id+"') \n"
+                + "where  estado_solicitud in (SELECT id_tipo FROM dbo.nom_tipo where desc_tipo in('Cobrando','Aprobado')) and ced_empleado='" + id + "') \n"
                 + "and id_tipo in (SELECT id_tipo FROM dbo.nom_tipo where desc_tipo in('Cancelado','Abono')) \n"
                 + "group by id_solicitud,id_tipo) as a\n"
                 + "group by  id_solicitud,cuota) as a \n"
@@ -829,8 +838,8 @@ public class BeanRemuneracion {
         return tabDatos;
     }
 
-     public TablaGenerica getGeneraListaCedula(String fecha0, String fecha1) {
-         conNomina();
+    public TablaGenerica getGeneraListaCedula(String fecha0, String fecha1) {
+        conNomina();
         TablaGenerica tabDatos = new TablaGenerica();
         conNomina();
         tabDatos.setConexion(conNomina);
@@ -838,8 +847,8 @@ public class BeanRemuneracion {
         tabDatos.ejecutarSql();
         desNomina();
         return tabDatos;
-     }
-    
+    }
+
     public TablaGenerica getVerificaDatos(String cedula) {
         conNomina();
         TablaGenerica tabDatos = new TablaGenerica();
@@ -983,6 +992,22 @@ public class BeanRemuneracion {
         return tabFuncionario;
     }
 
+    public TablaGenerica getConteoNom(String mes, Integer anio) {
+        conNomina();
+        TablaGenerica tabFuncionario = new TablaGenerica();
+        conNomina();
+        tabFuncionario.setConexion(conNomina);
+        tabFuncionario.setSql("SELECT 0 as id,count(DISTINCT NOHISNOM.codtra) as descuento\n"
+                + "FROM NOHISNOM \n"
+                + "inner join NODTTRPR on  NOHISNOM.CODTRA = NODTTRPR.codtra\n"
+                + "where NOHISNOM.TIPTRS = 'D' and NOHISNOM.CODPER = '" + mes + "' and to_char(NOHISNOM.fecini,'YYYY') =  " + anio + "\n"
+                + "and NOHISNOM.CODTRS = 'ANT'");
+        tabFuncionario.ejecutarSql();
+        tabFuncionario.imprimirSql();
+        desNomina();
+        return tabFuncionario;
+    }
+    
     public TablaGenerica getAnticipoRol(String mes, Integer anio, String tipo) {
         conNomina();
         TablaGenerica tabFuncionario = new TablaGenerica();
