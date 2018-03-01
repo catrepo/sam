@@ -120,7 +120,6 @@ public class pre_consultar_liquidaciones extends Pantalla {
 
 //        bar_botones.agregarComponente(new Etiqueta("Buscador Fallecidos:"));
 //        bar_botones.agregarComponente(autBusca);
-
         cmbLugar.setId("cmbLugar");
         cmbLugar.setCombo("select ide_lugar,detalle_lugar from cmt_lugar where cod_rubro = 'CMTR' order by detalle_lugar");
         cmbLugar.setMetodo("verSector");
@@ -157,7 +156,7 @@ public class pre_consultar_liquidaciones extends Pantalla {
         bar_botones.agregarBoton(bot_busca1);
 
         Boton bot_busca = new Boton();
-        bot_busca.setValue("Busq. Levantamientio Excel");
+        bot_busca.setValue("Busq. Levantamiento Excel");
         bot_busca.setExcluirLectura(true);
         bot_busca.setIcon("ui-icon-search");
         bot_busca.setMetodo("abrirBusquedaExcel");
@@ -169,7 +168,6 @@ public class pre_consultar_liquidaciones extends Pantalla {
         bot_migrar.setIcon("ui-icon-gear");
         bot_migrar.setMetodo("ejecutaSp");
         bar_botones.agregarBoton(bot_migrar);
-
 
         List list = new ArrayList();
         Object fila1[] = {
@@ -187,11 +185,15 @@ public class pre_consultar_liquidaciones extends Pantalla {
         Object fila5[] = {
             "4", "Cedula Representante"
         };
+        Object fila6[] = {
+            "5", "Catastro Anterior"
+        };
         list.add(fila2);;
         list.add(fila1);;
         list.add(fila3);;
         list.add(fila4);;
-        list.add(fila5);;
+//        list.add(fila5);;
+        list.add(fila6);;
         Grid griPri = new Grid();
         griPri.setColumns(3);
 
@@ -215,7 +217,6 @@ public class pre_consultar_liquidaciones extends Pantalla {
         panOpcion.setTransient(true);
 //        panOpcion.setHeader("<CENTER><B>DATOS DE FALLECIDO RENTAS CEMENTERIO</CENTER></B>");
         agregarComponente(panOpcion);
-
 
         dibujarPantalla();
         Boton bot_buscar1 = new Boton();
@@ -249,20 +250,28 @@ public class pre_consultar_liquidaciones extends Pantalla {
         agregarComponente(setSolicitud);
 
         List lista = new ArrayList();
-        Object fila7[] = {
+        Object fila8[] = {
             "0", "Cédula Fallecido"
         };
-        Object fila8[] = {
+        Object fila9[] = {
             "1", "Nombres Fallecido"
         };
-        Object fila9[] = {
+        Object fila10[] = {
             "2", "Fecha Defuncion"
         };
 
-        lista.add(fila8);;
-        lista.add(fila7);;
-        lista.add(fila9);;
+        Object fila11[] = {
+            "3", "Catastro Anterior"
+        };
 
+        Object fila12[] = {
+            "4", "Catastro Actual"
+        };
+        lista.add(fila9);;
+        lista.add(fila8);;
+        lista.add(fila10);;
+        lista.add(fila11);;
+        lista.add(fila12);;
 
         cmbOpcion1.setCombo(lista);
         cmbOpcion1.eliminarVacio();
@@ -337,7 +346,6 @@ public class pre_consultar_liquidaciones extends Pantalla {
         agregarComponente(rep_reporte); //2 agregar el listado de reportes
         sef_formato.setId("sef_formato");
         agregarComponente(sef_formato);
-
 
         diaArchivo.setId("diaArchivo");
         diaArchivo.setTitle("Parametros Catastro Levantado");
@@ -543,10 +551,10 @@ public class pre_consultar_liquidaciones extends Pantalla {
         texBusqueda1.setValue(arregloDeSubCadenas[0]);
         setExcel.getTab_seleccion().limpiar();
     }
+
     /*
      * Metodo para busqueda
      */
-
     public void busquedaInfo() {
         if (cmbOpcion.getValue().equals("0")) {
             buscaCedula();
@@ -558,6 +566,8 @@ public class pre_consultar_liquidaciones extends Pantalla {
             buscarRepresentante();
         } else if (cmbOpcion.getValue().equals("4")) {
             buscarCedulaRepresentante();
+        } else if (cmbOpcion.getValue().equals("5")) {
+            buscarCatastro();
         } else {
             utilitario.agregarMensaje("Parametros de busqueda no seleccionados", null);
         }
@@ -571,6 +581,10 @@ public class pre_consultar_liquidaciones extends Pantalla {
             buscaApellidoFallecidoExcel();
         } else if (cmbOpcion1.getValue().equals("2")) {
             buscaFechaExcel();
+            } else if (cmbOpcion1.getValue().equals("4")) {
+            buscaCatastroActual();
+            } else if (cmbOpcion1.getValue().equals("3")) {
+            buscaCatastroAnterior();
         } else {
             utilitario.agregarMensaje("Parametros de busqueda no seleccionados", null);
         }
@@ -628,6 +642,16 @@ public class pre_consultar_liquidaciones extends Pantalla {
         }
     }
 
+    public void buscarCatastro() {
+        if (texBusqueda.getValue() != null && texBusqueda.getValue().toString().isEmpty() == false) {
+            setSolicitud.getTab_seleccion().setSql("select id_fallecido,cedula_fallecido,nombre_fallecido,fecha_defuncion,lugar_actual,representante_actual,cedula_representante "
+                    + "from FALLECIDOS where estado_fallecido = 'ACTIVO' and bloqueo is null and replace(replace(replace(replace(replace(cast(lugar_actual as varchar(500)),'NICHO  SERIE:',''),'SITIO  BLOQUE:',''),'  NIVEL:','-'),'  NUM:','-'),'  FILA:','-') LIKE '%" + texBusqueda.getValue() + "%' order by nombre_fallecido");
+            setSolicitud.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
+        }
+    }
+
     public void buscaCedulaExcel() {
         if (texBusqueda1.getValue() != null && texBusqueda1.getValue().toString().isEmpty() == false) {
             setExcel.getTab_seleccion().setSql("SELECT cod_tabla,ex_cedula,ex_nombres,ex_fecha_defuncion,(CASE WHEN ex_lugar = 'NICHO' THEN ex_lugar + '   SERIE:' + ex_bloque + '-' + ex_fila + '-' + ex_numero ELSE ex_lugar + '   Bloque:' + ex_bloque + '   Fila:' + ex_fila + '  Numero:' + ex_numero END) AS LUGAR,ex_piso,(CASE WHEN ex_lugar = 'NICHO' THEN ex_lugar + '   SERIE:' + nuevo_bloque + '-' + nuevo_fila + '-' +  convert(VARCHAR,nuevo_numero) ELSE ex_lugar + '   Bloque:' + nuevo_bloque + '   Fila:' + nuevo_fila + '  Numero:' + convert(VARCHAR,nuevo_numero) END) AS LUGAR_nuevo,nuevo_piso "
@@ -658,6 +682,29 @@ public class pre_consultar_liquidaciones extends Pantalla {
         }
     }
 
+    public void buscaCatastroActual() {
+        System.err.println("->>");
+      if (texBusqueda1.getValue() != null && texBusqueda1.getValue().toString().isEmpty() == false) {
+          System.err.println("->>>");
+            setExcel.getTab_seleccion().setSql("SELECT cod_tabla,ex_cedula,ex_nombres,ex_fecha_defuncion,(CASE WHEN ex_lugar = 'NICHO' THEN ex_lugar + '   SERIE:' + ex_bloque + '-' + ex_fila + '-' + ex_numero ELSE ex_lugar + '   Bloque:' + ex_bloque + '   Fila:' + ex_fila + '  Numero:' + ex_numero END) AS LUGAR,ex_piso,(CASE WHEN ex_lugar = 'NICHO' THEN ex_lugar + '   SERIE:' + nuevo_bloque + '-' + nuevo_fila + '-' +  convert(VARCHAR,nuevo_numero) ELSE ex_lugar + '   Bloque:' + nuevo_bloque + '   Fila:' + nuevo_fila + '  Numero:' + convert(VARCHAR,nuevo_numero) END) AS LUGAR_nuevo,nuevo_piso "
+                    + "FROM CMT_MIGRACION_DATOS where isnull(bloqueo,'')='' and (nuevo_bloque+'-'+nuevo_fila+'-'+nuevo_numero) like'%" + texBusqueda1.getValue() + "%' order by ex_nombres");
+            setExcel.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
+        }  
+    }
+    
+    public void buscaCatastroAnterior() {
+        System.err.println("-<<");
+        if (texBusqueda1.getValue() != null && texBusqueda1.getValue().toString().isEmpty() == false) {
+            System.err.println("-<<<");
+            setExcel.getTab_seleccion().setSql("SELECT cod_tabla,ex_cedula,ex_nombres,ex_fecha_defuncion,(CASE WHEN ex_lugar = 'NICHO' THEN ex_lugar + '   SERIE:' + ex_bloque + '-' + ex_fila + '-' + ex_numero ELSE ex_lugar + '   Bloque:' + ex_bloque + '   Fila:' + ex_fila + '  Numero:' + ex_numero END) AS LUGAR,ex_piso,(CASE WHEN ex_lugar = 'NICHO' THEN ex_lugar + '   SERIE:' + nuevo_bloque + '-' + nuevo_fila + '-' +  convert(VARCHAR,nuevo_numero) ELSE ex_lugar + '   Bloque:' + nuevo_bloque + '   Fila:' + nuevo_fila + '  Numero:' + convert(VARCHAR,nuevo_numero) END) AS LUGAR_nuevo,nuevo_piso "
+                    + "FROM CMT_MIGRACION_DATOS where isnull(bloqueo,'')='' and (ex_bloque+'-'+ex_fila+'-'+ex_numero) like '%" + texBusqueda1.getValue() + "%' order by ex_nombres");
+            setExcel.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
+        }
+    }
     public void cemeneterioMovimiento() {
         limpiar();
         autBusca.setValor(setSolicitud.getValorSeleccionado());
@@ -791,7 +838,7 @@ public class pre_consultar_liquidaciones extends Pantalla {
 
     public void ejecutarProceso() {
         if (intCatastro > 0) {
-            cementerioM.setUpdateCatastro(intCatastro,tabFallecido.getValor("lugar_actual").toUpperCase());
+            cementerioM.setUpdateCatastro(intCatastro, tabFallecido.getValor("lugar_actual").toUpperCase());
         }
         diaInfor.cerrar();
         System.out.println("entreamo a sp ");
@@ -814,20 +861,12 @@ public class pre_consultar_liquidaciones extends Pantalla {
                     cementerioM.set_updateFallecidoRentas(tabFallecido.getValor("id_fallecido"), tabFallecido.getValor("nuevo_lugar"),
                             tabFallecido.getValor("nuevo_bloque"), tabFallecido.getValor("nuevo_fila"), tabFallecido.getValor("nuevo_numero").toUpperCase(), tabFallecido.getValor("nuevo_piso"));
 
-                    cementerioM.getDatosFallecido(Integer.parseInt(tabFallecido.getValor("id_fallecido")), "" + tabFallecido.getValor("cedula_fallecido") + ""
-                            , "" + tabFallecido.getValor("nombre_fallecido") + "", "" + str_fecha1 + "", "" + tabConsulta.getValor("NICK_USUA") + ""
-                            , "" + tabFallecido.getValor("lugar_actual").toUpperCase() + "", tabFallecido.getValor("nuevo_lugar").toUpperCase(), tabFallecido.getValor("nuevo_fila").toUpperCase()
-                            , tabFallecido.getValor("nuevo_bloque").toUpperCase(), tabFallecido.getValor("nuevo_numero").toUpperCase(), intCatastro, codigo
-                            , tabFallecido.getValor("lugar_actual").toUpperCase());//
+                    cementerioM.getDatosFallecido(Integer.parseInt(tabFallecido.getValor("id_fallecido")), "" + tabFallecido.getValor("cedula_fallecido") + "", "" + tabFallecido.getValor("nombre_fallecido") + "", "" + str_fecha1 + "", "" + tabConsulta.getValor("NICK_USUA") + "", "" + tabFallecido.getValor("lugar_actual").toUpperCase() + "", tabFallecido.getValor("nuevo_lugar").toUpperCase(), tabFallecido.getValor("nuevo_fila").toUpperCase(), tabFallecido.getValor("nuevo_bloque").toUpperCase(), tabFallecido.getValor("nuevo_numero").toUpperCase(), intCatastro, codigo, tabFallecido.getValor("lugar_actual").toUpperCase());//
                     for (int i = 0; i < tabRepresentante.getTotalFilas(); i++) {
                         cementerioM.CMT_DATOS_REPRESENTANTE_INSERT(tabRepresentante.getValor(i, "id_representante"), String.valueOf(codigo), tabConsulta.getValor("NICK_USUA"), tabRepresentante.getValor(i, "cedula_represent"), tabRepresentante.getValor(i, "nombres_represent"), tabRepresentante.getValor(i, "direccion_represent"), tabRepresentante.getValor(i, "telefono_represent"), tabRepresentante.getValor(i, "estado_represent"));
                     }
                     for (int i = 0; i < tabMovimientoFallecido.getTotalFilas(); i++) {
-                        cementerioM.CMT_MOVIMIENTOS_FALLECIDOS_INSERT(tabMovimientoFallecido.getValor(i, "id_CONTROL"), tabFallecido.getValor("id_fallecido")
-                                , tabConsulta.getValor("NICK_USUA"), tabFallecido.getValor("lugar_actual"), tabFallecido.getValor("tipo_pago")
-                                , tabFallecido.getValor("cedula_fallecido"), tabFallecido.getValor("nombre_fallecido"), tabFallecido.getValor("fecha_defuncion")
-                                , tabFallecido.getValor("NUEVO_LUGAR"), tabFallecido.getValor("NUEVO_BLOQUE"), tabFallecido.getValor("NUEVO_NUMERO").toUpperCase()
-                                , tabFallecido.getValor("NUEVO_FILA"));
+                        cementerioM.CMT_MOVIMIENTOS_FALLECIDOS_INSERT(tabMovimientoFallecido.getValor(i, "id_CONTROL"), tabFallecido.getValor("id_fallecido"), tabConsulta.getValor("NICK_USUA"), tabFallecido.getValor("lugar_actual"), tabFallecido.getValor("tipo_pago"), tabFallecido.getValor("cedula_fallecido"), tabFallecido.getValor("nombre_fallecido"), tabFallecido.getValor("fecha_defuncion"), tabFallecido.getValor("NUEVO_LUGAR"), tabFallecido.getValor("NUEVO_BLOQUE"), tabFallecido.getValor("NUEVO_NUMERO").toUpperCase(), tabFallecido.getValor("NUEVO_FILA"));
                     }
                     utilitario.agregarMensaje("Informacion ingresada correctamente", "");
                     cementerioM.set_updateBloque("'CMT_FALLECIDO'", codigo);
@@ -837,8 +876,7 @@ public class pre_consultar_liquidaciones extends Pantalla {
                         tabFallecido.setValor("bloqueo", tabInfor.getValor("bloqueo"));
                         utilitario.addUpdate("tabFallecido");
                     }
-                    cementerioM.setUpdateDesHabilita(tabFallecido.getValor("NUEVO_LUGAR").toUpperCase(),tabFallecido.getValor("NUEVO_BLOQUE")
-                            ,tabFallecido.getValor("NUEVO_NUMERO").toUpperCase(),tabFallecido.getValor("NUEVO_FILA"));
+                    cementerioM.setUpdateDesHabilita(tabFallecido.getValor("NUEVO_LUGAR").toUpperCase(), tabFallecido.getValor("NUEVO_BLOQUE"), tabFallecido.getValor("NUEVO_NUMERO").toUpperCase(), tabFallecido.getValor("NUEVO_FILA"));
                 }
             } else {
                 utilitario.agregarMensaje("Clave primaria no corresponde", "");
