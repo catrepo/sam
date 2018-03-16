@@ -52,6 +52,7 @@ public class CedulasPresupuestarias extends Pantalla {
     private SeleccionTabla setPrograma = new SeleccionTabla();
     private SeleccionTabla setPartidas = new SeleccionTabla();
     private SeleccionTabla setProyecto = new SeleccionTabla();
+    private SeleccionTabla setComprobantes = new SeleccionTabla();
     //Declaracion de combos
     private Combo cmbNivelInicial = new Combo();
     private Combo cmbNivelFinal = new Combo();
@@ -69,7 +70,7 @@ public class CedulasPresupuestarias extends Pantalla {
     private Panel panelPresupuesto = new Panel();
     private Panel panelArchivo = new Panel();
     //Etiquetas
-    private Etiqueta txtTipo = new Etiqueta("TIPO : ");
+    private Etiqueta etiTipos = new Etiqueta("TIPO : ");
     private Etiqueta txtMes = new Etiqueta("MES : ");
     private Etiqueta txtAno = new Etiqueta("AÑO : ");
     private Etiqueta txtAnio = new Etiqueta("AÑO : ");
@@ -79,6 +80,15 @@ public class CedulasPresupuestarias extends Pantalla {
     private Etiqueta txtFechaInicio = new Etiqueta("FECHA INICIAL : ");
     private Etiqueta txtFechaFin = new Etiqueta("FECHA FINAL : ");
     private Etiqueta etiEstado = new Etiqueta("Agrupar por : ");
+    private Etiqueta etiCompania = new Etiqueta("Compañía : ");
+    private Etiqueta etiTipo = new Etiqueta("Tipo Comprobante : ");
+    private Etiqueta etiPeriodo = new Etiqueta("Periodo Comprobante : ");
+    private Etiqueta etiNumero = new Etiqueta("Número Comprobante : ");
+    private Texto txtCompania = new Texto();
+    private Texto txtTipo = new Texto();
+    private Texto txtPeriodo = new Texto();
+    private Texto txtMess = new Texto();
+    private Texto txtNumero = new Texto();
     private Dialogo diaArchivo = new Dialogo();
     private Dialogo diaEstado = new Dialogo();
     private Grid gridA = new Grid();
@@ -311,7 +321,7 @@ public class CedulasPresupuestarias extends Pantalla {
         grdArchivo.setColumns(2);
         grdArchivo.getChildren().add(txtAnio);
         grdArchivo.getChildren().add(cmbAnio);
-        grdArchivo.getChildren().add(txtTipo);
+        grdArchivo.getChildren().add(etiTipos);
         grdArchivo.getChildren().add(cmbTipo);
         grdArchivo.getChildren().add(txtMes);
         grdArchivo.getChildren().add(cmbMes);
@@ -473,8 +483,7 @@ public class CedulasPresupuestarias extends Pantalla {
         setProyecto.getBot_aceptar().setMetodo("dibujarReporte");
         setProyecto.setHeader("AUXILIAR POR PROYECTO");
         agregarComponente(setProyecto);
-        
-        
+
         cmbAgrupar.setId("cmbAgrupar");
         List listAgrupar = new ArrayList();
         Object filaa1[] = {
@@ -486,7 +495,7 @@ public class CedulasPresupuestarias extends Pantalla {
         listAgrupar.add(filaa1);;
         listAgrupar.add(filaa2);;
         cmbAgrupar.setCombo(listAgrupar);
-        
+
         diaEstado.setId("diaEstado");
         diaEstado.setTitle("SELECCIONAR AGRUPACIÒN"); //titulo
         diaEstado.setWidth("20%"); //siempre en porcentajes  ancho
@@ -495,6 +504,54 @@ public class CedulasPresupuestarias extends Pantalla {
         diaEstado.getBot_aceptar().setMetodo("dibujarReporte");
         gridE.setColumns(4);
         agregarComponente(diaEstado);
+
+        /*
+        impresion de comprobantes de pago
+         */
+        Grid griComprobante = new Grid();
+        griComprobante.setColumns(3);
+        griComprobante.getChildren().add(etiCompania);
+        griComprobante.getChildren().add(txtCompania);
+        txtCompania.setSize(5);
+        Grid griAux = new Grid();
+        griAux.setColumns(3);
+        griAux.getChildren().add(etiPeriodo);
+        griAux.getChildren().add(txtPeriodo);
+        griAux.getChildren().add(txtMess);
+        txtPeriodo.setSize(5);
+        txtMess.setSize(2);
+        griComprobante.getChildren().add(griAux);
+        griComprobante.getChildren().add(etiTipo);
+        griComprobante.getChildren().add(txtTipo);
+        txtTipo.setSize(5);
+        Grid griAux1 = new Grid();
+        griAux1.setColumns(2);
+        griAux1.getChildren().add(etiNumero);
+        griAux1.getChildren().add(txtNumero);
+        txtNumero.setSize(10);
+        griComprobante.getChildren().add(griAux1);
+
+        Boton botComprobante = new Boton();
+        botComprobante.setId("botComprobante");
+        botComprobante.setValue("Buscar");
+        botComprobante.setIcon("ui-icon-search");
+        botComprobante.setMetodo("buscaComprobantes");
+        griComprobante.getChildren().add(botComprobante);
+
+        setComprobantes.setId("setComprobantes");
+        setComprobantes.getTab_seleccion().setConexion(conOracle);
+        setComprobantes.setSeleccionTabla("select compromiso as id,compania,aniofecha as Año,mesfecha as Periodo,fecha,dttcom as Tipo_Cta,dtncom as Número_Cta,compromiso \n"
+                + "from VT_CABECERA_COMPROBANTE_PAGO\n"
+                + "where dtccia='Y'", "id");
+        setComprobantes.setRadio();
+        setComprobantes.getTab_seleccion().setRows(7);
+        setComprobantes.getTab_seleccion().getColumna("Número_Cta").setFiltro(true);
+        setComprobantes.getTab_seleccion().getColumna("compromiso").setFiltro(true);
+        setComprobantes.getGri_cuerpo().setHeader(griComprobante);
+        setComprobantes.setWidth("45");
+        setComprobantes.getBot_aceptar().setMetodo("dibujarReporte");
+        setComprobantes.setHeader("COMPROBANTE DE PAGO");
+        agregarComponente(setComprobantes);
 
     }
 
@@ -611,6 +668,19 @@ public class CedulasPresupuestarias extends Pantalla {
         setProyecto.getTab_seleccion().ejecutarSql();
     }
 
+    public void buscaComprobantes() {
+        setComprobantes.getTab_seleccion().setSql("select compromiso as id,compania,aniofecha,mesfecha,fecha,dttcom,dtncom ,compromiso\n"
+                + "from VT_CABECERA_COMPROBANTE_PAGO\n"
+                + "where dtccia='"+txtCompania.getValue()+"'\n"
+                + "and dtperi="+"1" + txtPeriodo.getValue().toString().substring(2, 4) + "" + txtMess.getValue() + ""+"\n"
+                + "and dttcom="+txtTipo.getValue()+"\n"
+                + "and dtclct = 'P'\n"
+                + "and dtncom >="+txtNumero.getValue()+"\n"
+                + "order by dtncom,fecha");
+        setComprobantes.getTab_seleccion().ejecutarSql();
+//        setIngresos.getTab_seleccion().imprimirSql();
+    }
+
     @Override
     public void abrirListaReportes() {
         rep_reporte.dibujar();
@@ -675,6 +745,9 @@ public class CedulasPresupuestarias extends Pantalla {
                 gridE.getChildren().add(cmbAgrupar);
                 diaEstado.setDialogo(gridE);
                 diaEstado.dibujar();
+                break;
+            case "COMPROBANTE DE PAGO":
+                setComprobantes.dibujar();
                 break;
         }
     }
@@ -993,7 +1066,7 @@ public class CedulasPresupuestarias extends Pantalla {
                 sef_formato.dibujar();
                 break;
             case "PROYECTOS GENERAL":
-                 String mes16,
+                String mes16,
                  mes17;
                 if (String.valueOf((utilitario.getMes(fechaInicio.getFecha()))).length() > 1) {
                     mes16 = String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
@@ -1013,13 +1086,13 @@ public class CedulasPresupuestarias extends Pantalla {
                 p_parametros.put("reforma", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15"));
                 p_parametros.put("fecha", utilitario.getFechaActual());
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
-                System.err.println("->>> "+p_parametros);
+                System.err.println("->>> " + p_parametros);
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
             case "PROYECTOS AGRUPADOS":
-                 String mes18,
+                String mes18,
                  mes19;
                 if (String.valueOf((utilitario.getMes(fechaInicio.getFecha()))).length() > 1) {
                     mes18 = String.valueOf((utilitario.getMes(fechaInicio.getFecha())));
@@ -1038,9 +1111,22 @@ public class CedulasPresupuestarias extends Pantalla {
                 p_parametros.put("inicial", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "14"));
                 p_parametros.put("reforma", Integer.parseInt("1" + (Integer.parseInt(fechaInicio.getFecha().toString().substring(2, 4)) - 1) + "15"));
                 p_parametros.put("fecha", utilitario.getFechaActual());
-                p_parametros.put("codigo", Integer.parseInt(cmbAgrupar.getValue()+""));
+                p_parametros.put("codigo", Integer.parseInt(cmbAgrupar.getValue() + ""));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
-                System.err.println("->>> "+p_parametros);
+                System.err.println("->>> " + p_parametros);
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+            case "COMPROBANTE DE PAGO":
+                p_parametros.put("compania", txtCompania.getValue() + "");
+                p_parametros.put("tipo", txtTipo.getValue() + "");
+                p_parametros.put("numero", txtNumero.getValue() + "");
+                p_parametros.put("periodo", txtPeriodo.getValue() + "");
+                p_parametros.put("mes", txtMess.getValue() + "");
+                p_parametros.put("comprobante", setComprobantes.getValorSeleccionado() + "");
+                p_parametros.put("fecha", "1" + txtPeriodo.getValue().toString().substring(2, 4) + "" + txtMess.getValue() + "");
+                System.err.println("->>>Comp " + p_parametros);
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
@@ -1359,4 +1445,13 @@ public class CedulasPresupuestarias extends Pantalla {
     public void setSetProyecto(SeleccionTabla setProyecto) {
         this.setProyecto = setProyecto;
     }
+
+    public SeleccionTabla getSetComprobantes() {
+        return setComprobantes;
+    }
+
+    public void setSetComprobantes(SeleccionTabla setComprobantes) {
+        this.setComprobantes = setComprobantes;
+    }
+
 }
