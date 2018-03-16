@@ -63,7 +63,7 @@ public class AdquisicionesConsulta extends Pantalla {
         tabConsulta.setCampoPrimaria("IDE_USUA");
         tabConsulta.setLectura(true);
         tabConsulta.dibujar();
-        
+
         autBusca.setId("autBusca");
         autBusca.setAutoCompletar("SELECT c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,r.PARTIDA_ADCERT,c.FECHA_INGRE\n"
                 + "FROM dbo.ADQ_COMPRA as c\n"
@@ -99,7 +99,16 @@ public class AdquisicionesConsulta extends Pantalla {
         agregarComponente(panOpcion1);
 
         setRegistro.setId("setRegistro");
-        setRegistro.setSeleccionTabla("SELECT DISTINCT top 100 c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,r.PARTIDA_ADCERT,c.FECHA_INGRE\n"
+        setRegistro.setSeleccionTabla("SELECT DISTINCT top 50 c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,\n"
+                + "(select STUFF(\n"
+                + "(SELECT CAST(';' AS varchar(MAX)) + PARTIDA_ADCERT\n"
+                + "FROM SIGAG.dbo.ADQ_CERTIFICACION\n"
+                + "where ADQ_CERTIFICACION.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                + "ORDER BY IDE_ADCOMP\n"
+                + "FOR XML PATH('')\n"
+                + "), 1, 1, '')\n"
+                + ") as PARTIDA_ADCERT \n"
+                + ",c.FECHA_INGRE\n"
                 + "FROM dbo.ADQ_COMPRA as c\n"
                 + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
                 + "order by c.FECHA_INGRE desc", "IDE_ADCOMP");
@@ -354,11 +363,11 @@ public class AdquisicionesConsulta extends Pantalla {
 //        utilitario.addUpdate("panOpcion");
 //    }
     public void buscaSolicitud() {
-        setRegistro.dibujar(); 
+        setRegistro.dibujar();
     }
 
-    public void cargarRegistro(){
-    if (setRegistro.getValorSeleccionado() != null) {
+    public void cargarRegistro() {
+        if (setRegistro.getValorSeleccionado() != null) {
 //        limpiar();
             autBusca.setValor(setRegistro.getValorSeleccionado());
             dibujarPantalla();
@@ -368,7 +377,7 @@ public class AdquisicionesConsulta extends Pantalla {
             utilitario.agregarMensajeInfo("Debe seleccionar una Solicitud", "");
         }
     }
-    
+
     @Override
     public void abrirListaReportes() {
         // TODO Auto-generated method stub
