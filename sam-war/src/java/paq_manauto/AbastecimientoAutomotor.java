@@ -173,10 +173,10 @@ public class AbastecimientoAutomotor extends Pantalla {
         } else {
             tabTabla.setCondicion("abastecimiento_id=" + autCompleta.getValor());
         }
-        tabTabla.getColumna("tipo_combustible_id").setCombo("SELECT tipo_combustible_id,(tipo_combustible_descripcion||'/'||tipo_valor_galon) as valor FROM mvtipo_combustible order by tipo_combustible_descripcion");
+        tabTabla.getColumna("tipo_combustible_id").setCombo("SELECT tipo_combustible_id,tipo_combustible_descripcion as tipo,tipo_valor_galon as valor FROM mvtipo_combustible order by tipo_combustible_descripcion");
         tabTabla.getColumna("mve_secuencial").setCombo("SELECT v.mve_secuencial,\n"
                 + "(case when m.mvmarca_descripcion is null then v.motor when m.mvmarca_descripcion is not null then ((case when v.placa is NULL then v.codigo_activo when v.placa is not null then v.placa end )\n"
-                + "||'/'||m.mvmarca_descripcion ||'/'||o.mvmodelo_descripcion)end)as descripcion\n"
+                + ")end),m.mvmarca_descripcion,o.mvmodelo_descripcion\n"
                 + "FROM mv_vehiculo v\n"
                 + "left JOIN mvmarca_vehiculo m ON v.marca_id = m.mvmarca_id\n"
                 + "left JOIN mvmodelo_vehiculo o ON v.modelo_id = o.mvmodelo_id\n"
