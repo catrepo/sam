@@ -13,12 +13,17 @@ import framework.componentes.Imagen;
 import framework.componentes.Panel;
 import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
+import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
+import framework.componentes.Texto;
+import framework.componentes.VisualizarPDF;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJB;
 import paq_beans.Archivo;
+import paq_financiero.presupuesto.ejb.ReporteCedulas;
 import sistema.aplicacion.Pantalla;
 import persistencia.Conexion;
 
@@ -37,19 +42,52 @@ public class ReporteContabilidad extends Pantalla {
     //Creacion Calendarios
     private Calendario fechaInicio = new Calendario();
     private Calendario fechaFin = new Calendario();
+    private Calendario fechaDesde = new Calendario();
+    private Calendario fechaHasta = new Calendario();
     private Panel panOpcion = new Panel();
     //declaracion de tablas
     private Tabla tabConsulta = new Tabla();
+    private SeleccionTabla setComprobantes = new SeleccionTabla();
+    private SeleccionTabla setMovimientos = new SeleccionTabla();
     ///REPORTES
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
     private Map p_parametros = new HashMap();
+    private VisualizarPDF vzpdfMovimiento = new VisualizarPDF();
+
+    private Etiqueta etiCompania = new Etiqueta("Compañía : ");
+    private Etiqueta etiTipo = new Etiqueta("Tipo Comprobante : ");
+    private Etiqueta etiPeriodo = new Etiqueta("Periodo Comprobante : ");
+    private Etiqueta etiNumero = new Etiqueta("Número Comprobante : ");
+
+    private Etiqueta etiCompania1 = new Etiqueta("Compañía o Grupo : ");
+    private Etiqueta etiNomInstitucion = new Etiqueta("MUNICIPIO DE RUMIÑAHUI");
+    private Etiqueta etiDesde = new Etiqueta("Periodo Desde : ");
+    private Etiqueta etiHasta = new Etiqueta("Periodo Hasta : ");
+    private Etiqueta etiCuenta = new Etiqueta("Cuenta de Mayor : ");
+    private Etiqueta etiDato = new Etiqueta("Tipo de Datos : ");
+
+    private Texto txtCompania = new Texto();
+    private Texto txtTipo = new Texto();
+    private Texto txtPeriodo = new Texto();
+    private Texto txtMess = new Texto();
+    private Texto txtNumero = new Texto();
+
+    private Texto txtCompania1 = new Texto();
+    private Texto txtTipo1 = new Texto();
+    private Texto txtDesde = new Texto();
+    private Texto txtHasta = new Texto();
+    private Texto txtCuenta = new Texto();
+
     //PARA ASIGNACION DE MES
     String selec_mes = new String();
     String link = new String();
     private Boolean dentro;
     Archivo file = new Archivo();
 
+    @EJB
+    private ReporteCedulas admin = (ReporteCedulas) utilitario.instanciarEJB(ReporteCedulas.class);
+    
     public ReporteContabilidad() {
 
         /*
@@ -70,7 +108,7 @@ public class ReporteContabilidad extends Pantalla {
         /*
          * opción para impresión
          */
-        /*
+ /*
          * CONFIGURACIÓN DE OBJETO REPORTE
          */
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
@@ -105,7 +143,6 @@ public class ReporteContabilidad extends Pantalla {
         /*
          * COMBOS QUE PERMITE SELECCIONAR EL NIVEL DE BUSQUEDA PARA LAS CEDULAS DE GASTOS E INGRESOS
          */
-
         griCuerpo.getChildren().add(new Etiqueta("NIVEL INICIAL: "));
         cmbNiveli.setId("cmbNiveli");
         List lista = new ArrayList();
@@ -198,6 +235,173 @@ public class ReporteContabilidad extends Pantalla {
         tabp2.getChildren().add(panOpcion);
         tabp2.getChildren().add(botPrint);
         agregarComponente(tabp2);
+
+        /*
+        impresion de comprobantes de pago
+         */
+        Grid griComprobante = new Grid();
+        griComprobante.setColumns(3);
+        griComprobante.getChildren().add(etiCompania);
+        griComprobante.getChildren().add(txtCompania);
+        txtCompania.setSize(5);
+        txtCompania.setValue("MR");
+        Grid griAux = new Grid();
+        griAux.setColumns(3);
+        griAux.getChildren().add(etiPeriodo);
+        griAux.getChildren().add(txtPeriodo);
+        griAux.getChildren().add(txtMess);
+        txtPeriodo.setSize(5);
+        txtMess.setSize(2);
+        txtPeriodo.setValue(utilitario.getAnio(utilitario.getFechaActual()));
+        txtMess.setValue(mes(utilitario.getMes(utilitario.getFechaActual())));
+        griComprobante.getChildren().add(griAux);
+        griComprobante.getChildren().add(etiTipo);
+        griComprobante.getChildren().add(txtTipo);
+        txtTipo.setSize(5);
+        Grid griAux1 = new Grid();
+        griAux1.setColumns(2);
+        griAux1.getChildren().add(etiNumero);
+        griAux1.getChildren().add(txtNumero);
+        txtNumero.setSize(10);
+        griComprobante.getChildren().add(griAux1);
+
+        Boton botComprobante = new Boton();
+        botComprobante.setId("botComprobante");
+        botComprobante.setValue("Buscar");
+        botComprobante.setIcon("ui-icon-search");
+        botComprobante.setMetodo("buscaComprobantes");
+        griComprobante.getChildren().add(botComprobante);
+
+        setComprobantes.setId("setComprobantes");
+        setComprobantes.getTab_seleccion().setConexion(conOracle);
+        setComprobantes.setSeleccionTabla("select compromiso as id,compania,aniofecha as Año,mesfecha as Periodo,fecha,dttcom as Tipo_Cta,dtncom as Número_Cta,compromiso \n"
+                + "from VT_CABECERA_COMPROBANTE_PAGO\n"
+                + "where dtccia='Y'", "id");
+        setComprobantes.setRadio();
+        setComprobantes.getTab_seleccion().setRows(7);
+        setComprobantes.getTab_seleccion().getColumna("Número_Cta").setFiltro(true);
+        setComprobantes.getTab_seleccion().getColumna("compromiso").setFiltro(true);
+        setComprobantes.getGri_cuerpo().setHeader(griComprobante);
+        setComprobantes.setWidth("45");
+        setComprobantes.getBot_aceptar().setMetodo("dibujarReporte");
+        setComprobantes.setHeader("COMPROBANTE DE PAGO");
+        agregarComponente(setComprobantes);
+
+        /*
+        saldos y movimiento de mayor
+         */
+        fechaDesde.setValue("2016/01/01");
+        fechaHasta.setFechaActual();
+        
+        Grid griMovimiento = new Grid();
+        griMovimiento.setColumns(1);
+        Grid griMovAux = new Grid();
+        griMovAux.setColumns(3);
+        griMovAux.getChildren().add(etiCompania1);
+        griMovAux.getChildren().add(txtCompania1);
+        griMovAux.getChildren().add(etiNomInstitucion);
+        Grid griMovAux1 = new Grid();
+        griMovAux1.setColumns(4);
+        griMovAux1.getChildren().add(etiDesde);
+        griMovAux1.getChildren().add(fechaDesde);
+        griMovAux1.getChildren().add(etiHasta);
+        griMovAux1.getChildren().add(fechaHasta);
+        Grid griMovAux2 = new Grid();
+        griMovAux2.setColumns(2);
+        griMovAux2.getChildren().add(etiCuenta);
+        griMovAux2.getChildren().add(txtCuenta);
+        griMovAux2.getChildren().add(etiDato);
+        griMovAux2.getChildren().add(txtTipo1);
+        griMovimiento.getChildren().add(griMovAux);
+        griMovimiento.getChildren().add(griMovAux1);
+        griMovimiento.getChildren().add(griMovAux2);
+
+        Boton botMovimiento = new Boton();
+        botMovimiento.setId("botMovimiento");
+        botMovimiento.setValue("Buscar");
+        botMovimiento.setIcon("ui-icon-search");
+        botMovimiento.setMetodo("buscaMovimiento");
+        griMovimiento.getChildren().add(botMovimiento);
+
+        setMovimientos.setId("setMovimientos");
+        setMovimientos.getTab_seleccion().setConexion(conOracle);
+        setMovimientos.setSeleccionTabla("select compromiso as id,compania,aniofecha as Año,mesfecha as Periodo,fecha,dttcom as Tipo_Cta,dtncom as Número_Cta,compromiso \n"
+                + "from VT_CABECERA_COMPROBANTE_PAGO\n"
+                + "where dtccia='Y'", "id");
+        setMovimientos.setRadio();
+        setMovimientos.getTab_seleccion().setRows(15);
+//        setMovimientos.getTab_seleccion().getColumna("Número_Cta").setFiltro(true);
+//        setMovimientos.getTab_seleccion().getColumna("compromiso").setFiltro(true);
+        setMovimientos.getGri_cuerpo().setHeader(griMovimiento);
+//        setMovimientos.setWidth("45");
+        setMovimientos.getBot_aceptar().setMetodo("generarPDF");
+        setMovimientos.setHeader("SALDOS Y MOVIMIENTOS DE MAYOR");
+        agregarComponente(setMovimientos);
+
+        vzpdfMovimiento.setId("vzpdfMovimiento");
+        vzpdfMovimiento.setTitle("DETALLE DE MOVIMIENTOS");
+        agregarComponente(vzpdfMovimiento);
+    }
+
+    public void buscaComprobantes() {
+        if (txtCompania.getValue() != null && !txtCompania.getValue().toString().isEmpty()) {
+            if (txtPeriodo.getValue() != null && !txtPeriodo.getValue().toString().isEmpty() && txtMess.getValue() != null && !txtMess.getValue().toString().isEmpty()) {
+                if (txtTipo.getValue() != null && !txtTipo.getValue().toString().isEmpty()) {
+                    if (txtNumero.getValue() != null && !txtNumero.getValue().toString().isEmpty()) {
+                        setComprobantes.getTab_seleccion().setSql("select compromiso as id,compania,aniofecha,mesfecha,fecha,dttcom,dtncom ,compromiso\n"
+                                + "from VT_CABECERA_COMPROBANTE_PAGO\n"
+                                + "where dtccia='" + txtCompania.getValue().toString().toUpperCase() + "'\n"
+                                + "and dtperi=" + "1" + txtPeriodo.getValue().toString().substring(2, 4) + "" + txtMess.getValue() + "" + "\n"
+                                + "and dttcom=" + txtTipo.getValue() + "\n"
+                                + "and dtclct = 'P'\n"
+                                + "and dtncom >=" + txtNumero.getValue() + "\n"
+                                + "order by dtncom,fecha");
+                        setComprobantes.getTab_seleccion().ejecutarSql();
+                    } else {
+                        utilitario.agregarMensajeInfo("Ingresar Número de comprobante", "");
+                    }
+                } else {
+                    utilitario.agregarMensajeInfo("Ingresar Tipo de comprobante", "");
+                }
+            } else {
+                utilitario.agregarMensajeInfo("Ingresar Periodo y Mes", "");
+            }
+        } else {
+            utilitario.agregarMensajeInfo("Ingresar Compañia", "");
+        }
+    }
+
+    public void buscaMovimiento() {
+        setMovimientos.getTab_seleccion().setSql("select compromiso as id,compania,aniofecha,mesfecha,fecha,dttcom,dtncom ,compromiso\n"
+                + "from VT_CABECERA_COMPROBANTE_PAGO\n"
+                + "where dtccia='" + txtCompania.getValue() + "'\n"
+                + "and dtperi=" + "1" + txtPeriodo.getValue().toString().substring(2, 4) + "" +mes(Integer.parseInt(txtMess.getValue().toString())) + "" + "\n"
+                + "and dttcom=" + txtTipo.getValue() + "\n"
+                + "and dtclct = 'P'\n"
+                + "and dtncom >=" + txtNumero.getValue() + "\n"
+                + "order by dtncom,fecha");
+        setMovimientos.getTab_seleccion().ejecutarSql();
+//        setIngresos.getTab_seleccion().imprimirSql();
+    }
+
+    public void generarPDF() {
+        if (setMovimientos.getValorSeleccionado() != null) {
+            ///////////AQUI ABRE EL REPORTE
+            Map parametros = new HashMap();
+            parametros.put("p_desde", Integer.parseInt(setMovimientos.getValorSeleccionado()));
+            parametros.put("p_hasta", Integer.parseInt(setMovimientos.getValorSeleccionado()));
+            parametros.put("cuenta", Integer.parseInt(setMovimientos.getValorSeleccionado()));
+            parametros.put("n_cuenta", Integer.parseInt(setMovimientos.getValorSeleccionado()));
+            
+//            p_parametros.put("p_usuario", tabConsulta.getValor("NICK_USUA") + "");
+//
+//            //System.out.println(" " + str_titulos);
+            vzpdfMovimiento.setVisualizarPDF("rep_financiero/rep_saldos_movimientos_mayor.jasper", parametros);
+            vzpdfMovimiento.dibujar();
+            utilitario.addUpdate("vzpdfMovimiento");
+        } else {
+            utilitario.agregarMensajeInfo("Seleccione una Solititud de compra", "");
+        }
     }
 
     @Override
@@ -211,6 +415,12 @@ public class ReporteContabilidad extends Pantalla {
         switch (rep_reporte.getNombre()) {
             case "BALANCE DE COMPROBACIÓN 8COLUMNAS":
                 dibujarReporte();
+                break;
+            case "COMPROBANTE DE PAGO":
+                setComprobantes.dibujar();
+                break;
+            case "SALDOS Y MOVIMIENTOS DE MAYOR":
+                setMovimientos.dibujar();
                 break;
         }
     }
@@ -241,8 +451,24 @@ public class ReporteContabilidad extends Pantalla {
                 p_parametros.put("niveli", Integer.parseInt(cmbNiveli.getValue() + ""));
                 p_parametros.put("nivelf", Integer.parseInt(cmbNivelf.getValue() + ""));
                 rep_reporte.cerrar();
+                System.out.println("+"+p_parametros);
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
+                break;
+            case "COMPROBANTE DE PAGO":
+                p_parametros.put("compania", txtCompania.getValue() + "");
+                p_parametros.put("tipo", txtTipo.getValue() + "");
+                p_parametros.put("numero", txtNumero.getValue() + "");
+                p_parametros.put("periodo", txtPeriodo.getValue() + "");
+                p_parametros.put("mes", txtMess.getValue() + "");
+                p_parametros.put("comprobante", setComprobantes.getValorSeleccionado() + "");
+                p_parametros.put("fecha", "1" + txtPeriodo.getValue().toString().substring(2, 4) + "" + txtMess.getValue() + "");
+                System.err.println("->>>Comp " + p_parametros);
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+            case "SALDOS Y MOVIMIENTOS DE MAYOR":
                 break;
         }
     }
@@ -290,6 +516,16 @@ public class ReporteContabilidad extends Pantalla {
         return selec_mes;
     }
 
+    public String mes(Integer numero) {
+        String mes = "";
+        if (String.valueOf(numero).length() > 1) {
+            mes = String.valueOf(numero);
+        } else {
+            mes = "0" + String.valueOf(numero);
+        }
+        return mes;
+    }
+
     @Override
     public void insertar() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -335,5 +571,29 @@ public class ReporteContabilidad extends Pantalla {
 
     public void setP_parametros(Map p_parametros) {
         this.p_parametros = p_parametros;
+    }
+
+    public SeleccionTabla getSetComprobantes() {
+        return setComprobantes;
+    }
+
+    public void setSetComprobantes(SeleccionTabla setComprobantes) {
+        this.setComprobantes = setComprobantes;
+    }
+
+    public SeleccionTabla getSetMovimientos() {
+        return setMovimientos;
+    }
+
+    public void setSetMovimientos(SeleccionTabla setMovimientos) {
+        this.setMovimientos = setMovimientos;
+    }
+
+    public VisualizarPDF getVzpdfMovimiento() {
+        return vzpdfMovimiento;
+    }
+
+    public void setVzpdfMovimiento(VisualizarPDF vzpdfMovimiento) {
+        this.vzpdfMovimiento = vzpdfMovimiento;
     }
 }
