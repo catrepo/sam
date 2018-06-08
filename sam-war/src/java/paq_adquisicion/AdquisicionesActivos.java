@@ -52,7 +52,7 @@ public class AdquisicionesActivos extends Pantalla {
     
      public AdquisicionesActivos (){
          par_tipo_secretaria=utilitario.getVariable("p_tipo_secretaria");
-         par_tipo_bodeguero=utilitario.getVariable("p_tipo_bodeguero");
+         par_tipo_bodeguero=utilitario.getVariable("p_tipo_activo_fijo");
          par_aprueba_gasto=utilitario.getVariable("p_tipo_generador_gasto");
          par_aprueba_solicitud=utilitario.getVariable("p_tipo_aprueba_solicitud");
          par_anulado=utilitario.getVariable("p_tipo_anulado");
@@ -365,10 +365,10 @@ public void aprobarSolicitud(){
     }
 }
 public void guardarAprobacion(){
-    
+        
+    tab_adquisiones.setValor("APLICA_ADCOMP", "1");
     tab_adquisiones.setValor("ATIENDE_BODEGA_ADCOMP", "true");
     tab_adquisiones.setValor("ADQ_IDE_ADEMDE2", ide_ademple);
-    tab_adquisiones.setValor("APLICA_ADCOMP", "true");
     
     TablaGenerica tab_materiales = utilitario.consultar(ser_adquisiciones.getMateriales(tab_adquisiones.getValor("ide_adcomp")));
     
@@ -376,7 +376,6 @@ public void guardarAprobacion(){
         
         utilitario.getConexion().ejecutarSql("update ADQ_COMPRA_BIENES set NO_EXISTE_ADCOBI=1 where IDE_ADCOBI ="+tab_materiales.getValor(i, "IDE_ADCOBI"));
     }
-    
     
     tab_adquisiones.modificar(tab_adquisiones.getFilaActual());
 

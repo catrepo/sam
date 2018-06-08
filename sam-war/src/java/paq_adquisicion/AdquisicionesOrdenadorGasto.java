@@ -385,6 +385,7 @@ public class AdquisicionesOrdenadorGasto extends Pantalla {
                 + "and ide_ademple = ( select ide_ademple from ADQ_EMPLEADO where cedula_Ademple ='" + cedula + "'))\n"
                 + "and APLICA_ADCOMP=1 AND ATIENDE_BODEGA_ADCOMP=1 AND APRUEBA_GASTO_ADCOMP=0");
         tab_adquisiones.ejecutarSql();
+        tab_adquisiones.imprimirSql();
         tab_certificacion.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
         tab_compra_bienes.ejecutarValorForanea(tab_adquisiones.getValorSeleccionado());
 

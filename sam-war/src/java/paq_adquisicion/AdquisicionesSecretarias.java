@@ -65,7 +65,7 @@ public class AdquisicionesSecretarias extends Pantalla {
         tabConsulta.setCampoPrimaria("IDE_USUA");
         tabConsulta.setLectura(true);
         tabConsulta.dibujar();
-        
+
         /*
          * Cadena de conexión base de datos
          */
@@ -82,19 +82,29 @@ public class AdquisicionesSecretarias extends Pantalla {
 
         sel_tabla_certificado.setId("sel_tabla_certificado");
         sel_tabla_certificado.getTab_seleccion().setConexion(conOracle);
-        sel_tabla_certificado.setSeleccionTabla("select DISTINCT CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUAD01) as id, NDOCDC as Certificado,cedtmc as partida,AUAD02,MONTDT as Valor,AUAD01 as Proyecto\n"
-                + "from USFIMRU.TIGSA_GLB01 \n"
-                + "inner join USFIMRU.PRCO01 on  CUENDT = CUENDC and AUAD02 = AUA2DC\n"
-                + "inner join USFIMRU.TIGSA_GLM03 on CUENMC = CUENDT\n"
-                + "where STATDT='E' \n"
-                + "AND CCIADT <> 'CM' and CCIADT <> 'MR' \n"
-                + "AND SAPRDT>=1" + (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1) + "14 \n"
-                + "AND SAPRDT<=1" + (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1) + "15 \n"
-                + "AND AUAD02 is not null \n"
-                + "AND ANIODC =" + utilitario.getAnio(utilitario.getFechaActual()) + "\n"
-                + "AND TIPLMC= 'R'\n"
-                + "AND substr(FDOCDT,1,5) <= 1" + String.valueOf((utilitario.getAnio(utilitario.getFechaActual()))).substring(2, 4) + "" + fecha + "", "id");
-        sel_tabla_certificado.getTab_seleccion().getColumna("Certificado").setFiltro(true);
+        sel_tabla_certificado.setSeleccionTabla("SELECT DISTINCT CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUA1DC) as id,\n"
+                + "    NDOCDC as certificado ,\n"
+                + "		cedtmc as partida,\n"
+                + "		AUA2DC AS programa ,\n"
+                + "    SUM(\n"
+                + "    CASE\n"
+                + "      WHEN MONTDC>0\n"
+                + "      THEN MontDC\n"
+                + "      ELSE 0\n"
+                + "    END )       AS VALOR,\n"
+                + "		AUA1DC AS proyecto\n"
+                + "  FROM USFIMRU.PRCO01\n"
+                + "   inner join USFIMRU.TIGSA_GLM03 on USFIMRU.TIGSA_GLM03.CUENMC=USFIMRU.PRCO01.CUENDC\n"
+                + "   inner join USFIMRU.TIGSA_GLAI3 on  CCIAAD =CCIADC and  SAPRAD = SAPRDC and TICOAD=ticodc and NUCOAD=nucodc\n"
+                + "  WHERE\n"
+                + "TIPLMC='R'\n"
+                + "and ANIODC ="+utilitario.getAnio(utilitario.getFechaActual())+"\n"
+                + "  GROUP BY \n"
+                + "	NDOCDC,\n"
+                + "		cedtmc,\n"
+                + "    AUA1DC,\n"
+                + "    AUA2DC", "id");
+        sel_tabla_certificado.getTab_seleccion().getColumna("certificado").setFiltro(true);
         sel_tabla_certificado.getTab_seleccion().getColumna("partida").setFiltro(true);
         sel_tabla_certificado.setRadio();
         sel_tabla_certificado.getBot_aceptar().setMetodo("filtraDatos");
@@ -144,7 +154,7 @@ public class AdquisicionesSecretarias extends Pantalla {
 
             tab_adquisiones.getColumna("APRUEBA_ADCOMP").setRadio(lista, "1");
             tab_adquisiones.getColumna("IDE_ADAPRO").setCombo(ser_adquisiciones.getAprobado());
-                tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("2", ide_ademple, "1", ide_ademple));
+            tab_adquisiones.getColumna("IDE_ADEMAP").setCombo(ser_adquisiciones.getEmpleadoAprueba("2", ide_ademple, "1", ide_ademple));
             tab_adquisiones.getColumna("IDE_ADEMDE").setCombo(ser_adquisiciones.getEmpleadoDepartamento("3", "1", "1", "1"));
             tab_adquisiones.getColumna("IDE_ADEMDE").setAutoCompletar();
             tab_adquisiones.getColumna("IDE_ADEMDE").setLectura(true);
@@ -195,12 +205,12 @@ public class AdquisicionesSecretarias extends Pantalla {
             tab_adquisiones.getColumna("USO_ADCOMP").setNombreVisual("USO");
             tab_adquisiones.getColumna("OBSERVACIONES_ADCOMP").setNombreVisual("OBSERVACIONES");
             tab_adquisiones.getColumna("DESTINO_DEL_BIEN_ADCOMP").setNombreVisual("DESTINO");
-            
+
             tab_adquisiones.getColumna("ide_adcomp").setVisible(false);
             tab_adquisiones.getColumna("IDE_ADAPRO").setVisible(false);
             tab_adquisiones.getColumna("IDE_ADAPRO").setRequerida(true);
             tab_adquisiones.getColumna("IDE_ADAPRO").setValorDefecto("1");
-            
+
             tab_adquisiones.getColumna("TIPO_COMPRA_ADCOMP").setVisible(true);
             tab_adquisiones.getColumna("DESCRIPCION_ADCOMP").setVisible(true);
             //tab_adquisiones.getColumna("INGRESO_ADCOMP").setVisible(false);
@@ -400,20 +410,20 @@ public class AdquisicionesSecretarias extends Pantalla {
         } else {
             fecha = "0" + String.valueOf((utilitario.getMes(utilitario.getFechaActual())));
         }
-        TablaGenerica tabDato = ser_adquisiciones.getMuestraDatos(sel_tabla_certificado.getValorSeleccionado()+"", utilitario.getAnio(utilitario.getFechaActual()), (Integer.parseInt(utilitario.getFechaActual().toString().substring(2, 4)) - 1), String.valueOf((utilitario.getAnio(utilitario.getFechaActual()))).substring(2, 4) + "" + fecha);
+        TablaGenerica tabDato = ser_adquisiciones.getMuestraDatos(sel_tabla_certificado.getValorSeleccionado() + "", utilitario.getAnio(utilitario.getFechaActual()));
         if (!tabDato.isEmpty()) {
-            System.err.println("certificado->> "+tabDato.getValor("NDOCDC"));
-            tab_certificacion.setValor("NRO_CERTIFICACION_ADCERT", tabDato.getValor("NDOCDC")+"");
-            tab_certificacion.setValor("PARTIDA_ADCERT", tabDato.getValor("AUAD02")+"."+tabDato.getValor("cedtmc")+"");
-            tab_certificacion.setValor("VALOR_ADCERT", tabDato.getValor("MONTDT")+"");
-             tab_certificacion.setValor("PARTIDA_NOM_ADCERT", tabDato.getValor("NOLAAD")+"");
-            System.err.println("Valor->> "+tab_certificacion.getValor("VALOR_ADCERT"));
+            System.err.println("certificado->> " + tabDato.getValor("certificado"));
+            tab_certificacion.setValor("NRO_CERTIFICACION_ADCERT", tabDato.getValor("certificado") + "");
+            tab_certificacion.setValor("PARTIDA_ADCERT", tabDato.getValor("programa") + "." + tabDato.getValor("partida") + "");
+            tab_certificacion.setValor("VALOR_ADCERT", tabDato.getValor("VALOR") + "");
+            tab_certificacion.setValor("PARTIDA_NOM_ADCERT", tabDato.getValor("NOLAAD") + "");
+            System.err.println("Valor->> " + tab_certificacion.getValor("VALOR_ADCERT"));
             utilitario.addUpdateTabla(tab_certificacion, "NRO_CERTIFICACION_ADCERT,PARTIDA_ADCERT,VALOR_ADCERT,PARTIDA_NOM_ADCERT", "");//actualiza solo componentes
 //            
 //            utilitario.addUpdate("tab_certificacion");
 //            utilitario.addUpdateTabla(tab_certificacion, cedula, empleado);
-        }else {
-        System.err.println("No ai datos");
+        } else {
+            System.err.println("No ai datos");
         }
         sel_tabla_certificado.cerrar();
     }
@@ -493,37 +503,36 @@ public class AdquisicionesSecretarias extends Pantalla {
     @Override
     public void guardar() {
         if (tab_adquisiones.isFocus()) {
-            
+
             tab_adquisiones.guardar();
-            
-            
+
         } else if (tab_certificacion.isFocus()) {
             tab_certificacion.guardar();
         } else if (tab_compra_bienes.isFocus()) {
             tab_compra_bienes.guardar();
         }
         guardarPantalla();
-        System.out.println("imprimo "+tab_adquisiones.getValorSeleccionado());
-        System.out.println("imprimoss "+tab_adquisiones.getValor("NUMERO_ORDEN_ADCOMP"));
+        System.out.println("imprimo " + tab_adquisiones.getValorSeleccionado());
+        System.out.println("imprimoss " + tab_adquisiones.getValor("NUMERO_ORDEN_ADCOMP"));
         //System.out.println("imprimodd "+tab_adquisiones.getValor("IDE_ADCOMP"));
-        if(tab_adquisiones.getValor("NUMERO_ORDEN_ADCOMP") == null){
-                    System.out.println(" xx  ");
+        if (tab_adquisiones.getValor("NUMERO_ORDEN_ADCOMP") == null) {
+            System.out.println(" xx  ");
 
-        utilitario.getConexion().ejecutarSql("update ADQ_COMPRA\n"
-                + "set NUMERO_ORDEN_ADCOMP=numero\n"
-                + "from (\n"
-                + "select (case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 as maximo,\n"
-                + "len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 )as longitu,\n"
-                + "(case when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =1 then concat('00000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
-                + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =2 then concat('0000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
-                + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =3 then concat('000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
-                + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =4 then concat('00',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
-                + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =5 then concat('0',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
-                + "end) as numero\n"
-                + "from ADQ_COMPRA\n"
-                + ") a where ADQ_COMPRA.IDE_ADCOMP =" + tab_adquisiones.getValorSeleccionado());
-        System.out.println(" vv  ");
-        tab_adquisiones.ejecutarSql();
+            utilitario.getConexion().ejecutarSql("update ADQ_COMPRA\n"
+                    + "set NUMERO_ORDEN_ADCOMP=numero\n"
+                    + "from (\n"
+                    + "select (case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 as maximo,\n"
+                    + "len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 )as longitu,\n"
+                    + "(case when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =1 then concat('00000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
+                    + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =2 then concat('0000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
+                    + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =3 then concat('000',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
+                    + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =4 then concat('00',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
+                    + "when len((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1 ) =5 then concat('0',((case when max(NUMERO_ORDEN_ADCOMP) is null then 0 else max(NUMERO_ORDEN_ADCOMP) end) +1)) \n"
+                    + "end) as numero\n"
+                    + "from ADQ_COMPRA\n"
+                    + ") a where ADQ_COMPRA.IDE_ADCOMP =" + tab_adquisiones.getValorSeleccionado());
+            System.out.println(" vv  ");
+            tab_adquisiones.ejecutarSql();
         }
     }
 
@@ -553,8 +562,8 @@ public class AdquisicionesSecretarias extends Pantalla {
 
             map_parametros.put("p_usuario", tabConsulta.getValor("NICK_USUA") + "");
             sel_rep.setSeleccionFormatoReporte(map_parametros, rep_reporte.getPath());
-            System.err.println("parametros ->> " +map_parametros);
-            System.err.println("reporte ->>" +rep_reporte.getPath());
+            System.err.println("parametros ->> " + map_parametros);
+            System.err.println("reporte ->>" + rep_reporte.getPath());
             sel_rep.dibujar();
         }
     }

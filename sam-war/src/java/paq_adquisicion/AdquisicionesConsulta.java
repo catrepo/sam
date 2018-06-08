@@ -7,7 +7,10 @@ package paq_adquisicion;
 import framework.aplicacion.TablaGenerica;
 import framework.componentes.AutoCompletar;
 import framework.componentes.Boton;
+import framework.componentes.Combo;
 import framework.componentes.Division;
+import framework.componentes.Etiqueta;
+import framework.componentes.Grid;
 import framework.componentes.Grupo;
 import framework.componentes.Panel;
 import framework.componentes.PanelTabla;
@@ -32,6 +35,10 @@ public class AdquisicionesConsulta extends Pantalla {
     private Tabla tabConsulta = new Tabla();
     private Tabla tab_certificacion = new Tabla();
     private Tabla tab_compra_bienes = new Tabla();
+    private Combo cmbAnio = new Combo();
+    private Combo cmbMes = new Combo();
+    private Etiqueta etiAnio = new Etiqueta(par_ti_anulado);
+    private Etiqueta etiMes = new Etiqueta(par_ti_anulado);
     private SeleccionTabla setRegistro = new SeleccionTabla();
     private AutoCompletar autBusca = new AutoCompletar();
     private Panel panOpcion1 = new Panel();
@@ -98,8 +105,41 @@ public class AdquisicionesConsulta extends Pantalla {
         panOpcion1.setHeader("SOLICITUD DE ORDENES DE PAGO");
         agregarComponente(panOpcion1);
 
+        cmbAnio.setId("cmbAnio");
+        cmbAnio.setCombo("SELECT DISTINCT \n"
+                + "year(c.FECHA_INGRE) anio\n"
+                + ",year(c.FECHA_INGRE) año\n"
+                + "FROM dbo.ADQ_COMPRA as c\n"
+                + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                + "where c.IDE_ADAPRO !=2\n"
+                + "order by year(c.FECHA_INGRE) desc");
+        cmbAnio.eliminarVacio();
+
+        cmbMes.setId("cmbMes");
+        cmbMes.setCombo("SELECT DISTINCT \n"
+                + "month(c.FECHA_INGRE)me\n"
+                + ",month(c.FECHA_INGRE)mes\n"
+                + "FROM dbo.ADQ_COMPRA as c\n"
+                + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                + "where c.IDE_ADAPRO !=2\n"
+                + "order by month(c.FECHA_INGRE) desc");
+        cmbMes.eliminarVacio();
+
+        Grid gri_busca = new Grid();
+        gri_busca.setColumns(5);
+        gri_busca.getChildren().add(etiAnio);
+        gri_busca.getChildren().add(cmbAnio);
+        gri_busca.getChildren().add(etiMes);
+        gri_busca.getChildren().add(cmbMes);
+        Boton bot_buscar = new Boton();
+        bot_buscar.setValue("Buscar");
+        bot_buscar.setIcon("ui-icon-search");
+        bot_buscar.setMetodo("mostrarDatos");
+//        bar_botones.agregarBoton(bot_buscar);
+        gri_busca.getChildren().add(bot_buscar);
+
         setRegistro.setId("setRegistro");
-        setRegistro.setSeleccionTabla("SELECT DISTINCT top 50 c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,\n"
+        setRegistro.setSeleccionTabla("SELECT DISTINCT c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,\n"
                 + "(select STUFF(\n"
                 + "(SELECT CAST(';' AS varchar(MAX)) + PARTIDA_ADCERT\n"
                 + "FROM SIGAG.dbo.ADQ_CERTIFICACION\n"
@@ -110,12 +150,14 @@ public class AdquisicionesConsulta extends Pantalla {
                 + ") as PARTIDA_ADCERT \n"
                 + ",c.FECHA_INGRE\n"
                 + "FROM dbo.ADQ_COMPRA as c\n"
-                + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP "
+                + "where c.IDE_ADAPRO =-2\n"
                 + "order by c.FECHA_INGRE desc", "IDE_ADCOMP");
         setRegistro.getTab_seleccion().getColumna("NUMERO_ORDEN_ADCOMP").setFiltroContenido();
         setRegistro.getTab_seleccion().getColumna("PARTIDA_ADCERT").setFiltroContenido();
         setRegistro.setRadio();
         setRegistro.getTab_seleccion().setRows(10);
+        setRegistro.getGri_cuerpo().setHeader(gri_busca);
         setRegistro.getBot_aceptar().setMetodo("cargarRegistro");
         agregarComponente(setRegistro);
 
@@ -324,6 +366,29 @@ public class AdquisicionesConsulta extends Pantalla {
         gru.getChildren().add(div_adquisiciones);
         panOpcion1.getChildren().add(gru);
 //        agregarComponente(div_adquisiciones);
+    }
+
+    public void mostrarDatos() {
+        if (cmbAnio.getValue() != null && cmbAnio.getValue().toString().isEmpty() == false && cmbMes.getValue() != null && cmbMes.getValue().toString().isEmpty() == false) {
+            setRegistro.getTab_seleccion().setSql("SELECT DISTINCT c.IDE_ADCOMP,c.NUMERO_ORDEN_ADCOMP,\n"
+                    + "(select STUFF(\n"
+                    + "(SELECT CAST(';' AS varchar(MAX)) + PARTIDA_ADCERT\n"
+                    + "FROM SIGAG.dbo.ADQ_CERTIFICACION\n"
+                    + "where ADQ_CERTIFICACION.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                    + "ORDER BY IDE_ADCOMP\n"
+                    + "FOR XML PATH('')\n"
+                    + "), 1, 1, '')\n"
+                    + ") as PARTIDA_ADCERT \n"
+                    + ",c.FECHA_INGRE\n"
+                    + "FROM dbo.ADQ_COMPRA as c\n"
+                    + "INNER JOIN dbo.ADQ_CERTIFICACION r ON r.IDE_ADCOMP = c.IDE_ADCOMP\n"
+                    + "where c.IDE_ADAPRO !=2 and year(c.FECHA_INGRE)= " + cmbAnio.getValue() + " and month(c.FECHA_INGRE) =" + cmbMes.getValue() + " \n"
+                    + "order by c.FECHA_INGRE desc");
+            setRegistro.getTab_seleccion().ejecutarSql();
+//            setRegistro.getTab_seleccion().imprimirSql();
+        } else {
+            utilitario.agregarMensajeInfo("Seleccionar parametros de busqueda", "");
+        }
     }
 
     public void prueba(AjaxBehaviorEvent evt) {

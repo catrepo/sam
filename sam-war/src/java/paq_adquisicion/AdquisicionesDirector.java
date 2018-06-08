@@ -318,6 +318,7 @@ public void aprobarSolicitud(){
 }
 public void guardarAprobacion(){
     tab_adquisiones.setValor("PRUEBA_DIRECTOR_ADCOMP", "true");
+    utilitario.addUpdate("tab_adquisiones");
     tab_adquisiones.modificar(tab_adquisiones.getFilaActual());
 
     utilitario.addUpdate("tab_adquisiones");
