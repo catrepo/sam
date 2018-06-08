@@ -9,7 +9,9 @@
 package paq_bienes;
 
 import framework.componentes.Boton;
+import framework.componentes.Check;
 import framework.componentes.Combo;
+import framework.componentes.Dialogo;
 import framework.componentes.Etiqueta;
 import framework.componentes.Grid;
 import framework.componentes.Imagen;
@@ -35,15 +37,24 @@ public class ReporteporCustodio extends Pantalla {
     private Conexion CAYMAN = new Conexion();
     //declaracion de tablas
     private Tabla tabConsulta = new Tabla();
+    private Tabla setGrupos = new Tabla();
     private SeleccionTabla setActivo = new SeleccionTabla();
     private SeleccionTabla setCuentas = new SeleccionTabla();
     private SeleccionTabla setCustodios = new SeleccionTabla();
+    private SeleccionTabla setOpciones = new SeleccionTabla();
     private Combo cmbOpcion = new Combo();
     private Texto texBusqueda = new Texto();
     ///REPORTES
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
     private Map p_parametros = new HashMap();
+
+    private Etiqueta etiTodos = new Etiqueta("TODOS LOS REGISTROS:");
+    private Check chkTodos = new Check();
+    private Dialogo diaGrupos = new Dialogo();
+    private Grid gridG = new Grid();
+    private Grid gridg = new Grid();
+
     //PARA ASIGNACION DE MES
     String selec_mes = new String();
     Archivo file = new Archivo();
@@ -74,7 +85,7 @@ public class ReporteporCustodio extends Pantalla {
         /*
          * opción para impresión
          */
-        /*
+ /*
          * CONFIGURACIÓN DE OBJETO REPORTE
          */
         bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
@@ -90,7 +101,7 @@ public class ReporteporCustodio extends Pantalla {
         Grid griCuerpo = new Grid();
         griCuerpo.setStyle("text-align:center;position:absolute;left:500px;");
         griCuerpo.setColumns(1);
-        
+
         Imagen quinde = new Imagen();
         quinde.setValue("imagenes/logo.png");
 
@@ -109,7 +120,8 @@ public class ReporteporCustodio extends Pantalla {
         setCuentas.setSeleccionTabla("select  distinct gru_id, gru_nombre  from activo INNER join GRUPO G on activo.GRU_ID1= G.GRU_ID order by gru_nombre", "gru_id");
         setCuentas.getTab_seleccion().getColumna("gru_nombre").setFiltro(true);
         setCuentas.setRadio();
-        setCuentas.getBot_aceptar().setMetodo("dibujarReporte");
+//        setCuentas.getBot_aceptar().setMetodo("dibujarReporte");
+        setCuentas.getBot_aceptar().setMetodo("buscarOpciones");
         setCuentas.setHeader("SELECCIONAR PROGRAMA");
         agregarComponente(setCuentas);
 
@@ -178,6 +190,20 @@ public class ReporteporCustodio extends Pantalla {
         setActivo.getBot_aceptar().setMetodo("dibujarReporte");
         setActivo.setHeader("SELECCIONAR ARTICULO");
         agregarComponente(setActivo);
+
+        Grid griGrupo = new Grid();
+        griGrupo.setColumns(2);
+        griGrupo.getChildren().add(etiTodos);
+        griGrupo.getChildren().add(chkTodos);
+        diaGrupos.setId("diaGrupos");
+        diaGrupos.setTitle("GRUPOS"); //titulo
+        diaGrupos.setWidth("45%"); //siempre en porcentajes  ancho
+        diaGrupos.setHeight("50%");//siempre porcentaje   alto
+        diaGrupos.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaGrupos.getGri_cuerpo().setHeader(griGrupo);
+        diaGrupos.getBot_aceptar().setMetodo("dibujarReporte");
+        gridg.setColumns(4);
+        agregarComponente(diaGrupos);
     }
 
     public void busquedaInfo() {
@@ -219,6 +245,28 @@ public class ReporteporCustodio extends Pantalla {
         }
     }
 
+    public void buscarOpciones() {
+        diaGrupos.Limpiar();
+        Grid griBuscap = new Grid();
+        setGrupos.setId("setGrupos");
+        setGrupos.setConexion(CAYMAN);
+        setGrupos.setSql("select  distinct g1.gru_id, g1.gru_nombre  \n"
+                + "from activo \n"
+                + "INNER join GRUPO G on activo.GRU_ID1= G.GRU_ID \n"
+                + "inner join GRUPO G1 on G.GRU_ID= G1.GRU_PADRE and activo.GRU_ID2= G1.GRU_ID \n"
+                + "where G.GRU_ID  = " + Integer.parseInt(setCuentas.getValorSeleccionado() + "") + "\n"
+                + "order by gru_nombre");
+        setGrupos.getColumna("gru_nombre").setFiltro(true);
+        setGrupos.setTipoSeleccion(false);
+        setGrupos.setRows(10);
+        setGrupos.dibujar();
+        griBuscap.getChildren().add(setGrupos);
+        gridg.getChildren().add(griBuscap);
+        diaGrupos.setDialogo(gridg);
+        diaGrupos.dibujar();
+
+    }
+
     @Override
     public void abrirListaReportes() {
         rep_reporte.dibujar();
@@ -237,7 +285,7 @@ public class ReporteporCustodio extends Pantalla {
             case "ACTIVOS POR CUSTODIO":
                 setCustodios.dibujar();
                 break;
-                case "ACTIVOS FIJOS GENERAL":
+            case "ACTIVOS FIJOS GENERAL":
                 dibujarReporte();
                 break;
         }
@@ -248,8 +296,15 @@ public class ReporteporCustodio extends Pantalla {
         switch (rep_reporte.getNombre()) {
             case "ACTIVOS POR CUENTAS":
                 p_parametros.put("cuenta", Integer.parseInt(setCuentas.getValorSeleccionado() + ""));
+                if(chkTodos.getValue().equals(true)){
+                     p_parametros.put("tipo", 1);
+                }else{
+                     p_parametros.put("tipo", 0);
+                }
+                p_parametros.put("grupo", Integer.parseInt(setGrupos.getValorSeleccionado() + ""));
                 p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
                 rep_reporte.cerrar();
+                System.err.println("->> " + p_parametros);
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
@@ -269,7 +324,12 @@ public class ReporteporCustodio extends Pantalla {
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
                 break;
-                case "ACTIVOS FIJOS GENERAL":
+            case "ACTIVOS FIJOS GENERAL":
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+            case "CONSOLIDADO ACTIVOS":
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
@@ -347,4 +407,21 @@ public class ReporteporCustodio extends Pantalla {
     public void setSetActivo(SeleccionTabla setActivo) {
         this.setActivo = setActivo;
     }
+
+    public SeleccionTabla getSetOpciones() {
+        return setOpciones;
+    }
+
+    public void setSetOpciones(SeleccionTabla setOpciones) {
+        this.setOpciones = setOpciones;
+    }
+
+    public Tabla getSetGrupos() {
+        return setGrupos;
+    }
+
+    public void setSetGrupos(Tabla setGrupos) {
+        this.setGrupos = setGrupos;
+    }
+
 }

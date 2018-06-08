@@ -4,13 +4,16 @@ import framework.aplicacion.TablaGenerica;
 import framework.componentes.AutoCompletar;
 import framework.componentes.Boton;
 import framework.componentes.Combo;
+import framework.componentes.Confirmar;
 import framework.componentes.Dialogo;
 import framework.componentes.Division;
 import framework.componentes.Etiqueta;
 import framework.componentes.Grid;
+import framework.componentes.Grupo;
 import framework.componentes.PanelTabla;
 import framework.componentes.Reporte;
 import framework.componentes.SeleccionFormatoReporte;
+import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
 import framework.componentes.Texto;
 import java.util.HashMap;
@@ -29,9 +32,12 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
 
     private Conexion CAYMAN = new Conexion();
     private Combo cmbTipo = new Combo();
+    private Combo cmbAnio = new Combo();
+    private Etiqueta etiAnio = new Etiqueta("AñO : ");
     private Tabla tabDenuncia = new Tabla();
     private Tabla tabMovimiento = new Tabla();
     private Tabla tabConsulta = new Tabla();
+    private SeleccionTabla selActas = new SeleccionTabla();
     private Texto txtItems = new Texto();
     private Texto txtValor = new Texto();
     private Dialogo diaDialogo = new Dialogo();
@@ -41,6 +47,7 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
     private Map p_parametros = new HashMap();
+    private Confirmar diaConfirmar = new Confirmar();
     @EJB
     private acfbienes activos = (acfbienes) utilitario.instanciarEJB(acfbienes.class);
 
@@ -65,17 +72,33 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         cmbTipo.setId("cmbOpcion");
         cmbTipo.setCombo("SELECT CUS_ID,CUS_APELLIDOS+' '+ISNULL(CUS_NOMBRES,'') as custodio from custodio order by CUS_APELLIDOS+' '+ISNULL(CUS_NOMBRES,'')   ");
 
+        cmbAnio.setConexion(CAYMAN);
+        cmbAnio.setId("cmbAnio");
+        cmbAnio.setCombo("select DISTINCT year(fecha_acta) id, year(fecha_acta) anio from ACF order by year(fecha_acta) desc");
 
         bar_botones.agregarComponente(new Etiqueta("Custodio :"));
         bar_botones.agregarComponente(cmbTipo);
 
         Boton botBuscar = new Boton();
-        botBuscar.setValue("Buscar ");
+        botBuscar.setValue("Buscar");
         botBuscar.setExcluirLectura(true);
         botBuscar.setIcon("ui-icon-search");
         botBuscar.setMetodo("busquedaInfo");
         bar_botones.agregarBoton(botBuscar);
 
+        Boton botSearch = new Boton();
+        botSearch.setValue("Actas Guardadas");
+        botSearch.setExcluirLectura(true);
+        botSearch.setIcon("ui-icon-search");
+        botSearch.setMetodo("busquedaActas");
+        bar_botones.agregarBoton(botSearch);
+
+        Boton botAnular = new Boton();
+        botAnular.setValue("Anular");
+        botAnular.setExcluirLectura(true);
+        botAnular.setIcon("ui-icon-cancel");
+        botAnular.setMetodo("anularActa");
+        bar_botones.agregarBoton(botAnular);
 
         diaDialogo.setId("diaDialogo");
         diaDialogo.setTitle("Seleccione Acta"); //titulo
@@ -85,6 +108,41 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         diaDialogo.getBot_aceptar().setMetodo("mostrarReporte");
         grid.setColumns(4);
         agregarComponente(diaDialogo);
+
+        diaConfirmar.setId("diaConfirmar");
+        agregarComponente(diaConfirmar);
+
+        /*
+         * Muestra un listado de todos los anticipos pendiente
+         */
+        Grupo gru_lis = new Grupo();
+        gru_lis.getChildren().add(etiAnio);
+        gru_lis.getChildren().add(cmbAnio);
+        Boton bot_lista = new Boton();
+        bot_lista.setValue("Buscar");
+        bot_lista.setIcon("ui-icon-search");
+        bot_lista.setMetodo("buscarActa");
+        bar_botones.agregarBoton(bot_lista);
+        gru_lis.getChildren().add(bot_lista);
+
+        selActas.setId("selActas");
+        selActas.getTab_seleccion().setConexion(CAYMAN);
+        selActas.setSeleccionTabla("select DISTINCT numero as id,custodio,fecha_acta,numero,year(fecha_acta) anio\n"
+                + "from ACF \n"
+                + "where acta !=0 and numero =-1\n"
+                + "order by year(fecha_acta),custodio", "id");
+        selActas.getTab_seleccion().setEmptyMessage("No se encontraron resultados");
+        selActas.getTab_seleccion().getColumna("custodio").setFiltro(true);
+        selActas.getTab_seleccion().getColumna("custodio").setLongitud(50);
+        selActas.getTab_seleccion().getColumna("numero").setFiltro(true);
+        selActas.getTab_seleccion().setRows(11);
+        selActas.setRadio();
+        selActas.setWidth("40%");
+        selActas.setHeight("75%");
+        selActas.getGri_cuerpo().setHeader(gru_lis);
+        selActas.getBot_aceptar().setMetodo("aceptoActa");
+        selActas.setHeader("SELECCIONE ACTA");
+        agregarComponente(selActas);
 
         tabDenuncia.setId("tabDenuncia");
         tabDenuncia.setConexion(CAYMAN);
@@ -103,6 +161,8 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
 //        tipoactivo barras  codigo  dependencia direccion oficina custodio cuenta  observaciones  nombre descripcion
 // estado
 //marca modelo serie fecha  valor  util residual
+        tabDenuncia.getColumna("acta").setValorDefecto("1");
+        tabDenuncia.getColumna("acta").setVisible(false);
         tabDenuncia.getColumna("tipoactivo").setVisible(false);
         tabDenuncia.getColumna("barras").setVisible(false);
         tabDenuncia.getColumna("codigo").setVisible(false);
@@ -142,11 +202,11 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         txtValor.setSize(10);
         gri_busca.getChildren().add(new Etiqueta("<B>Total Valor: </B>"));
         gri_busca.getChildren().add(txtValor);
-        
+
         Division dic = new Division();
         dic.setId("dic");
         dic.dividir2(pnt, gri_busca, "70%", "v");
-        
+
         tabMovimiento.setId("tabMovimiento");
         tabMovimiento.setConexion(CAYMAN);
         tabMovimiento.setTabla("activo", "ACT_ID", 2);
@@ -174,7 +234,6 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         tabMovimiento.getColumna("UGE_ID2").setVisible(false);
         tabMovimiento.getColumna("UGE_ID3").setVisible(false);
 
-
         tabMovimiento.getColumna("UGE_ID4").setVisible(false);
         tabMovimiento.getColumna("UOR_ID1").setVisible(false);
         tabMovimiento.getColumna("UOR_ID2").setVisible(false);
@@ -196,7 +255,6 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         tabMovimiento.getColumna("ACT_VALORRESIDUALNIIF").setVisible(false);
         tabMovimiento.getColumna("ACT_GARANTIA").setVisible(false);
 
-
         tabMovimiento.getColumna("ACT_FECHAGARANTIAVENCE").setVisible(false);
         tabMovimiento.getColumna("ACT_TRANSFEROK").setVisible(false);
         tabMovimiento.getColumna("ACT_PPC").setVisible(false);
@@ -211,7 +269,6 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         tabMovimiento.getColumna("ACT_CODBARRAS").setLongitud(35);
         tabMovimiento.getColumna("ACT_FECHACOMPRA").setLongitud(35);
         tabMovimiento.getColumna("ACT_SERIE1").setLongitud(25);
-
 
         tabMovimiento.getColumna("ACT_CODIGO1").setNombreVisual("CODIGO");
         tabMovimiento.getColumna("ACT_NUMFACT").setNombreVisual("FACTURA");
@@ -256,10 +313,10 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
             utilitario.addUpdate("tabDenuncia");
         }
     }
+
     /*
      * Metodo para ingresar un comentario de cierre
      */
-
     public void busquedaInfo() {
         if (cmbTipo.getValue() != null && cmbTipo.getValue().toString().isEmpty() == false) {
             buscaCedula();
@@ -282,7 +339,7 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         if (Integer.parseInt(activos.listaMax("ACF")) > 0) {
             tabDenuncia.insertar();
             tabDenuncia.setValor("numero", activos.listaMax("ACF"));
-                    System.err.println("cmbTipo.getValue()<<<<<<<<<<" + cmbTipo.getValue());
+            System.err.println("cmbTipo.getValue()<<<<<<<<<<" + cmbTipo.getValue());
             String str_filtros = "";
             str_filtros = "CUS_ID1 = '" + cmbTipo.getValue() + "'";
             return str_filtros;
@@ -297,8 +354,8 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         txtValor.setValue("");
         utilitario.addUpdate("txtItems,txtValor");
     }
-    
-    public void datosTotal(){
+
+    public void datosTotal() {
         TablaGenerica tabDatos = activos.getActivoTotales(Integer.parseInt(cmbTipo.getValue() + ""));
         if (!tabDatos.isEmpty()) {
             txtItems.setValue(tabDatos.getValor("item"));
@@ -308,12 +365,52 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
             utilitario.agregarMensaje("Datos ocurrio un error", null);
         }
     }
-    
+
     public void buscaActas() {
         diaDialogo.Limpiar();
         diaDialogo.setDialogo(grid);
         diaDialogo.setDialogo(gridD);
         diaDialogo.dibujar();
+    }
+
+    public void anularActa() {
+        diaConfirmar.setMessage("Esta Seguro de anular acta " + tabDenuncia.getValor("numero"));
+        diaConfirmar.setTitle("Confirmación de anulación");
+        diaConfirmar.getBot_aceptar().setMetodo("anulaActa");
+        diaConfirmar.dibujar();
+        utilitario.addUpdate("diaConfirmar");
+    }
+
+    public void anulaActa() {
+        activos.setUpdateACF(tabDenuncia.getValor("numero"),utilitario.getAnio(tabDenuncia.getValor("fecha_acta"))+"");
+        diaConfirmar.cerrar();
+        utilitario.agregarMensaje("Solicitud anulada", "");
+    }
+
+    public void busquedaActas() {
+        selActas.getTab_seleccion().limpiar();
+        selActas.dibujar();
+    }
+
+    public void buscarActa() {
+        if (cmbAnio.getValue() != null && cmbAnio.getValue().toString().isEmpty() == false) {
+            selActas.getTab_seleccion().setSql("select DISTINCT numero as id,custodio,fecha_acta,numero,year(fecha_acta) anio\n"
+                    + "from ACF \n"
+                    + "where year(fecha_acta) = " + cmbAnio.getValue() + " \n"
+                    + "order by year(fecha_acta),custodio");
+            selActas.getTab_seleccion().ejecutarSql();
+        } else {
+            utilitario.agregarMensajeInfo("Debe seleccionar una fecha", "");
+        }
+    }
+
+    public void aceptoActa() {
+        tabDenuncia.setCondicion("ide_acta= (select max(ide_acta)\n"
+                + "from ACF\n"
+                + "where numero ='"+selActas.getValorSeleccionado()+"' and year(fecha_acta) = "+cmbAnio.getValue()+")");
+        tabDenuncia.ejecutarSql();
+        utilitario.addUpdate("tabDenuncia");
+        selActas.cerrar();
     }
 
     @Override
@@ -340,10 +437,24 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
         System.out.println("voy por  akkk" + tabDenuncia.getValor("NUMero"));
         switch (rep_reporte.getNombre()) {
             case "REPORTE ACTA":
+                String cadena = "";
+                TablaGenerica tabTabla = activos.getEstadoActa(tabDenuncia.getValor("numero"),utilitario.getAnio(tabDenuncia.getValor("fecha_acta"))+"");
+                if (!tabTabla.isEmpty()) {
+                    if (tabTabla.getValor("acta").equals("1")) {
+                        cadena = "";
+                    } else {
+                        cadena = "ANULADO";
+                    }
+                    
                 p_parametros.put("num_acta", tabDenuncia.getValor("numero") + "");
+                p_parametros.put("anio", utilitario.getAnio(tabDenuncia.getValor("fecha_acta"))+"");
+                p_parametros.put("letrero", cadena);
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
+                }else {
+                    utilitario.agregarMensaje("Registro no disponible", null);
+                }
                 break;
 
             case "REPORTE TOTAL DETALLE":
@@ -442,5 +553,21 @@ public class ActaContatacionFisicaMuebles extends Pantalla {
 
     public void setP_parametros(Map p_parametros) {
         this.p_parametros = p_parametros;
+    }
+
+    public Confirmar getDiaConfirmar() {
+        return diaConfirmar;
+    }
+
+    public void setDiaConfirmar(Confirmar diaConfirmar) {
+        this.diaConfirmar = diaConfirmar;
+    }
+
+    public SeleccionTabla getSelActas() {
+        return selActas;
+    }
+
+    public void setSelActas(SeleccionTabla selActas) {
+        this.selActas = selActas;
     }
 }

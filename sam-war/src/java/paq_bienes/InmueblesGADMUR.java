@@ -235,7 +235,7 @@ public class InmueblesGADMUR extends Pantalla{
             tabBienes.setValor("area_cons", tabDato.getValor("VAL_ARCON"));            
             tabBienes.setValor("canton_notario", tabDato.getValor("mae_canton"));
             tabBienes.setValor("fecha_notaria", tabDato.getValor("fec_registro"));            
-            tabBienes.setValor("val_catastro", tabDato.getValor("VAL_AVATER"));
+            tabBienes.setValor("val_catastro", tabDato.getValor("valor_total"));
             tabBienes.setValor("codigo", tabDato.getValor("act_codigo1"));
             tabBienes.setValor("val_bienes", tabDato.getValor("act_valorcompra"));
             tabBienes.setValor("estado", tabDato.getValor("est_nombre"));
