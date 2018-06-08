@@ -871,7 +871,7 @@ public class AprobacionAnticipo extends Pantalla {
             adminRemuneracion.setRol_Si_NO(utilitario.getDia(utilitario.getFechaActual()) + 1);
             utilitario.agregarMensaje("Bloqueado Rol", null);
         } else {
-            adminRemuneracion.setRol_Si_NO(25);
+            adminRemuneracion.setRol_Si_NO(utilitario.getDia(utilitario.getFechaActual())-1);
             utilitario.agregarMensaje("Activo Rol", null);
         }
     }

@@ -111,7 +111,7 @@ public class ListadoExcepcion extends Pantalla {
 
         tabSolicitud.getColumna("ide_autoriza").setVisible(false);
         tabSolicitud.getColumna("ip_autoriza").setVisible(false);
-        tabSolicitud.getColumna("fecha_autoriza").setVisible(false);
+//        tabSolicitud.getColumna("fecha_autoriza").setVisible(false);
         tabSolicitud.getColumna("anio_autoriza").setVisible(false);
         tabSolicitud.getColumna("dir_empleado").setVisible(false);
         tabSolicitud.getColumna("estado").setVisible(false);

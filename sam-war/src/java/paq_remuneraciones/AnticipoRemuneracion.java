@@ -162,7 +162,7 @@ public class AnticipoRemuneracion extends Pantalla {
         lista.add(fila1);
         lista.add(fila2);
         tabSolicitud.getColumna("id_distributivo").setCombo(lista);
-        tabSolicitud.getColumna("fecha_ant").setLectura(true);
+//        tabSolicitud.getColumna("fecha_ant").setLectura(true);
         tabSolicitud.getColumna("suel_empleado").setLectura(true);
         tabSolicitud.getColumna("rmu_empleado").setLectura(true);
         tabSolicitud.getColumna("id_distributivo").setLectura(true);
@@ -224,7 +224,7 @@ public class AnticipoRemuneracion extends Pantalla {
         tabAnticipo.getColumna("valor").setMetodoChange("validaAnticipo");
         tabAnticipo.getColumna("cuotas").setMetodoChange("validarCuota");
         tabAnticipo.getColumna("id_tipo").setCombo("SELECT id_tipo,desc_tipo FROM dbo.nom_tipo where obs_tipo = 'TIP'");
-        tabAnticipo.getColumna("fecha").setValorDefecto(utilitario.getFechaActual());
+//        tabAnticipo.getColumna("fecha").setValorDefecto(utilitario.getFechaActual());
         tabAnticipo.getColumna("id_tipo").setValorDefecto("3");
         tabAnticipo.getColumna("id_tipo").setMetodoChange("nuevo");
 
@@ -366,6 +366,7 @@ public class AnticipoRemuneracion extends Pantalla {
             PasIde = clase.verificaNull(tabAutor.getValor("ide_autoriza"));
             PasId = clase.verificaNull(tabAutor.getValor("id_autoriza"));
             PasAnFis = clase.verificaNull(tabAutor.getValor("pasar_fiscal"));
+            tabAnticipo.setValor("fecha",tabAnticipo.getValor("fecha_ant"));
         }
         validaDatos();
     }

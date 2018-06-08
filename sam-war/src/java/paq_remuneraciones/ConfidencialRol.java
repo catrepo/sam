@@ -96,7 +96,7 @@ public class ConfidencialRol extends Pantalla {
         cmbSevidor.setId("cmbSevidor");
         cmbSevidor.setConexion(conNomina);
         cmbSevidor.setCombo("select cedciu,nomtra from nodattra where tipctt <> 'JUB' order by nomtra");
-        //cmbSevidor.setCombo("select cedciu,nomtra from nodttrpr where tipctt <> 'JUB' order by nomtra");
+//        cmbSevidor.setCombo("select distinct cedciu,nomtra from nodttrpr where tipctt <> 'JUB' order by nomtra");
 
         List list = new ArrayList();
         Object fila1[] = {
