@@ -227,7 +227,7 @@ public class pre_inhumacion extends Pantalla {
         tab_tabla1.getColumna("CERTIFICADO_DEFUN").setRequerida(true);
         tab_tabla1.getColumna("CEDULA_REPRESENTANTE").setVisible(false);
         tab_tabla1.getColumna("REPRESENTANTE_ACTUAL").setVisible(false);
-        tab_tabla1.getColumna("TIPO_PAGO").setCombo("select IDE_TIPO_PAGO,DESCRIPCION from CMT_TIPO_PAGO where DESCRIPCION ='ARRENDAMIENTO'");
+        tab_tabla1.getColumna("TIPO_PAGO").setCombo("select IDE_TIPO_PAGO,DESCRIPCION from CMT_TIPO_PAGO where IDE_TIPO_PAGO in (2,5)");
         tab_tabla1.getColumna("TIPO_PAGO").setMetodoChange("validaPago");
 
         tab_tabla1.getColumna("TIPO_FALLECIDO").setMetodoChange("datosTipoFallecido");
@@ -438,7 +438,6 @@ public class pre_inhumacion extends Pantalla {
         if (!tabInfo.isEmpty()) {
             TablaGenerica tabCatastro = cementerioM.periodoCatastro(tab_tabla1.getValor("IDE_CATASTRO"));
             if (!tabCatastro.isEmpty()) {
-
                 TablaGenerica tadLugar = cementerioM.getRecuperaLugar(Integer.parseInt(tabCatastro.getValor("ide_lugar")));
                 if (!tadLugar.isEmpty()) {
                     if (Double.valueOf(tadLugar.getValor("valor")) > 0.0) {
@@ -455,10 +454,14 @@ public class pre_inhumacion extends Pantalla {
                         utilitario.agregarMensajeInfo("Para generar liquidación valor de cuenta debe ser mayor a cero", "Solo generar movimiento");
                     }
                 }
-
-
-//                    tab_tabla4.getColumna("PERIODO_ARRENDAMIENTO").setLectura(true);
-                tab_tabla4.setValor("PERIODO_ARRENDAMIENTO", tabCatastro.getValor("PERIODO"));
+                
+//                TablaGenerica tabExon = utilitario.consultar("select IDE_TIPO_PAGO,DESCRIPCION from CMT_TIPO_PAGO where IDE_TIPO_PAGO ="+tab_tabla1.getValor("TIPO_PAGO"));
+//                if(tabExon.getValor("DESCRIPCION").equals("ARRENDAMIENTO")){
+                     tab_tabla4.setValor("PERIODO_ARRENDAMIENTO", tabCatastro.getValor("PERIODO"));
+//                }else{
+//                     tab_tabla4.setValor("PERIODO_ARRENDAMIENTO", "0");
+//                }
+                
                 utilitario.addUpdate("tab_tabla4");
                 System.err.println(tab_tabla4.getValor("PERIODO_ARRENDAMIENTO") + "PERIODO ARRENDAMIENTO");
                 System.out.println("plazoLugar++++++++++++++++++++++");
@@ -475,13 +478,18 @@ public class pre_inhumacion extends Pantalla {
     }
 
     public void plazoLugar() {
-
+int valor1=0;
         System.out.println("TIPO_PAGO<<<<" + tab_tabla1.getValor("TIPO_PAGO"));
         if (tab_tabla1.getValor("TIPO_PAGO") != null) {
             TablaGenerica tabInfo = utilitario.consultar("select IDE_TIPO_PAGO,DESCRIPCION from CMT_TIPO_PAGO where IDE_TIPO_PAGO =" + tab_tabla1.getValor("TIPO_PAGO"));
             tab_tabla4.setValor("TIPO_PAGO", tabInfo.getValor("DESCRIPCION"));
-            TablaGenerica tabDato = cementerioM.periodoCatastro(tab_tabla1.getValor("IDE_CATASTRO"));
-            int valor1 = Integer.parseInt(tabDato.getValor("periodo"));
+//           if(tabInfo.getValor("DESCRIPCION").equals("ARRENDAMIENTO")){
+               TablaGenerica tabDato = cementerioM.periodoCatastro(tab_tabla1.getValor("IDE_CATASTRO"));
+            valor1 = Integer.parseInt(tabDato.getValor("periodo"));
+//           }else{
+//               valor1 = Integer.parseInt("0");
+//           }            
+            
             System.out.println("valor1  " + valor1);
 
             int valor2 = Integer.parseInt(tab_tabla4.getValor("PERIODO_ARRENDAMIENTO"));

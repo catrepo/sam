@@ -7,6 +7,7 @@ package paq_cementerio;
 import framework.aplicacion.TablaGenerica;
 import framework.componentes.AutoCompletar;
 import framework.componentes.Boton;
+import framework.componentes.BuscarTabla;
 import framework.componentes.Combo;
 import framework.componentes.Dialogo;
 import framework.componentes.Division;
@@ -16,9 +17,13 @@ import framework.componentes.Grupo;
 import framework.componentes.Imagen;
 import framework.componentes.Panel;
 import framework.componentes.PanelTabla;
+import framework.componentes.Reporte;
+import framework.componentes.SeleccionFormatoReporte;
 import framework.componentes.SeleccionTabla;
 import framework.componentes.Tabla;
 import framework.componentes.Texto;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.EJB;
 import paq_cementerio.ejb.cementerio;
 import sistema.aplicacion.Pantalla;
@@ -28,8 +33,9 @@ import sistema.aplicacion.Pantalla;
  * @author l-suntaxi
  */
 public class pre_catastro_ubicacion extends Pantalla {
-
+    
     private Tabla tab_categoria = new Tabla();
+    private Tabla tabConsulta = new Tabla();
     private Tabla tab_tipo = new Tabla();
     private Tabla setFallecido = new Tabla();
     private Tabla setInformacion = new Tabla();
@@ -43,23 +49,43 @@ public class pre_catastro_ubicacion extends Pantalla {
     private Dialogo diaRegistro = new Dialogo();
     private Dialogo diaFallecidos = new Dialogo();
     private Dialogo diaInformacion = new Dialogo();
+    private Dialogo diaLugares = new Dialogo();
     private Grid gridre = new Grid();
     private Grid gridfa = new Grid();
     private Grid gridif = new Grid();
+    private Grid gridl = new Grid();
     private Grid gridRe = new Grid();
     private Grid gridFa = new Grid();
     private Grid gridIf = new Grid();
+    private Grid gridL = new Grid();
     private Combo cmbTipo = new Combo();
     private Combo cmbLugar = new Combo();
+    private Combo cmbEstado = new Combo();
+    private Combo cmbLugares = new Combo();
+    
+    private Etiqueta etiLugares = new Etiqueta("TIPO LUGAR : ");
+    
     @EJB
     private cementerio cementerioM = (cementerio) utilitario.instanciarEJB(cementerio.class);
+
+    //Declaración para reportes
+    private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
+    private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
+    private Map p_parametros = new HashMap();
 
     public pre_catastro_ubicacion() {
         Imagen quinde = new Imagen();
         quinde.setValue("imagenes/logoactual.png");
         agregarComponente(quinde);
         bar_botones.quitarBotonsNavegacion();
-
+        
+        //Para capturar el usuario que se encuntra utilizando la opción
+        tabConsulta.setId("tabConsulta");
+        tabConsulta.setSql("select IDE_USUA, NOM_USUA, NICK_USUA from SIS_USUARIO where IDE_USUA=" + utilitario.getVariable("IDE_USUA"));
+        tabConsulta.setCampoPrimaria("IDE_USUA");
+        tabConsulta.setLectura(true);
+        tabConsulta.dibujar();
+        
         aut_busca.setId("aut_busca");
         aut_busca.setAutoCompletar("SELECT IDE_LUGAR,DETALLE_LUGAR FROM CMT_LUGAR");
         aut_busca.setMetodoChange("buscarPersona");
@@ -71,13 +97,13 @@ public class pre_catastro_ubicacion extends Pantalla {
         cmbLugar.setCombo("SELECT IDE_LUGAR,DETALLE_LUGAR FROM CMT_LUGAR");
         cmbLugar.setMetodo("buscarPersona");
         cmbLugar.eliminarVacio();
-
-//        Boton bot_busca = new Boton();
-//        bot_busca.setValue("Busqueda Disponibles");
-//        bot_busca.setExcluirLectura(true);
-//        bot_busca.setIcon("ui-icon-search");
-//        bot_busca.setMetodo("buscaRegistro");
-//        bar_botones.agregarBoton(bot_busca);
+        
+        cmbLugares.setId("cmbLugares");
+        cmbLugares.setCombo("select * from (\n"
+                + "select IDE_LUGAR,DETALLE_LUGAR from CMT_LUGAR\n"
+                + "union\n"
+                + "select 0, 'TODOS')s");
+        cmbLugares.eliminarVacio();
 
         //Elemento principal
         panOpcion.setId("panOpcion");
@@ -85,7 +111,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         panOpcion.setStyle("text-align:center;");
         panOpcion.setHeader("CATASTRO CEMENTERIO");
         agregarComponente(panOpcion);
-
+        
         cmbTipo.setId("cmbTipo");
         cmbTipo.setCombo("select distinct (case when disponible_ocupado='DISPONIBLE' THEN 'DISPONIBLE' ELSE 'OCUPADO' END) AS ID, disponible_ocupado from cmt_catastro");
 
@@ -97,10 +123,10 @@ public class pre_catastro_ubicacion extends Pantalla {
         bot_buscar.setIcon("ui-icon-search");
         bot_buscar.setMetodo("mostrarDatos");
         bar_botones.agregarBoton(bot_buscar);
-
+        
         gri_busca.getChildren().add(cmbTipo);
         gri_busca.getChildren().add(bot_buscar);
-
+        
         setRegistros.setId("setRegistros");
         setRegistros.setSeleccionTabla("select top 10 IDE_CATASTRO,DETALLE_LUGAR,SECTOR,NUMERO,MODULO from CMT_CATASTRO a, cmt_lugar b\n"
                 + "where a.ide_lugar=b.ide_lugar AND DISPONIBLE_OCUPADO='DISPONIBLE' ORDER BY SECTOR,NUMERO,MODULO", "IDE_CATASTRO");
@@ -128,7 +154,6 @@ public class pre_catastro_ubicacion extends Pantalla {
         gridre.setColumns(4);
         agregarComponente(diaRegistro);
         dibujarPantalla();
-
         
         diaFallecidos.setId("diaFallecidos");
         diaFallecidos.setTitle("DATOS DE OCUPACIÓN DE SITIO"); //titulo
@@ -138,8 +163,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         diaFallecidos.getBot_cancelar().setMetodo("regresaForma");
         gridre.setColumns(4);
         agregarComponente(diaFallecidos);
-
-
+        
         diaInformacion.setId("diaInformacion");
         diaInformacion.setTitle("INFORMACIÓN DE FALLECIDO"); //titulo
 //        diaFallecidos.setWidth("70%"); //siempre en porcentajes  ancho
@@ -149,7 +173,15 @@ public class pre_catastro_ubicacion extends Pantalla {
         diaInformacion.getBot_cancelar().setMetodo("returnForma");
         gridif.setColumns(4);
         agregarComponente(diaInformacion);
-
+        
+        diaLugares.setId("diaLugares");
+        diaLugares.setTitle("Catastro CEMENTERIO");
+        diaLugares.setWidth("30%");
+        diaLugares.setHeight("25%");
+        diaLugares.getBot_aceptar().setMetodo("abrirReporte");
+        gridl.setColumns(4);
+        agregarComponente(diaLugares);
+        
         setUbicacion.setId("setUbicacion");
         setUbicacion.setSeleccionTabla("SELECT IDE_CATASTRO, SECTOR, MODULO, NUMERO, DISPONIBLE_OCUPADO, UBICACION, MAUSOLEO,catastro_anterior\n"
                 + "FROM CMT_CATASTRO\n"
@@ -168,8 +200,13 @@ public class pre_catastro_ubicacion extends Pantalla {
         setUbicacion.setHeader("BUSCAR CATASTRO CEMENTERIO");
         agregarComponente(setUbicacion);
 
+        /*         * CONFIGURACIÓN DE OBJETO REPORTE         */
+        bar_botones.agregarReporte(); //1 para aparesca el boton de reportes 
+        agregarComponente(rep_reporte); //2 agregar el listado de reportes
+        sef_formato.setId("sef_formato");
+        agregarComponente(sef_formato);
     }
-
+    
     public void cargarCatastro() {
         setUbicacion.getTab_seleccion().setSql("SELECT IDE_CATASTRO, SECTOR, MODULO, NUMERO, DISPONIBLE_OCUPADO, UBICACION, MAUSOLEO,catastro_anterior\n"
                 + "FROM CMT_CATASTRO\n"
@@ -177,7 +214,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         setUbicacion.getTab_seleccion().ejecutarSql();
         setUbicacion.dibujar();
     }
-
+    
     public void mostrarDatos() {
         if (cmbTipo.getValue() != null && cmbTipo.getValue().toString().isEmpty() == false) {
             setRegistros.getTab_seleccion().setSql(" select IDE_CATASTRO,DETALLE_LUGAR,SECTOR,NUMERO,MODULO from CMT_CATASTRO a, cmt_lugar b\n"
@@ -188,7 +225,7 @@ public class pre_catastro_ubicacion extends Pantalla {
             utilitario.agregarMensajeInfo("Debe ingresar un valor en el texto", "");
         }
     }
-
+    
     public void dibujarPantalla() {
         limpiarPanel();
         tab_categoria.setId("tab_categoria");
@@ -196,7 +233,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         tab_categoria.getColumna("IDE_LUGAR").setNombreVisual("Codigo");
         tab_categoria.getColumna("detalle_lugar").setMetodoChange("buscaValor");
         tab_categoria.getColumna("VALOR").setFormatoNumero(2);
-
+        
         tab_categoria.getGrid().setColumns(2);
         tab_categoria.setLectura(true);
         tab_categoria.setTipoFormulario(true);
@@ -204,7 +241,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         tab_categoria.dibujar();
         PanelTabla tabp = new PanelTabla();
         tabp.setMensajeWarn("LUGAR DEL CEMENTERIO");
-
+        
         txtDisponible.setId("txtDisponible");
         txtDisponible.setSize(5);
 //        txtDebe.setValue(tab_categoria.getValor("IDE_LUGAR"));
@@ -216,17 +253,17 @@ public class pre_catastro_ubicacion extends Pantalla {
         txtTotal.setId("txtTotal");
         txtTotal.setSize(5);
         txtTotal.setValue(Integer.parseInt(cementerioM.getCuentaOcupado(tab_categoria.getValor("IDE_LUGAR"))) + Integer.parseInt(cementerioM.getCuentaDisponible(tab_categoria.getValor("IDE_LUGAR"))));
-
+        
         Grid gri_busca = new Grid();
         gri_busca.setColumns(10);
-
+        
         gri_busca.getChildren().add(new Etiqueta("<B>Disponibles: </B>"));
         gri_busca.getChildren().add(txtDisponible);
         gri_busca.getChildren().add(new Etiqueta("<B>Ocupados: </B>"));
         gri_busca.getChildren().add(txtOcupado);
         gri_busca.getChildren().add(new Etiqueta("<B>Total: </B>"));
         gri_busca.getChildren().add(txtTotal);
-
+        
         Grid griBusca = new Grid();
         griBusca.setColumns(2);
         griBusca.getChildren().add(new Etiqueta("<B>Buscar : </B>"));
@@ -234,7 +271,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         tabp.getChildren().add(griBusca);
         tabp.setPanelTabla(tab_categoria);
         tabp.getChildren().add(gri_busca);
-
+        
         tab_tipo.setId("tab_tipo");
         tab_tipo.setTabla("CMT_CATASTRO", "IDE_CATASTRO", 2);
         tab_tipo.getColumna("DISPONIBLE_OCUPADO").setValorDefecto("DISPONIBLE");
@@ -242,7 +279,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         tab_tipo.getColumna("IDE_CATASTRO").setOnClick("abrirFallecido");
         tab_tipo.getColumna("ver").setCheck();
         tab_tipo.getColumna("ver").setMetodoChange("mostrarRegistro");
-
+        
         tab_tipo.getColumna("SECTOR").setMetodoChange("validaBloque");
 //        tab_tipo.getColumna("NUMERO_FILA").setMetodoChange("validaBloquel");
         tab_tipo.getColumna("DISPONIBLE_OCUPADO").setFiltro(true);
@@ -264,17 +301,17 @@ public class pre_catastro_ubicacion extends Pantalla {
         tab_tipo.getGrid().setColumns(2);
         tab_tipo.setTipoFormulario(true);
         tab_tipo.dibujar();
-
+        
         Boton bot_buscar = new Boton();
         bot_buscar.setValue("Buscar");
         bot_buscar.setIcon("ui-icon-search");
         bot_buscar.setMetodo("cargarCatastro");
-
+        
         PanelTabla tabp1 = new PanelTabla();
         tabp1.setMensajeWarn("UBICACIÓN");
         tabp1.getChildren().add(bot_buscar);
         tabp1.setPanelTabla(tab_tipo);
-
+        
         Division div = new Division();
         div.setId("divTablas");
         div.dividir2(tabp, tabp1, "45%", "H");
@@ -282,7 +319,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         gru.getChildren().add(div);
         panOpcion.getChildren().add(gru);
     }
-
+    
     public void mostrarRegistro() {
         if (tab_tipo.getValor("ver") != null && tab_tipo.getValor("DISPONIBLE_OCUPADO").equals("OCUPADO") && tab_tipo.getValor("ver").toString().isEmpty() == false) {
             String telf = "", celu = "", mail = "", direcc = "";
@@ -314,7 +351,7 @@ public class pre_catastro_ubicacion extends Pantalla {
             utilitario.agregarMensajeInfo("Lugar se encuentra disponible", "No se puede visualizar datos");
         }
     }
-
+    
     public void verFallecido() {
         diaInformacion.Limpiar();
         diaInformacion.setDialogo(gridif);
@@ -330,28 +367,28 @@ public class pre_catastro_ubicacion extends Pantalla {
         setInformacion.dibujar();
         diaInformacion.dibujar();
     }
-
+    
     public void regresaForma() {
         diaFallecidos.cerrar();
         tab_tipo.setValor("ver", null);
         utilitario.addUpdate("tab_tipo");
     }
-
+    
     public void returnForma() {
         diaInformacion.cerrar();
         mostrarRegistro();
     }
-
+    
     private void limpiarPanel() {
         //borra el contenido de la división central central
         panOpcion.getChildren().clear();
     }
-
+    
     public void limpia() {
         limpiarPanel();
         utilitario.addUpdate("panOpcion");
     }
-
+    
     @Override
     public void insertar() {
 
@@ -362,7 +399,7 @@ public class pre_catastro_ubicacion extends Pantalla {
 //        utilitario.addUpdate("txtOcupado");
         tab_tipo.insertar();
     }
-
+    
     @Override
     public void actualizar() {
         super.actualizar(); //To change body of generated methods, choose Tools | Templates.
@@ -370,7 +407,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         aut_busca.setSize(70);
         utilitario.addUpdate("aut_busca");
     }
-
+    
     public void buscarPersona() {
 //        aut_busca.onSelect(evt);
         System.out.println("aut_busca.getValor() " + cmbLugar.getValue());
@@ -381,7 +418,7 @@ public class pre_catastro_ubicacion extends Pantalla {
             stock();
         }
     }
-
+    
     public void stock() {
         Integer disponible = 0, ocupado = 0;
         TablaGenerica tabDatos = cementerioM.getStockCementerio(cmbLugar.getValue() + "");
@@ -405,7 +442,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         txtTotal.setValue(disponible + ocupado);
         utilitario.addUpdate("txtDisponible,txtOcupado,txtTotal");
     }
-
+    
     public void validaBloquel() {
         if (tab_categoria.getValor("DETALLE_LUGAR ").equals("MAUSOLEO")) {
             utilitario.agregarMensajeError("Mausoleo", "No tiene NUMERO");
@@ -413,7 +450,7 @@ public class pre_catastro_ubicacion extends Pantalla {
             utilitario.addUpdate("tab_tipo");
         }//actualiza solo componentes
     }
-
+    
     public void validaBloque() {
         if (tab_categoria.getValor("DETALLE_LUGAR ").equals("MAUSOLEO")) {
             tab_tipo.setValor("SECTOR", null);
@@ -422,7 +459,7 @@ public class pre_catastro_ubicacion extends Pantalla {
         }//actualiza solo componentes
         utilitario.agregarMensajeError("Mausoleo", "No tiene serie SEHUNNFF");
     }
-
+    
     public void buscaValor() {
         System.out.println("tab_categoria.getValor(\"DETALLE_LUGAR\")ZZZZZZZZZZZZZZZZZZZZ" + tab_categoria.getValor("DETALLE_LUGAR"));
         TablaGenerica tabDato = cementerioM.getValorCatastro(tab_categoria.getValor("DETALLE_LUGAR"));
@@ -438,7 +475,7 @@ public class pre_catastro_ubicacion extends Pantalla {
             utilitario.agregarMensajeInfo("No existe datos con esas descripciones", "");
         }
     }
-
+    
     public void muestraRegistro() {
         if (!getFiltrosAcceso().isEmpty()) {
             tab_tipo.setCondicion(getFiltrosAcceso());
@@ -447,21 +484,21 @@ public class pre_catastro_ubicacion extends Pantalla {
         }
         setUbicacion.cerrar();
     }
-
+    
     private String getFiltrosAcceso() {
         // Forma y valida las condiciones de fecha y hora
         String str_filtros = "";
         if (setUbicacion.getValorSeleccionado() != null) {
-
+            
             str_filtros = "IDE_LUGAR = " + Integer.parseInt(tab_categoria.getValor("IDE_LUGAR")) + "and  IDE_CATASTRO = " + Integer.parseInt(setUbicacion.getValorSeleccionado());
-
+            
         } else {
             utilitario.agregarMensajeInfo("Filtros no válidos",
                     "Debe seleccionar valor");
         }
         return str_filtros;
     }
-
+    
     @Override
     public void guardar() {
 //        if (tab_categoria.isFocus()) {
@@ -511,73 +548,132 @@ public class pre_catastro_ubicacion extends Pantalla {
 //            }
 //        }
     }
-
+    
     @Override
     public void eliminar() {
         utilitario.getTablaisFocus().eliminar();
     }
+    
+    @Override
+    public void abrirListaReportes() {
+        rep_reporte.dibujar();
 
+    }
+    
+    @Override
+    public void aceptarReporte() {
+        rep_reporte.cerrar();
+        switch (rep_reporte.getNombre()) {
+                case "REPORTE CATASTRO CEMENTERIO":
+                diaLugares.setDialogo(gridl);
+                Grid griBusc = new Grid();
+                griBusc.setColumns(2);
+                griBusc.getChildren().add(etiLugares);
+                griBusc.getChildren().add(cmbLugares);
+                gridL.getChildren().add(griBusc);
+                diaLugares.setDialogo(gridL);
+                diaLugares.dibujar();
+                break;
+        }
+    }
+
+    public void abrirReporte() {
+        switch (rep_reporte.getNombre()) {
+            case "REPORTE CATASTRO CEMENTERIO":
+                sef_formato.setConexion(getConexion());
+                p_parametros.put("tipo", Integer.parseInt(cmbLugares.getValue()+""));
+                p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+        }
+    }
     public Tabla getTab_categoria() {
         return tab_categoria;
     }
-
+    
     public void setTab_categoria(Tabla tab_categoria) {
         this.tab_categoria = tab_categoria;
     }
-
+    
     public Tabla getTab_tipo() {
         return tab_tipo;
     }
-
+    
     public void setTab_tipo(Tabla tab_tipo) {
         this.tab_tipo = tab_tipo;
     }
-
+    
     public AutoCompletar getAut_busca() {
         return aut_busca;
     }
-
+    
     public void setAut_busca(AutoCompletar aut_busca) {
         this.aut_busca = aut_busca;
     }
-
+    
     public Dialogo getDiaRegistro() {
         return diaRegistro;
     }
-
+    
     public void setDiaRegistro(Dialogo diaRegistro) {
         this.diaRegistro = diaRegistro;
     }
-
+    
     public SeleccionTabla getSetRegistros() {
         return setRegistros;
     }
-
+    
     public void setSetRegistros(SeleccionTabla setRegistros) {
         this.setRegistros = setRegistros;
     }
-
+    
     public SeleccionTabla getSetUbicacion() {
         return setUbicacion;
     }
-
+    
     public void setSetUbicacion(SeleccionTabla setUbicacion) {
         this.setUbicacion = setUbicacion;
     }
-
+    
     public Tabla getSetFallecido() {
         return setFallecido;
     }
-
+    
     public void setSetFallecido(Tabla setFallecido) {
         this.setFallecido = setFallecido;
     }
-
+    
     public Tabla getSetInformacion() {
         return setInformacion;
     }
-
+    
     public void setSetInformacion(Tabla setInformacion) {
         this.setInformacion = setInformacion;
+    }
+    
+    public Reporte getRep_reporte() {
+        return rep_reporte;
+    }
+    
+    public void setRep_reporte(Reporte rep_reporte) {
+        this.rep_reporte = rep_reporte;
+    }
+    
+    public SeleccionFormatoReporte getSef_formato() {
+        return sef_formato;
+    }
+    
+    public void setSef_formato(SeleccionFormatoReporte sef_formato) {
+        this.sef_formato = sef_formato;
+    }
+    
+    public Map getP_parametros() {
+        return p_parametros;
+    }
+    
+    public void setP_parametros(Map p_parametros) {
+        this.p_parametros = p_parametros;
     }
 }

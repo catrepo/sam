@@ -214,9 +214,9 @@ public class pre_exhumacion extends Pantalla {
         tabExhumacion.setId("tabExhumacion");
         tabExhumacion.setTabla("CMT_DETALLE_MOVIMIENTO", "IDE_DET_MOVIMIENTO", 4);
         tabExhumacion.setCondicion("IDE_DET_MOVIMIENTO=-1");
-        tabExhumacion.getColumna("IDE_TIPO_MOVIMIENTO").setCombo("SELECT IDE_CMACC, DETALLE_CMACC FROM CMT_ACCION where id_parametro = 'EXHU'");
-        tabExhumacion.getColumna("IDE_TIPO_MOVIMIENTO").setMetodoChange("validaTipo");
-//        tabExhumacion.getColumna("NUM_LIQUIDACION").setMetodoChange("validaLiquidacion");
+        tabExhumacion.getColumna("ESTADO_PAGO").setCombo("SELECT IDE_CMACC, DETALLE_CMACC FROM CMT_ACCION where id_parametro = 'EXHU'");
+        tabExhumacion.getColumna("ESTADO_PAGO").setMetodoChange("validaTipo");
+        tabExhumacion.getColumna("IDE_TIPO_MOVIMIENTO").setValorDefecto("4");
         tabExhumacion.getColumna("FECHA_INGRESA").setValorDefecto(utilitario.getFechaActual());
         tabExhumacion.getGrid().setColumns(4);
         tabExhumacion.setTipoFormulario(true);
@@ -430,13 +430,14 @@ public class pre_exhumacion extends Pantalla {
     }
 
     public void validaTipo() {
-        if (tabExhumacion.getValor("IDE_TIPO_MOVIMIENTO") != null) {
-            TablaGenerica tabInfo = admin.consultaExhumacion(Integer.parseInt(tabExhumacion.getValor("IDE_TIPO_MOVIMIENTO") + ""));
+        if (tabExhumacion.getValor("ESTADO_PAGO") != null) {
+            TablaGenerica tabInfo = admin.consultaExhumacion(Integer.parseInt(tabExhumacion.getValor("ESTADO_PAGO") + ""));
             if (!tabInfo.isEmpty()) {
                 if (tabInfo.getValor("parametro2").equals("A")) {
                     if (calculateAge(utilitario.DeStringADate(tabFallecido.getValor("fecha_defuncion"))) >= Integer.parseInt(tabInfo.getValor("parametro"))) {
                         tabExhumacion.getColumna("observacion").setLectura(false);
                         tabExhumacion.setValor("observacion", null);
+                        tabExhumacion.setValor("tipo_pago", tabInfo.getValor("DETALLE_CMACC"));
                         utilitario.addUpdate("tabExhumacion");
                     } else {
                         tabExhumacion.setValor("observacion", null);
@@ -448,6 +449,7 @@ public class pre_exhumacion extends Pantalla {
                     if (calcularMeses(utilitario.DeStringADate(tabFallecido.getValor("fecha_defuncion")), utilitario.DeStringADate(utilitario.getFechaActual())) >= Integer.parseInt(tabInfo.getValor("parametro"))) {
                         tabExhumacion.getColumna("observacion").setLectura(false);
                         tabExhumacion.setValor("observacion", null);
+                        tabExhumacion.setValor("tipo_pago", tabInfo.getValor("DETALLE_CMACC"));
                         utilitario.addUpdate("tabExhumacion");
                     } else {
                         tabExhumacion.setValor("observacion", null);
@@ -457,6 +459,7 @@ public class pre_exhumacion extends Pantalla {
                     }
                 } else {
                     tabExhumacion.getColumna("observacion").setLectura(false);
+                    tabExhumacion.setValor("tipo_pago", tabInfo.getValor("DETALLE_CMACC"));
                     utilitario.addUpdate("tabExhumacion");
                 }
                 if (tabInfo.getValor("id_tipo").equals("SL")) {
