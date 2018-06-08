@@ -333,7 +333,6 @@ public class pre_renovacion extends Pantalla {
         tab_tabla4.getColumna("VALOR_LIQUIDACION_CALCULADO").setVisible(false);
         tab_tabla4.getColumna("TIPO_RENOVACION").setVisible(false);
         tab_tabla4.setCondicion("IDE_DET_MOVIMIENTO is null");
-//        tab_tabla4.getColumna("tipo_renovacion").setCombo("SELECT ide_tipo_renovacion,descripcion_renovacion FROM CMT_TIPO_RENOVACION");
         tab_tabla4.getColumna("VER").setCheck();
         tab_tabla4.getColumna("VER").setMetodoChange("mostrarRegistro");
         tab_tabla4.getGrid().setColumns(4);
@@ -996,7 +995,7 @@ public class pre_renovacion extends Pantalla {
     private String getFiltrosAcceso() {
         String str_filtros = "";
         if (setSolicitud.getValorSeleccionado() != null) {
-            str_filtros = "AND IDE_CMREP = (SELECT DISTINCT (SELECT top 1 IDE_CMREP FROM CMT_REPRESENTANTE where IDE_FALLECIDO = " + Integer.parseInt(setSolicitud.getValorSeleccionado()) + " order by IDE_CMREP desc)as codigo\n"
+            str_filtros = "IDE_CMREP = (SELECT DISTINCT (SELECT top 1 IDE_CMREP FROM CMT_REPRESENTANTE where IDE_FALLECIDO = " + Integer.parseInt(setSolicitud.getValorSeleccionado()) + " order by IDE_CMREP desc)as codigo\n"
                     + "FROM CMT_FALLECIDO)";
         }
 //        else {
