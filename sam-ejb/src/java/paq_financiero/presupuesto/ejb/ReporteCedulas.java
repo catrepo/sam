@@ -96,6 +96,17 @@ public class ReporteCedulas {
         return tabFuncionario;
     }
 
+    public TablaGenerica getNombPartida(String cuenta) {
+        conOraclesql();
+        TablaGenerica tabFuncionario = new TablaGenerica();
+        conOraclesql();
+        tabFuncionario.setConexion(conOracle);
+        tabFuncionario.setSql("select TIPLMC,NOABMC,CUENMC from USFIMRU.TIGSA_GLM03 where TIPLMC= 'C' and CUENMC =" + cuenta);
+        tabFuncionario.ejecutarSql();
+        desOraclesql();
+        return tabFuncionario;
+    }
+
     public String maxRegistro() {
         conSql();
         String ValorMax;
@@ -439,13 +450,8 @@ public class ReporteCedulas {
                 + "on CUENMC = CUENDT)\n"
                 + "on CUENMCC = CUENMCR\n"
                 + "left join\n"
-                + "(select CUENMC as CUENMCD,NIVEMC,devengado\n"
-                + "from (select CUENMC,NIVEMC\n"
-                + "from USFIMRU.TIGSA_GLM03\n"
-                + "where TIPLMC= 'R' and substr(CEDTMC,1,1) in (1,2,3) and NIVEMC = 6)\n"
-                + "left join\n"
-                + "(select F01CTD,devengado\n"
-                + "from(select CUENDT,inicial\n"
+                + "(select  F01CTD as CUENMCD,NIVEMC,devengado\n"
+                + "from (select CUENMC,nivemc\n"
                 + "from (select CUENMC,nivemc\n"
                 + "from USFIMRU.TIGSA_GLM03\n"
                 + "where TIPLMC= 'R' and substr(CEDTMC,1,1) in (1,2,3) and NIVEMC = 6)\n"
@@ -460,11 +466,11 @@ public class ReporteCedulas {
                 + "GROUP BY CUENDT\n"
                 + "order by CUENDT)\n"
                 + "on CUENMC = CUENDT)\n"
-                + "inner join\n"
+                + "left join\n"
                 + "(select F01CTD,devengado\n"
                 + "from (SELECT  DISTINCT a.F01CTD,sum(MONTDT*-1) as devengado\n"
                 + "FROM USFIMRU.TIGSA_GLB01,\n"
-                + "(SELECT  F01CIO\n"
+                + "(SELECT DISTINCT F01CIO\n"
                 + ",(case when (case when F01A1O is null then F01A2O else F01A1O end) is null then '0'\n"
                 + " else  (case when F01A1O is null then F01A2O else F01A1O end) end) as F01A1O\n"
                 + ",F01CTD,F01CTO\n"
@@ -478,11 +484,10 @@ public class ReporteCedulas {
                 + "AND SAPRDT<=1" + Integer.parseInt(String.valueOf(anio).substring(2, 4)) + mes + "\n"
                 + "AND TMOVDT='H'\n"
                 + "group by F01CTD)\n"
-                + "where F01CTD <> '3801010000'\n"
                 + "union\n"
                 + "SELECT  DISTINCT a.F01CTD,sum(MONTDT*-1) as devengado\n"
                 + "FROM USFIMRU.TIGSA_GLB01,\n"
-                + "(SELECT  F01CIO\n"
+                + "(SELECT DISTINCT F01CIO\n"
                 + ",(case when (case when F01A1O is null then F01A2O else F01A1O end) is null then '0'\n"
                 + " else  (case when F01A1O is null then F01A2O else F01A1O end) end) as F01A1O\n"
                 + ",F01CTD,F01CTO\n"
@@ -509,19 +514,13 @@ public class ReporteCedulas {
                 + "AND SAPRDT>=1" + Integer.parseInt(String.valueOf(anio).substring(2, 4)) + "01\n"
                 + "AND SAPRDT<=1" + Integer.parseInt(String.valueOf(anio).substring(2, 4)) + mes + "\n"
                 + "AND TMOVDT='H'\n"
+                + "AND F01CTD <> '3801010000'\n"
                 + "group by F01CTD)\n"
-                + "on CUENDT = F01CTD)\n"
-                + "on CUENMC= F01CTD)\n"
+                + "on CUENMC = F01CTD)\n"
                 + "on CUENMCC = CUENMCD\n"
                 + "left join\n"
-                + "(\n"
-                + "select CUENMC as CUENMCE,NIVEMC,ejecutado\n"
-                + "from (select CUENMC,NIVEMC\n"
-                + "from USFIMRU.TIGSA_GLM03\n"
-                + "where TIPLMC= 'R' and substr(CEDTMC,1,1) in (1,2,3) and NIVEMC = 6)\n"
-                + "left join\n"
-                + "(select F01CTD,ejecutado\n"
-                + "from(select CUENDT,inicial\n"
+                + "(select CUENMC as CUENMCE,NIVEMC,ejecutado \n"
+                + "from (select CUENMC,nivemc\n"
                 + "from (select CUENMC,nivemc\n"
                 + "from USFIMRU.TIGSA_GLM03\n"
                 + "where TIPLMC= 'R' and substr(CEDTMC,1,1) in (1,2,3) and NIVEMC = 6)\n"
@@ -536,11 +535,11 @@ public class ReporteCedulas {
                 + "GROUP BY CUENDT\n"
                 + "order by CUENDT)\n"
                 + "on CUENMC = CUENDT)\n"
-                + "inner join\n"
+                + "left join\n"
                 + "(select F01CTD,devengado as ejecutado\n"
                 + "from (SELECT  DISTINCT a.F01CTD,sum(MONTDT*-1) as devengado\n"
                 + "FROM USFIMRU.TIGSA_GLB01,\n"
-                + "(SELECT  F01CIO\n"
+                + "(SELECT DISTINCT F01CIO\n"
                 + ",(case when (case when F01A1O is null then F01A2O else F01A1O end) is null then '0'\n"
                 + " else  (case when F01A1O is null then F01A2O else F01A1O end) end) as F01A1O\n"
                 + ",F01CTD,F01CTO\n"
@@ -554,7 +553,7 @@ public class ReporteCedulas {
                 + "AND SAPRDT<=1" + Integer.parseInt(String.valueOf(anio).substring(2, 4)) + mes + "\n"
                 + "AND TMOVDT='H'\n"
                 + "group by F01CTD)\n"
-                + "where F01CTD <> '3801010000'\n"
+                + "where F01CTD <> '1801030000'\n"
                 + "union\n"
                 + "select F01CTD,devengado\n"
                 + "from (SELECT  DISTINCT a.F01CTD,sum(MONTDT*-1) as devengado\n"
@@ -570,15 +569,14 @@ public class ReporteCedulas {
                 + "AND SAPRDT<=1" + Integer.parseInt(String.valueOf(anio).substring(2, 4)) + mes + "\n"
                 + "AND TMOVDT='H'\n"
                 + "group by F01CTD)\n"
-                + "where F01CTD = '3801010000' or F01CTD = '3602010000')\n"
-                + "on CUENDT = F01CTD)\n"
-                + "on CUENMC= F01CTD\n"
-                + "order by  CUENMC)\n"
+                + "where  F01CTD = '3602010000' or F01CTD = '2702030000' or F01CTD = '3801070000' or F01CTD = '3801080000')\n"
+                + "on CUENMC = F01CTD)\n"
                 + "on CUENMCC = CUENMCE\n"
-                + "group by  substr(CUENMCC,1,6))"
+                + "group by  substr(CUENMCC,1,6))\n"
                 + "where (case when codificado = 0 then (case when reforma = 0 then (case when devengado = 0 then (case when ejecutado = 0 then 1 else 0 end) else 0 end ) else 0 end) else 0 end)!=1\n"
                 + "order by CUENMC");
         tabFuncionario.ejecutarSql();
+        tabFuncionario.imprimirSql();
         desOraclesql();
         return tabFuncionario;
     }
@@ -648,6 +646,129 @@ public class ReporteCedulas {
                 + "order by auad01)\n"
                 + "group by CUENDT,AUAD01,AUAD02,proyecto)\n"
                 + "where AUAD01 ='" + proyecto + "'");
+        tabFuncionario.ejecutarSql();
+        desOraclesql();
+        return tabFuncionario;
+    }
+
+    public void listaCuentasMayor(Integer FechaInicial, Integer FechaFinal, Integer Codigo, String Cuenta) {
+        String auSql = "select CUENDT,NOABMC,debe, haber,neto, acumulado \n"
+                + "from (select  TIPLMC,NOABMC,CUENMC\n"
+                + "from USFIMRU.TIGSA_GLM03\n"
+                + "where TIPLMC= 'C')\n"
+                + "inner join (\n"
+                + "	select CUENDT,0 SALDO ,debe, haber,(debe -(haber*-1)) neto,(debe -(haber*-1)) acumulado\n"
+                + "		from (select substr(CUENDT,1,5)CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as debe\n"
+                + "		from USFIMRU.TIGSA_GLB01\n"
+                + "		where STATDT='E'\n"
+                + "			AND SAPRDT>=11801\n"
+                + "			AND SAPRDT<=11802\n"
+                + "			AND TMOVDT='D'\n"
+                + "			AND CCIADT = 'MR'\n"
+                + "			and CUENDT like '113%'\n"
+                + "		group by substr(CUENDT,1,5))\n"
+                + "	left join (\n"
+                + "		select substr(CUENDT,1,5) as auxh,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as haber\n"
+                + "		from USFIMRU.TIGSA_GLB01\n"
+                + "		where STATDT='E'\n"
+                + "			AND SAPRDT>=11801\n"
+                + "			AND SAPRDT<=11802\n"
+                + "			AND TMOVDT='H'\n"
+                + "			AND CCIADT = 'MR'\n"
+                + "			and CUENDT like '113%'\n"
+                + "		group by substr(CUENDT,1,5))\n"
+                + "	on CUENDT = auxh)\n"
+                + "on CUENMC = CUENDT\n"
+                + "order by CUENDT";
+        conOraclesql();
+        conOracle.ejecutarSql(auSql);
+        desOraclesql();
+    }
+
+    public TablaGenerica getCon_Ced_Programas(Integer asignacion, Integer reforma, Integer inicio, Integer fin) {
+        conOraclesql();
+        TablaGenerica tabFuncionario = new TablaGenerica();
+        conOraclesql();
+        tabFuncionario.setConexion(conOracle);
+        tabFuncionario.setSql("select CUENDT,inicial,codificado,reforma,compromiso,devengado,ejecutado,AUAD02,(codificado-devengado)as saldo\n"
+                + "from (select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as codificado,AUAD02\n"
+                + "from USFIMRU.TIGSA_GLB01\n"
+                + "where STATDT='E'\n"
+                + "AND CCIADT <> 'CM' \n"
+                + "AND CCIADT <> 'MR'\n"
+                + "AND SAPRDT>=" + asignacion + "\n"
+                + "AND SAPRDT<=" + reforma + "\n"
+                + "AND AUAD02 is not null\n"
+                + "AND substr(FDOCDT,1,5) <= " + fin + "\n"
+                + "group by CUENDT,AUAD02)\n"
+                + "left join \n"
+                + "(select CUENDT as auxi,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as inicial,AUAD02 as auxi1\n"
+                + "from USFIMRU.TIGSA_GLB01\n"
+                + "where STATDT='E'\n"
+                + "AND CCIADT <> 'CM' \n"
+                + "AND CCIADT <> 'MR'\n"
+                + "AND SAPRDT=" + asignacion + "\n"
+                + "AND AUAD02 is not null\n"
+                + "group by CUENDT,AUAD02)\n"
+                + "on CUENDT = auxi AND AUAD02 = auxi1\n"
+                + "left join \n"
+                + "(select CUENDT as auxr,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as reforma,AUAD02 as auxr1\n"
+                + "from USFIMRU.TIGSA_GLB01\n"
+                + "where STATDT='E'\n"
+                + "AND CCIADT <> 'CM' \n"
+                + "AND CCIADT <> 'MR'\n"
+                + "AND SAPRDT=" + reforma + "\n"
+                + "AND AUAD02 is not null\n"
+                + "AND substr(FDOCDT,1,5) <= " + fin + "\n"
+                + "group by CUENDT,AUAD02)\n"
+                + "on CUENDT = auxr AND AUAD02 = auxr1\n"
+                + "left join \n"
+                + "(select CUENDT as auxc,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as compromiso,AUAD02 as auxc1\n"
+                + "from USFIMRU.TIGSA_GLB01\n"
+                + "where STATDT='E'\n"
+                + "AND CCIADT <> 'CM' \n"
+                + "AND CCIADT <> 'MR'\n"
+                + "AND SAPRDT>=" + inicio + "\n"
+                + "AND SAPRDT<=" + fin + "\n"
+                + "AND CAUXDT='1'\n"
+                + "AND TMOVDT='D'\n"
+                + "group by CUENDT,AUAD02)\n"
+                + "on CUENDT = auxc AND AUAD02 = auxc1\n"
+                + "left join\n"
+                + "(select CUENDT as auxde,sum(devengado) as devengado,AUAD02 as auxde1,sum(ejecutado) as ejecutado\n"
+                + "from(select CUENDT,devengado,AUAD02,\n"
+                + "(case when (max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) = ejecutado\n"
+                + "then (totalee+(prorateo-totale)) else ejecutado end) as ejecutado\n"
+                + "from (\n"
+                + "select CUENDT,devengado,AUAD02,ROUND(ejecutado,2) as ejecutado,prorateo\n"
+                + ",(sum(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totale\n"
+                + ",(max(ROUND(ejecutado,2))over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as totalee\n"
+                + "from (select CUENDT,devengado,AUAD02,((case when prorateo = 0 then 0 else (prorateo/total)end) *devengado) as ejecutado,prorateo\n"
+                + "from (select CUENDT,devengado,AUAD02,substr(CUENDT,1,2) as pro\n"
+                + ",(sum(devengado)over (PARTITION BY substr(CUENDT,1,2) ORDER BY substr(CUENDT,1,2))) as total\n"
+                + "from(select CUENDT,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end )  as devengado,AUAD02\n"
+                + "from USFIMRU.TIGSA_GLB01\n"
+                + "where STATDT='E'\n"
+                + "AND CCIADT <> 'CM' and CCIADT <> 'MR'\n"
+                + "AND SAPRDT>=" + inicio + "\n"
+                + "AND SAPRDT<=" + fin + "\n"
+                + "AND CAUXDT='2'\n"
+                + "AND TMOVDT='D'\n"
+                + "group by CUENDT,AUAD02))\n"
+                + "left join\n"
+                + "(select cuenta,prorateo,(case when substr(cuenta,4,2) = 98 then '97' else substr(cuenta,4,2) end) as cu\n"
+                + "from(select substr(CUENDT,1,5) as cuenta,(case when sum(MONTDT) is null then 0 else  sum(MONTDT) end ) as prorateo\n"
+                + "from USFIMRU.TIGSA_GLB01\n"
+                + "where STATDT='E'\n"
+                + "AND SAPRDT>=" + inicio + "\n"
+                + "AND SAPRDT<=" + fin + "\n"
+                + "AND TMOVDT='D'\n"
+                + "AND CCIADT = 'MR'\n"
+                + "and CUENDT like '213%'\n"
+                + "group by substr(CUENDT,1,5)))\n"
+                + "on pro= cu)))\n"
+                + "group by CUENDT,AUAD02)\n"
+                + "on CUENDT = auxde AND AUAD02 = auxde1");
         tabFuncionario.ejecutarSql();
         desOraclesql();
         return tabFuncionario;

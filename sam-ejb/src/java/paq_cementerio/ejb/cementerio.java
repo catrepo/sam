@@ -11,6 +11,7 @@ import persistencia.Conexion;
  *
  * @author p-sistemas
  */
+
 @Stateless
 public class cementerio {
 
@@ -255,14 +256,14 @@ public class cementerio {
     }
 
     public TablaGenerica periodoCatastro(String catastro) {
+        System.err.println("->>1" + catastro);
         conSql();
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSql);
-        tabPersona.setSql("select detalle_lugar,sector,MODULO,numero ,periodo,valor,b.ide_lugar  \n"
-                + "from CMT_CATASTRO a, CMT_LUGAR b where a.ide_lugar=b.ide_lugar and ide_catastro\n"
-                + "=" + catastro);
+        tabPersona.setSql("select detalle_lugar,sector,MODULO ,periodo,sum(valor) as valor,b.ide_lugar  \n"
+                + "from CMT_CATASTRO a, CMT_LUGAR b where a.ide_lugar=b.ide_lugar and ide_catastro in (" + catastro + ")\n"
+                + "group by detalle_lugar,sector,MODULO,periodo,b.ide_lugar");
         tabPersona.ejecutarSql();
-//        tabPersona.imprimirSql();
         desConSql();
         return tabPersona;
     }

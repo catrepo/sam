@@ -165,13 +165,23 @@ public class ServiciosAdquisiones {
     public void setUpdateEstadoGastos(int codigo, String dato) {
         String auSql = "UPDATE adq_compra\n"
                 + "set APRUEBA_GASTO_ADCOMP= true,\n"
-                + "ADQ_IDE_ADEMDE = "+dato+"\n"
+                + "ADQ_IDE_ADEMDE = " + dato + "\n"
                 + "where ide_adcomp = " + codigo;
         conSql();
         conSql.ejecutarSql(auSql);
         desConSql();
     }
 
+     public void setUpdateInsertMaterial(String tabla,String detalle, int codigo, String usu) {
+        String auSql = "EXEC SIGAG.dbo.ADQ_INSERT_MATERIAL \n"
+                 + "@tabla ='" + tabla + "',"
+                + "@detalle ='" + detalle + "',"
+                + "@tipo =" + codigo + ","
+                + "@login ='" + usu + "'";
+        conSql();
+        conSql.ejecutarSql(auSql);
+        desConSql();
+    }
     /*
     Cargar certificaciones, partida y valor
      */
@@ -197,24 +207,36 @@ public class ServiciosAdquisiones {
         return tabFuncionario;
     }
 
-    public TablaGenerica getMuestraDatos(String id, int anio, int cadena, String fecha) {
+    public TablaGenerica getMuestraDatos(String id, int anio) {
         conOraclesql();
         TablaGenerica tabFuncionario = new TablaGenerica();
         conOraclesql();
         tabFuncionario.setConexion(conOracle);
-        tabFuncionario.setSql("select DISTINCT NDOCDC,cedtmc,AUAD02,MONTDT,AUAD01,NOLAAD \n"
-                + "from USFIMRU.TIGSA_GLB01 \n"
-                + "inner join USFIMRU.PRCO01 on  CUENDT = CUENDC and AUAD02 = AUA2DC\n"
-                + "inner join USFIMRU.TIGSA_GLM03 on CUENMC = CUENDT\n"
-                + "where STATDT='E' \n"
-                + "AND CCIADT <> 'CM' and CCIADT <> 'MR' \n"
-                + "AND SAPRDT>=1" + cadena + "14 \n"
-                + "AND SAPRDT<=1" + cadena + "15 \n"
-                + "AND AUAD02 is not null \n"
-                + "AND ANIODC =" + anio + "\n"
-                + "AND TIPLMC= 'R'\n"
-                + "AND substr(FDOCDT,1,5) <= 1" + fecha + " \n"
-                + "and CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUAD01) = '" + id + "'");
+        tabFuncionario.setSql("select * from (\n"
+                + "SELECT DISTINCT CONCAT(CONCAT(CONCAT(CONCAT(cedtmc,'-'),NDOCDC),'-'),AUA1DC) as id,\n"
+                + "    NDOCDC as certificado ,\n"
+                + "		cedtmc as partida,\n"
+                + "		AUA2DC AS programa ,\n"
+                + "    SUM(\n"
+                + "    CASE\n"
+                + "      WHEN MONTDC>0\n"
+                + "      THEN MontDC\n"
+                + "      ELSE 0\n"
+                + "    END )       AS VALOR,\n"
+                + "		AUA1DC AS proyecto, NOLAAD\n"
+                + "  FROM USFIMRU.PRCO01\n"
+                + "   inner join USFIMRU.TIGSA_GLM03 on USFIMRU.TIGSA_GLM03.CUENMC=USFIMRU.PRCO01.CUENDC\n"
+                + "   inner join USFIMRU.TIGSA_GLAI3 on  CCIAAD =CCIADC and  SAPRAD = SAPRDC and TICOAD=ticodc and NUCOAD=nucodc\n"
+                + "  WHERE\n"
+                + "TIPLMC='R'\n"
+                + "and ANIODC ="+anio+"\n"
+                + "  GROUP BY \n"
+                + "	NDOCDC,\n"
+                + "		cedtmc,\n"
+                + "    AUA1DC,\n"
+                + "    AUA2DC,NOLAAD \n"
+                + "    )\n"
+                + "		where id =  '" + id + "'");
         tabFuncionario.ejecutarSql();
         tabFuncionario.imprimirSql();
         desOraclesql();

@@ -41,6 +41,13 @@ public class acfbienes {
         desConSqlcy();
     }
 
+    public void setUpdateACF(String acta, String anio) {
+        String auSql = " update ACF set acta = 0 where numero ='"+acta+"' and year(fecha_acta) ='"+anio+"'";
+        conSqlcy();
+        conSqlcy.ejecutarSql(auSql);
+        desConSqlcy();
+    }
+    
     public void setUpdateActa(Integer codigo) {
         String auSql = "update ACF_INMUEBLES\n"
                 + "set acta_baja = 0 \n"
@@ -78,6 +85,18 @@ public class acfbienes {
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSqlcy);
         tabPersona.setSql("select count(*) as item, sum(act_valorcompra) as total from ACTIVO where CUS_ID1 = " + numero);
+        tabPersona.ejecutarSql();
+        desConSqlcy();
+        return tabPersona;
+    }
+
+    public TablaGenerica getEstadoActa(String acta, String anio) {
+        conSqlcy();
+        TablaGenerica tabPersona = new TablaGenerica();
+        tabPersona.setConexion(conSqlcy);
+        tabPersona.setSql("select DISTINCT 0 as id,acta\n"
+                + "from ACF \n"
+                + "where numero = '"+acta+"' and year(fecha_acta) = '"+anio+"'");
         tabPersona.ejecutarSql();
         desConSqlcy();
         return tabPersona;
@@ -160,9 +179,9 @@ public class acfbienes {
         conSqlcy();
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSqlcy);
-        tabPersona.setSql("select * from vw_ActivosInmuebles\n"
+        tabPersona.setSql("select *,(VAL_AVATER+VAL_OTRMEJ+VAL_AVACON) as valor_total from vw_ActivosInmuebles\n"
                 + "inner join  vw_CatastroUrbanoRural  on MAE_CLVACT = clave\n"
-                + "where MAE_CLVACT = '"+clave+"'");
+                + "where MAE_CLVACT = '" + clave + "'");
         tabPersona.ejecutarSql();
         desConSqlcy();
         return tabPersona;
@@ -173,13 +192,13 @@ public class acfbienes {
         TablaGenerica tabPersona = new TablaGenerica();
         tabPersona.setConexion(conSqlcy);
         tabPersona.setSql("SELECT * FROM SIGAG.dbo.SIS_AUXREPOR "
-                + "where SIGAG.dbo.SIS_AUXREPOR.REPT_NOMBRE like '"+descripcion+"'");
+                + "where SIGAG.dbo.SIS_AUXREPOR.REPT_NOMBRE like '" + descripcion + "'");
         tabPersona.ejecutarSql();
         tabPersona.imprimirSql();
         desConSqlcy();
         return tabPersona;
     }
-    
+
     private void conSqlcy() {
         if (conSqlcy == null) {
             conSqlcy = new Conexion();
