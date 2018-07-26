@@ -7,6 +7,7 @@ package paq_financiero.contabilidad;
 import framework.componentes.Boton;
 import framework.componentes.Calendario;
 import framework.componentes.Combo;
+import framework.componentes.Dialogo;
 import framework.componentes.Etiqueta;
 import framework.componentes.Grid;
 import framework.componentes.Imagen;
@@ -35,6 +36,7 @@ public class ReporteContabilidad extends Pantalla {
 
     //Variable conexion
     private Conexion conOracle = new Conexion();
+    private Conexion conBodega = new Conexion();
     //Declaracion de combos
     private Combo cmbAno = new Combo();
     private Combo cmbNiveli = new Combo();
@@ -85,6 +87,19 @@ public class ReporteContabilidad extends Pantalla {
     private Boolean dentro;
     Archivo file = new Archivo();
 
+    private Combo cmbTipo = new Combo();
+    private Calendario fechDesde = new Calendario();
+    private Calendario fechHasta = new Calendario();
+    private Etiqueta etiTip = new Etiqueta("Tipo Comprobante : ");
+    private Etiqueta etiInicio = new Etiqueta("Periodo Desde : ");
+    private Etiqueta etiFinal = new Etiqueta("Periodo Hasta : ");
+    private Etiqueta etiCia = new Etiqueta("Cia. o Grupo : ");
+    private Etiqueta etiCia1 = new Etiqueta(" RB");
+    private Dialogo diaParametro = new Dialogo();
+    private Grid gridPa = new Grid();
+    private Grid gridpa = new Grid();
+    
+    
     @EJB
     private ReporteCedulas admin = (ReporteCedulas) utilitario.instanciarEJB(ReporteCedulas.class);
     
@@ -95,8 +110,7 @@ public class ReporteContabilidad extends Pantalla {
          */
         conOracle.setUnidad_persistencia(utilitario.getPropiedad("oraclejdbc"));
         conOracle.NOMBRE_MARCA_BASE = "oracle";
-
-        /*
+                /*
          * Captura de usuario que se logea
          */
         tabConsulta.setId("tab_consulta");
@@ -341,6 +355,29 @@ public class ReporteContabilidad extends Pantalla {
         vzpdfMovimiento.setId("vzpdfMovimiento");
         vzpdfMovimiento.setTitle("DETALLE DE MOVIMIENTOS");
         agregarComponente(vzpdfMovimiento);
+        
+        
+        diaParametro.setId("diaParametro");
+        diaParametro.setTitle("Consulta de Datos"); //titulo
+        diaParametro.setWidth("30%"); //siempre en porcentajes  ancho
+        diaParametro.setHeight("30%");//siempre porcentaje   alto
+        diaParametro.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaParametro.getBot_aceptar().setMetodo("dibujarReporte");
+        gridpa.setColumns(4);
+        agregarComponente(diaParametro);
+        
+         List listTipo = new ArrayList();
+        Object fi1[] = {
+            "D", "Ingresos"
+        };
+        Object fi2[] = {
+            "H", "Egresos"
+        };
+        listTipo.add(fi1);;
+        listTipo.add(fi2);;
+        cmbTipo.setId("cmbTipo"); 
+        cmbTipo.setCombo(listTipo);
+        
     }
 
     public void buscaComprobantes() {
@@ -422,6 +459,27 @@ public class ReporteContabilidad extends Pantalla {
             case "SALDOS Y MOVIMIENTOS DE MAYOR":
                 setMovimientos.dibujar();
                 break;
+                case "BODEGA ARTICULOS CONTABILIDAD":
+                diaParametro.setDialogo(gridpa);
+                Grid gri = new Grid();
+                gri.setColumns(2);
+                gri.getChildren().add(etiCia);
+                gri.getChildren().add(etiCia1);
+                Grid griBusc = new Grid();
+                griBusc.setColumns(2);
+                griBusc.getChildren().add(etiTip);
+                griBusc.getChildren().add(cmbTipo);
+                
+                griBusc.getChildren().add(etiInicio );
+                griBusc.getChildren().add(fechDesde );
+                
+                griBusc.getChildren().add(etiFinal );
+                griBusc.getChildren().add(fechHasta );
+                
+                gridPa.getChildren().add(griBusc);
+                diaParametro.setDialogo(gridPa);
+                diaParametro.dibujar();
+                break;
         }
     }
 
@@ -469,6 +527,33 @@ public class ReporteContabilidad extends Pantalla {
                 sef_formato.dibujar();
                 break;
             case "SALDOS Y MOVIMIENTOS DE MAYOR":
+                break;
+                case "BODEGA ARTICULOS CONTABILIDAD":
+                 String mes2,
+                 mes3;
+                if (String.valueOf((utilitario.getMes(fechDesde.getFecha()))).length() > 1) {
+                    mes2 = String.valueOf((utilitario.getMes(fechDesde.getFecha())));
+                } else {
+                    mes2 = "0" + String.valueOf((utilitario.getMes(fechDesde.getFecha())));
+                }
+                if (String.valueOf((utilitario.getMes(fechHasta.getFecha()))).length() > 1) {
+                    mes3 = String.valueOf((utilitario.getMes(fechHasta.getFecha())));
+                } else {
+                    mes3 = "0" + String.valueOf((utilitario.getMes(fechHasta.getFecha())));
+                }
+                p_parametros.put("fecIni", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechDesde.getFecha()))).substring(2, 4) + "" + mes2));
+                p_parametros.put("fecFin", Integer.parseInt("1" + String.valueOf((utilitario.getAnio(fechHasta.getFecha()))).substring(2, 4) + "" + mes3));
+                p_parametros.put("nom_resp", tabConsulta.getValor("NICK_USUA") + "");
+                p_parametros.put("tipo", cmbTipo.getValue() + "");
+                if (cmbTipo.getValue().equals("H")){
+                    p_parametros.put("descripcion", "EGRESOS");
+                }else{
+                    p_parametros.put("descripcion", "INGRESOS");
+                }
+                rep_reporte.cerrar();
+                    System.err.println("parametro ->"+p_parametros);
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
                 break;
         }
     }
@@ -596,4 +681,13 @@ public class ReporteContabilidad extends Pantalla {
     public void setVzpdfMovimiento(VisualizarPDF vzpdfMovimiento) {
         this.vzpdfMovimiento = vzpdfMovimiento;
     }
+
+    public Conexion getConBodega() {
+        return conBodega;
+    }
+
+    public void setConBodega(Conexion conBodega) {
+        this.conBodega = conBodega;
+    }
+    
 }
