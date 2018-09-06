@@ -43,7 +43,11 @@ public class ReporteporCustodio extends Pantalla {
     private SeleccionTabla setCustodios = new SeleccionTabla();
     private SeleccionTabla setOpciones = new SeleccionTabla();
     private Combo cmbOpcion = new Combo();
+    private Combo cmbMarca = new Combo();
+    private Combo cmbDescripcion = new Combo();
     private Texto texBusqueda = new Texto();
+    private Etiqueta etiMarca = new Etiqueta("MARCA");
+    private Etiqueta etiEquipo = new Etiqueta("EQUIPO");
     ///REPORTES
     private Reporte rep_reporte = new Reporte(); //siempre se debe llamar rep_reporte
     private SeleccionFormatoReporte sef_formato = new SeleccionFormatoReporte();
@@ -51,10 +55,13 @@ public class ReporteporCustodio extends Pantalla {
 
     private Etiqueta etiTodos = new Etiqueta("TODOS LOS REGISTROS:");
     private Check chkTodos = new Check();
-    private Dialogo diaGrupos = new Dialogo();
+    private Dialogo diaGrupos = new Dialogo(); 
+    private Dialogo diaEquipos = new Dialogo();
     private Grid gridG = new Grid();
+    private Grid gridE = new Grid();
     private Grid gridg = new Grid();
-
+    private Grid gride = new Grid();
+    
     //PARA ASIGNACION DE MES
     String selec_mes = new String();
     Archivo file = new Archivo();
@@ -204,6 +211,25 @@ public class ReporteporCustodio extends Pantalla {
         diaGrupos.getBot_aceptar().setMetodo("dibujarReporte");
         gridg.setColumns(4);
         agregarComponente(diaGrupos);
+        
+        diaEquipos.setId("diaEquipos");
+        diaEquipos.setTitle("PARAMETROS DE REPORTE"); //titulo
+        diaEquipos.setWidth("35%"); //siempre en porcentajes  ancho
+        diaEquipos.setHeight("30%");//siempre porcentaje   alto
+        diaEquipos.setResizable(false); //para que no se pueda cambiar el tamaño
+        diaEquipos.getBot_aceptar().setMetodo("dibujarReporte");
+        gride.setColumns(4);
+        agregarComponente(diaEquipos);
+        
+        cmbMarca.setId("cmbMarca");
+        cmbMarca.setConexion(CAYMAN);
+        cmbMarca.setCombo("select distinct marca as id, marca from vw_ActivosFijos order by marca");
+        cmbMarca.setMetodo("cargaCombo");
+        
+        cmbDescripcion.setId("cmbDescripcion");
+        cmbDescripcion.setConexion(CAYMAN);
+        cmbDescripcion.setCombo("select distinct des_activo as id,des_activo from vw_ActivosFijos where marca ='MOTOROLA-'");
+        
     }
 
     public void busquedaInfo() {
@@ -267,6 +293,11 @@ public class ReporteporCustodio extends Pantalla {
 
     }
 
+        public void cargaCombo() {
+        cmbDescripcion.setCombo("select distinct des_activo as id,des_activo from vw_ActivosFijos where marca ='"+cmbMarca.getValue()+"'");
+        utilitario.addUpdate("cmbDescripcion");//actualiza solo componentes
+    }
+        
     @Override
     public void abrirListaReportes() {
         rep_reporte.dibujar();
@@ -287,6 +318,18 @@ public class ReporteporCustodio extends Pantalla {
                 break;
             case "ACTIVOS FIJOS GENERAL":
                 dibujarReporte();
+                break;
+                case "ACTIVOS FIJOS":
+                diaEquipos.setDialogo(gride);
+                Grid griFechas = new Grid();
+                griFechas.setColumns(2);
+                griFechas.getChildren().add(etiMarca);
+                griFechas.getChildren().add(cmbMarca);
+                griFechas.getChildren().add(etiEquipo);
+                griFechas.getChildren().add(cmbDescripcion);
+                gridE.getChildren().add(griFechas);
+                diaEquipos.setDialogo(gridE);
+                diaEquipos.dibujar();
                 break;
         }
     }
@@ -330,6 +373,13 @@ public class ReporteporCustodio extends Pantalla {
                 sef_formato.dibujar();
                 break;
             case "CONSOLIDADO ACTIVOS":
+                rep_reporte.cerrar();
+                sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
+                sef_formato.dibujar();
+                break;
+            case "ACTIVOS FIJOS":
+                p_parametros.put("marca", cmbMarca.getValue()+ "");
+                p_parametros.put("equipo", cmbDescripcion.getValue() + "");
                 rep_reporte.cerrar();
                 sef_formato.setSeleccionFormatoReporte(p_parametros, rep_reporte.getPath());
                 sef_formato.dibujar();
